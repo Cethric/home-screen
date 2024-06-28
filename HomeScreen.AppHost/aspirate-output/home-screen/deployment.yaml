@@ -1,0 +1,33 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: home-screen
+  labels:
+    app: home-screen
+spec:
+  minReadySeconds: 60
+  replicas: 1
+  selector:
+    matchLabels:
+      app: home-screen
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: home-screen
+    spec:
+      containers:
+      - name: home-screen
+        image: localhost:32000/home-screen/home-screen:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - name: http
+          containerPort: 8080
+        - name: https
+          containerPort: 8443
+        envFrom:
+        - configMapRef:
+            name: home-screen-env
+      terminationGracePeriodSeconds: 180

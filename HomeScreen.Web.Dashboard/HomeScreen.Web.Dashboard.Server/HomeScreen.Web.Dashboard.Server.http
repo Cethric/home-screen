@@ -1,0 +1,6 @@
+@HomeScreen.Web.Dashboard.Server_HostAddress = http://localhost:5240
+
+GET {{HomeScreen.Web.Dashboard.Server_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

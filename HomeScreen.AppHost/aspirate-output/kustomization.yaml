@@ -1,0 +1,11 @@
+namespace: home-screen
+
+resources:
+- home-screen
+- homescreen-web-slideshow
+- namespace.yaml
+
+generatorOptions:
+  disableNameSuffixHash: true
+
+

@@ -1,0 +1,43 @@
+{{#if hasPorts}}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{name}}
+spec:
+  type: {{serviceType}}
+  selector:
+    app: {{name}}
+  ports:
+  {{#each ports}}
+  - name: {{name}}
+  {{#if externalPort}}
+    port: {{externalPort}}
+  {{else}}
+    port: {{internalPort}}
+  {{/if}}
+    targetPort: {{internalPort}}
+  {{/each}}
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{name}}-ingress
+  annotations:
+    traefik.ingress.kubernetes.io/router.middlewares: cors-headers
+spec:
+  rules:
+{{#each ports}}
+    - host: "{{../name}}.home-automation.cloud"
+      {{name}}:
+        paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: {{../name}}
+              port:
+                name: {{name}}
+{{/each}}
+{{/if}}
