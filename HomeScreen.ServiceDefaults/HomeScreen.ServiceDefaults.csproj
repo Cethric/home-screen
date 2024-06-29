@@ -1,22 +1,36 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-    <IsAspireSharedProject>true</IsAspireSharedProject>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <IsAspireSharedProject>true</IsAspireSharedProject>
+        <Configurations>Debug;Release;SwaggerBuild</Configurations>
+        <Platforms>AnyCPU</Platforms>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <PropertyGroup Condition=" '$(Configuration)' == 'SwaggerBuild' ">
+        <DebugSymbols Condition=" '$(DebugSymbols)' == '' ">true</DebugSymbols>
+        <Optimize Condition=" '$(Optimize)' == '' ">false</Optimize>
+    </PropertyGroup>
 
-    <PackageReference Include="Microsoft.Extensions.Http.Resilience" Version="9.0.0-preview.5.24311.7" />
-    <PackageReference Include="Microsoft.Extensions.ServiceDiscovery" Version="8.0.1" />
-    <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.9.0" />
-    <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.9.0" />
-    <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.9.0" />
-    <PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="1.9.0" />
-    <PackageReference Include="OpenTelemetry.Instrumentation.Runtime" Version="1.9.0" />
-  </ItemGroup>
+    <ItemGroup>
+        <FrameworkReference Include="Microsoft.AspNetCore.App"/>
+        <PackageReference Include="Aspire.Seq" Version="8.0.2"/>
+        <PackageReference Include="Aspire.StackExchange.Redis.OutputCaching" Version="8.0.2"/>
+
+        <PackageReference Include="Microsoft.Extensions.Http.Resilience" Version="8.6.0"/>
+        <PackageReference Include="Microsoft.Extensions.ServiceDiscovery" Version="8.0.2"/>
+        <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.9.0"/>
+        <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.9.0"/>
+        <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.9.0"/>
+        <PackageReference Include="OpenTelemetry.Instrumentation.GrpcNetClient" Version="1.9.0-beta.1"/>
+        <PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="1.9.0"/>
+        <PackageReference Include="OpenTelemetry.Instrumentation.Runtime" Version="1.9.0"/>
+    </ItemGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'SwaggerBuild' ">
+        <DefineConstants>TRACE;SwaggerBuild</DefineConstants>
+    </PropertyGroup>
 
 </Project>

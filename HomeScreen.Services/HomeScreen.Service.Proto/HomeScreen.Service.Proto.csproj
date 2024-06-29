@@ -14,8 +14,16 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Aspire.Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.2" />
-      <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.6" />
+        <PackageReference Include="Grpc.AspNetCore" Version="2.63.0"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Protobuf Include="Protos\greet.proto"/>
+        <Protobuf Include="Protos\weather.proto"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Folder Include="obj\Debug\net9.0\Protos"/>
     </ItemGroup>
 
 </Project>

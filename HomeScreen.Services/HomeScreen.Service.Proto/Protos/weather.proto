@@ -1,0 +1,91 @@
+syntax = "proto3";
+
+option csharp_namespace = "HomeScreen.Service.Weather";
+
+package weather;
+
+service Weather {
+  rpc CurrentForecast(ForecastRequest) returns (CurrentForecastReply);
+  rpc HourlyForecast(ForecastRequest) returns (HourlyForecastReply);
+  rpc DailyForecast(ForecastRequest) returns (DailyForecastReply);
+}
+
+message ForecastRequest {
+  float latitude = 1;
+  float longitude = 2;
+}
+
+message CurrentForecastReply {
+  float feels_like_temperature = 1;
+  float max_temperature = 2;
+  float min_temperature = 3;
+  float chance_of_rain = 4;
+  float amount_of_rain = 5;
+  string weather_code = 6;
+}
+
+message HourlyForecastReply {
+  repeated HourlyForecast forecast = 1;
+}
+message HourlyForecast {
+  int64 Time = 1;
+  float ApparentTemperature = 2;
+  float Precipitation = 3;
+  float PrecipitationProbability = 4;
+  float WindDirection = 5;
+  float WindSpeed = 6;
+  float WindGusts = 7;
+  bool IsDay = 8;
+  float CloudCover = 9;
+}
+
+message DailyForecastReply {
+  repeated DailyForecast forecast = 1;
+}
+
+message DailyForecast {
+  int64 Time = 1;
+  float ApparentTemperatureMin = 2;
+  float ApparentTemperatureMax = 3;
+  float DaylightDuration = 4;
+  int64 Sunrise = 5;
+  int64 Sunset = 6;
+  float UvIndexClearSkyMax = 7;
+  float UvIndexMax = 8;
+  WmoWeatherCode WeatherCode = 9;
+  string WeatherCodeLabel = 10;
+  float PrecipitationSum = 11;
+  float PrecipitationProbabilityMax = 12;
+  float PrecipitationProbabilityMin = 13;
+}
+
+enum WmoWeatherCode {
+  Clear = 0 ;
+  MostlyClear = 1 ;
+  PartlyClear = 2 ;
+  Overcast = 3 ;
+  Fog = 45;
+  RimeFog = 48;
+  LightDrizzle = 51;
+  MediumDrizzle = 53;
+  HeavyDrizzle = 55;
+  LightFreezingDrizzle = 56;
+  HeavyFreezingDrizzle = 57;
+  LightRain = 61;
+  MediumRain = 63;
+  HeavyRain = 65;
+  LightFreezingRain = 66;
+  HeavyFreezingRain = 67;
+  LightSnow = 71;
+  MediumSnow = 73;
+  HeavySnow = 75;
+  GrainySnow = 77;
+  LightRainShower = 80;
+  MediumRainShower = 81;
+  HeavyRainShower = 82;
+  LightSnowShower = 85;
+  HeavySnowShower = 86;
+  Thunderstorm = 95;
+  ThunderstormWithSomeRain = 96;
+  ThunderstormWithHeavyRain = 99;
+}

@@ -6,7 +6,7 @@ public static class MediaDbExtensions
 {
     public static IHostApplicationBuilder AddMediaDb(this IHostApplicationBuilder builder)
     {
-        builder.AddNpgsqlDbContext<MediaDbContext>("homescreen-mediadb");
+        builder.AddSqlServerDbContext<MediaDbContext>("homescreen-media");
 
         return builder;
     }

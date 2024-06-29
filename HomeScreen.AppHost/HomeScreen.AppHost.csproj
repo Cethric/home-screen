@@ -8,18 +8,28 @@
         <IsAspireHost>true</IsAspireHost>
         <UserSecretsId>9264b4d1-a40a-4bf5-b93b-8782ffe4673c</UserSecretsId>
         <ContainerRegistry>192.168.156.49:32000</ContainerRegistry>
+        <Configurations>Debug;Release;SwaggerBuild</Configurations>
+        <Platforms>AnyCPU</Platforms>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'SwaggerBuild' ">
+      <DebugSymbols Condition=" '$(DebugSymbols)' == '' ">true</DebugSymbols>
+      <Optimize Condition=" '$(Optimize)' == '' ">false</Optimize>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Aspire.Hosting" Version="9.0.0-preview.3.24210.17" />
-        <PackageReference Include="Aspire.Hosting.AppHost" Version="8.0.1" />
-        <PackageReference Include="Aspire.Hosting.PostgreSQL" Version="8.0.1" />
+        <PackageReference Include="Aspire.Hosting" Version="8.0.2" />
+        <PackageReference Include="Aspire.Hosting.AppHost" Version="8.0.2" />
+        <PackageReference Include="Aspire.Hosting.Redis" Version="8.0.2" />
+        <PackageReference Include="Aspire.Hosting.Seq" Version="8.0.2" />
+        <PackageReference Include="Aspire.Hosting.SqlServer" Version="8.0.2" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\HomeScreen.Service.Media\HomeScreen.Service.Media.csproj" />
-      <ProjectReference Include="..\HomeScreen.Web.Dashboard\HomeScreen.Web.Dashboard.Server\HomeScreen.Web.Dashboard.Server.csproj" />
-      <ProjectReference Include="..\HomeScreen.Web.Slideshow\HomeScreen.Web.Slideshow.Server\HomeScreen.Web.Slideshow.Server.csproj" />
+      <ProjectReference Include="..\HomeScreen.Services\HomeScreen.Service.Media\HomeScreen.Service.Media.csproj" />
+      <ProjectReference Include="..\HomeScreen.Services\HomeScreen.Service.Weather\HomeScreen.Service.Weather.csproj" />
+      <ProjectReference Include="..\HomeScreen.Web\HomeScreen.Web.Dashboard\HomeScreen.Web.Dashboard.Server\HomeScreen.Web.Dashboard.Server.csproj" />
+      <ProjectReference Include="..\HomeScreen.Web\HomeScreen.Web.Slideshow\HomeScreen.Web.Slideshow.Server\HomeScreen.Web.Slideshow.Server.csproj" />
     </ItemGroup>
 
 </Project>

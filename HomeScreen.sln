@@ -4,68 +4,105 @@ VisualStudioVersion = 17.8.0.0
 MinimumVisualStudioVersion = 17.8.0.0
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HomeScreen.AppHost", "HomeScreen.AppHost\HomeScreen.AppHost.csproj", "{C9A02366-A6BF-490A-96D5-E0352FAD797C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HomeScreen.ServiceDefaults", "HomeScreen.ServiceDefaults\HomeScreen.ServiceDefaults.csproj", "{5617B179-64F1-41DE-A09A-61041507274A}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HomeScreen.Web.Slideshow.Server", "HomeScreen.Web.Slideshow\HomeScreen.Web.Slideshow.Server\HomeScreen.Web.Slideshow.Server.csproj", "{C6A0B7A8-D17F-4AB9-A2A4-557A651AA269}"
-EndProject
-Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "homescreen.web.slideshow.client", "HomeScreen.Web.Slideshow\homescreen.web.slideshow.client\homescreen.web.slideshow.client.esproj", "{426495EB-0138-45B3-AC49-AF59989B9C4E}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HomeScreen.Web.Dashboard.Server", "HomeScreen.Web.Dashboard\HomeScreen.Web.Dashboard.Server\HomeScreen.Web.Dashboard.Server.csproj", "{28181F16-6283-43EB-BA65-0720CC2CF6DA}"
-EndProject
-Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "homescreen.web.dashboard.client", "HomeScreen.Web.Dashboard\homescreen.web.dashboard.client\homescreen.web.dashboard.client.esproj", "{A7A21516-568D-4FDF-AE9C-5FE74470238A}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HomeScreen.Service.Media", "HomeScreen.Service.Media\HomeScreen.Service.Media.csproj", "{7B56FA04-E87C-4B2D-B0AC-F2D836274EC8}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "HomeScreen.Web.Dashboard", "HomeScreen.Web.Dashboard", "{6A28C31E-5A2F-4F63-8F93-45F530C0683B}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "HomeScreen.Web.Slideshow", "HomeScreen.Web.Slideshow", "{407A61C5-04C1-47B1-9912-A2F84CAA5C20}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "HomeScreen.Database", "HomeScreen.Database", "{193F2384-196B-4E6C-B8B8-D48F385F9D96}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeScreen.Database.MediaDb", "HomeScreen.Database\HomeScreen.Database.MediaDb\HomeScreen.Database.MediaDb.csproj", "{0C4D4CCD-0054-4F04-A99D-965F0C32DA66}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HomeScreen.ServiceDefaults", "HomeScreen.ServiceDefaults\HomeScreen.ServiceDefaults.csproj", "{5617B179-64F1-41DE-A09A-61041507274A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "HomeScreen.Services", "HomeScreen.Services", "{07486666-21D4-4C1F-AD73-362FE563626B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeScreen.Service.Media", "HomeScreen.Services\HomeScreen.Service.Media\HomeScreen.Service.Media.csproj", "{994D953D-65DC-4CB6-A657-2325DF306F14}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeScreen.Service.Weather", "HomeScreen.Services\HomeScreen.Service.Weather\HomeScreen.Service.Weather.csproj", "{3F36D6DF-BD41-4894-BA07-1C98BB3E6074}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeScreen.Service.Proto", "HomeScreen.Services\HomeScreen.Service.Proto\HomeScreen.Service.Proto.csproj", "{A7607BFC-4D12-4048-926C-1D64198A7DF0}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "HomeScreen.Web", "HomeScreen.Web", "{4BCA5DD8-E458-44C6-B072-9A2565371C38}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "HomeScreen.Web.Slideshow", "HomeScreen.Web\HomeScreen.Web.Slideshow", "{407A61C5-04C1-47B1-9912-A2F84CAA5C20}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HomeScreen.Web.Slideshow.Server", "HomeScreen.Web\HomeScreen.Web.Slideshow\HomeScreen.Web.Slideshow.Server\HomeScreen.Web.Slideshow.Server.csproj", "{C6A0B7A8-D17F-4AB9-A2A4-557A651AA269}"
+EndProject
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "homescreen.web.slideshow.client", "HomeScreen.Web\HomeScreen.Web.Slideshow\homescreen.web.slideshow.client\homescreen.web.slideshow.client.esproj", "{426495EB-0138-45B3-AC49-AF59989B9C4E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "HomeScreen.Web.Dashboard", "HomeScreen.Web\HomeScreen.Web.Dashboard", "{6A28C31E-5A2F-4F63-8F93-45F530C0683B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HomeScreen.Web.Dashboard.Server", "HomeScreen.Web\HomeScreen.Web.Dashboard\HomeScreen.Web.Dashboard.Server\HomeScreen.Web.Dashboard.Server.csproj", "{28181F16-6283-43EB-BA65-0720CC2CF6DA}"
+EndProject
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "homescreen.web.dashboard.client", "HomeScreen.Web\HomeScreen.Web.Dashboard\homescreen.web.dashboard.client\homescreen.web.dashboard.client.esproj", "{A7A21516-568D-4FDF-AE9C-5FE74470238A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
+		SwaggerBuild|Any CPU = SwaggerBuild|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{C9A02366-A6BF-490A-96D5-E0352FAD797C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C9A02366-A6BF-490A-96D5-E0352FAD797C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C9A02366-A6BF-490A-96D5-E0352FAD797C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C9A02366-A6BF-490A-96D5-E0352FAD797C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C9A02366-A6BF-490A-96D5-E0352FAD797C}.SwaggerBuild|Any CPU.ActiveCfg = SwaggerBuild|Any CPU
+		{C9A02366-A6BF-490A-96D5-E0352FAD797C}.SwaggerBuild|Any CPU.Build.0 = SwaggerBuild|Any CPU
 		{5617B179-64F1-41DE-A09A-61041507274A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5617B179-64F1-41DE-A09A-61041507274A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5617B179-64F1-41DE-A09A-61041507274A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5617B179-64F1-41DE-A09A-61041507274A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5617B179-64F1-41DE-A09A-61041507274A}.SwaggerBuild|Any CPU.ActiveCfg = SwaggerBuild|Any CPU
+		{5617B179-64F1-41DE-A09A-61041507274A}.SwaggerBuild|Any CPU.Build.0 = SwaggerBuild|Any CPU
 		{C6A0B7A8-D17F-4AB9-A2A4-557A651AA269}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C6A0B7A8-D17F-4AB9-A2A4-557A651AA269}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C6A0B7A8-D17F-4AB9-A2A4-557A651AA269}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C6A0B7A8-D17F-4AB9-A2A4-557A651AA269}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C6A0B7A8-D17F-4AB9-A2A4-557A651AA269}.SwaggerBuild|Any CPU.ActiveCfg = SwaggerBuild|Any CPU
+		{C6A0B7A8-D17F-4AB9-A2A4-557A651AA269}.SwaggerBuild|Any CPU.Build.0 = SwaggerBuild|Any CPU
 		{426495EB-0138-45B3-AC49-AF59989B9C4E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{426495EB-0138-45B3-AC49-AF59989B9C4E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{426495EB-0138-45B3-AC49-AF59989B9C4E}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
 		{426495EB-0138-45B3-AC49-AF59989B9C4E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{426495EB-0138-45B3-AC49-AF59989B9C4E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{426495EB-0138-45B3-AC49-AF59989B9C4E}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{426495EB-0138-45B3-AC49-AF59989B9C4E}.SwaggerBuild|Any CPU.ActiveCfg = SwaggerBuild|Any CPU
+		{426495EB-0138-45B3-AC49-AF59989B9C4E}.SwaggerBuild|Any CPU.Build.0 = SwaggerBuild|Any CPU
 		{28181F16-6283-43EB-BA65-0720CC2CF6DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{28181F16-6283-43EB-BA65-0720CC2CF6DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{28181F16-6283-43EB-BA65-0720CC2CF6DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{28181F16-6283-43EB-BA65-0720CC2CF6DA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{28181F16-6283-43EB-BA65-0720CC2CF6DA}.SwaggerBuild|Any CPU.ActiveCfg = SwaggerBuild|Any CPU
+		{28181F16-6283-43EB-BA65-0720CC2CF6DA}.SwaggerBuild|Any CPU.Build.0 = SwaggerBuild|Any CPU
 		{A7A21516-568D-4FDF-AE9C-5FE74470238A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A7A21516-568D-4FDF-AE9C-5FE74470238A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A7A21516-568D-4FDF-AE9C-5FE74470238A}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
 		{A7A21516-568D-4FDF-AE9C-5FE74470238A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A7A21516-568D-4FDF-AE9C-5FE74470238A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A7A21516-568D-4FDF-AE9C-5FE74470238A}.Release|Any CPU.Deploy.0 = Release|Any CPU
-		{7B56FA04-E87C-4B2D-B0AC-F2D836274EC8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7B56FA04-E87C-4B2D-B0AC-F2D836274EC8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7B56FA04-E87C-4B2D-B0AC-F2D836274EC8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7B56FA04-E87C-4B2D-B0AC-F2D836274EC8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A7A21516-568D-4FDF-AE9C-5FE74470238A}.SwaggerBuild|Any CPU.ActiveCfg = SwaggerBuild|Any CPU
+		{A7A21516-568D-4FDF-AE9C-5FE74470238A}.SwaggerBuild|Any CPU.Build.0 = SwaggerBuild|Any CPU
 		{0C4D4CCD-0054-4F04-A99D-965F0C32DA66}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{0C4D4CCD-0054-4F04-A99D-965F0C32DA66}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0C4D4CCD-0054-4F04-A99D-965F0C32DA66}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0C4D4CCD-0054-4F04-A99D-965F0C32DA66}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0C4D4CCD-0054-4F04-A99D-965F0C32DA66}.SwaggerBuild|Any CPU.ActiveCfg = SwaggerBuild|Any CPU
+		{0C4D4CCD-0054-4F04-A99D-965F0C32DA66}.SwaggerBuild|Any CPU.Build.0 = SwaggerBuild|Any CPU
+		{994D953D-65DC-4CB6-A657-2325DF306F14}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{994D953D-65DC-4CB6-A657-2325DF306F14}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{994D953D-65DC-4CB6-A657-2325DF306F14}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{994D953D-65DC-4CB6-A657-2325DF306F14}.Release|Any CPU.Build.0 = Release|Any CPU
+		{994D953D-65DC-4CB6-A657-2325DF306F14}.SwaggerBuild|Any CPU.ActiveCfg = SwaggerBuild|Any CPU
+		{994D953D-65DC-4CB6-A657-2325DF306F14}.SwaggerBuild|Any CPU.Build.0 = SwaggerBuild|Any CPU
+		{3F36D6DF-BD41-4894-BA07-1C98BB3E6074}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F36D6DF-BD41-4894-BA07-1C98BB3E6074}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F36D6DF-BD41-4894-BA07-1C98BB3E6074}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F36D6DF-BD41-4894-BA07-1C98BB3E6074}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F36D6DF-BD41-4894-BA07-1C98BB3E6074}.SwaggerBuild|Any CPU.ActiveCfg = SwaggerBuild|Any CPU
+		{3F36D6DF-BD41-4894-BA07-1C98BB3E6074}.SwaggerBuild|Any CPU.Build.0 = SwaggerBuild|Any CPU
+		{A7607BFC-4D12-4048-926C-1D64198A7DF0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A7607BFC-4D12-4048-926C-1D64198A7DF0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A7607BFC-4D12-4048-926C-1D64198A7DF0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A7607BFC-4D12-4048-926C-1D64198A7DF0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A7607BFC-4D12-4048-926C-1D64198A7DF0}.SwaggerBuild|Any CPU.ActiveCfg = SwaggerBuild|Any CPU
+		{A7607BFC-4D12-4048-926C-1D64198A7DF0}.SwaggerBuild|Any CPU.Build.0 = SwaggerBuild|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -79,5 +116,10 @@ Global
 		{426495EB-0138-45B3-AC49-AF59989B9C4E} = {407A61C5-04C1-47B1-9912-A2F84CAA5C20}
 		{C6A0B7A8-D17F-4AB9-A2A4-557A651AA269} = {407A61C5-04C1-47B1-9912-A2F84CAA5C20}
 		{0C4D4CCD-0054-4F04-A99D-965F0C32DA66} = {193F2384-196B-4E6C-B8B8-D48F385F9D96}
+		{994D953D-65DC-4CB6-A657-2325DF306F14} = {07486666-21D4-4C1F-AD73-362FE563626B}
+		{3F36D6DF-BD41-4894-BA07-1C98BB3E6074} = {07486666-21D4-4C1F-AD73-362FE563626B}
+		{A7607BFC-4D12-4048-926C-1D64198A7DF0} = {07486666-21D4-4C1F-AD73-362FE563626B}
+		{6A28C31E-5A2F-4F63-8F93-45F530C0683B} = {4BCA5DD8-E458-44C6-B072-9A2565371C38}
+		{407A61C5-04C1-47B1-9912-A2F84CAA5C20} = {4BCA5DD8-E458-44C6-B072-9A2565371C38}
 	EndGlobalSection
 EndGlobal
