@@ -1,0 +1,21 @@
+{
+  "name": "@homescreen/web",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "devDependencies": {
+    "prettier": "^3.3.2",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0"
+  },
+  "dependencies": {
+    "@homescreen/web-components-client": "workspace:*",
+    "@homescreen/web-slideshow-client": "workspace:*",
+    "@homescreen/web-dashboard-client": "workspace:*"
+  },
+  "packageManager": "pnpm@9.1.0",
+  "engines": {
+    "node": ">=20",
+    "pnpm": ">=9"
+  }
+}

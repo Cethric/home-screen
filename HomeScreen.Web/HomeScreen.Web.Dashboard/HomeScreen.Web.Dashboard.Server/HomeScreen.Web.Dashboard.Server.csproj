@@ -10,7 +10,7 @@
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <DockerfileContext>..\..</DockerfileContext>
     <SpaRoot>..\homescreen.web.dashboard.client</SpaRoot>
-    <SpaProxyLaunchCommand>npm run dev</SpaProxyLaunchCommand>
+    <SpaProxyLaunchCommand>pnpm run dev</SpaProxyLaunchCommand>
     <SpaProxyServerUrl>https://localhost:5173</SpaProxyServerUrl>
     <Configurations>Debug;Release;SwaggerBuild</Configurations>
     <Platforms>AnyCPU</Platforms>

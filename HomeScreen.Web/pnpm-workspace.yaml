@@ -1,0 +1,4 @@
+﻿packages:
+  - 'HomeScreen.Web.Components/**'
+  - 'HomeScreen.Web.Dashboard/**'
+  - 'HomeScreen.Web.Slideshow/**'

@@ -32,6 +32,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HomeScreen.Web.Dashboard.Se
 EndProject
 Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "homescreen.web.dashboard.client", "HomeScreen.Web\HomeScreen.Web.Dashboard\homescreen.web.dashboard.client\homescreen.web.dashboard.client.esproj", "{A7A21516-568D-4FDF-AE9C-5FE74470238A}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "HomeScreen.Web.Components", "HomeScreen.Web.Components", "{03926BA8-3C64-468A-B708-82876E6A61B9}"
+EndProject
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "homescreen.web.components.client", "HomeScreen.Web\HomeScreen.Web.Components\homescreen.web.components.client\homescreen.web.components.client.esproj", "{02BB561A-2BF7-40D8-B13A-D0EEA3A09FA4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -103,6 +107,12 @@ Global
 		{A7607BFC-4D12-4048-926C-1D64198A7DF0}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A7607BFC-4D12-4048-926C-1D64198A7DF0}.SwaggerBuild|Any CPU.ActiveCfg = SwaggerBuild|Any CPU
 		{A7607BFC-4D12-4048-926C-1D64198A7DF0}.SwaggerBuild|Any CPU.Build.0 = SwaggerBuild|Any CPU
+		{02BB561A-2BF7-40D8-B13A-D0EEA3A09FA4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{02BB561A-2BF7-40D8-B13A-D0EEA3A09FA4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{02BB561A-2BF7-40D8-B13A-D0EEA3A09FA4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{02BB561A-2BF7-40D8-B13A-D0EEA3A09FA4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{02BB561A-2BF7-40D8-B13A-D0EEA3A09FA4}.SwaggerBuild|Any CPU.ActiveCfg = SwaggerBuild|Any CPU
+		{02BB561A-2BF7-40D8-B13A-D0EEA3A09FA4}.SwaggerBuild|Any CPU.Build.0 = SwaggerBuild|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -121,5 +131,7 @@ Global
 		{A7607BFC-4D12-4048-926C-1D64198A7DF0} = {07486666-21D4-4C1F-AD73-362FE563626B}
 		{6A28C31E-5A2F-4F63-8F93-45F530C0683B} = {4BCA5DD8-E458-44C6-B072-9A2565371C38}
 		{407A61C5-04C1-47B1-9912-A2F84CAA5C20} = {4BCA5DD8-E458-44C6-B072-9A2565371C38}
+		{03926BA8-3C64-468A-B708-82876E6A61B9} = {4BCA5DD8-E458-44C6-B072-9A2565371C38}
+		{02BB561A-2BF7-40D8-B13A-D0EEA3A09FA4} = {03926BA8-3C64-468A-B708-82876E6A61B9}
 	EndGlobalSection
 EndGlobal
