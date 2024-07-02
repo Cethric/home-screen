@@ -1,4 +1,5 @@
 ﻿using Grpc.Core;
+using HomeScreen.Service.Weather.Generated.Entities;
 
 namespace HomeScreen.Service.Weather.Services;
 
@@ -7,8 +8,16 @@ public class WeatherService(ILogger<WeatherService> logger, IWeatherApi weatherA
     public override async Task<CurrentForecastReply> CurrentForecast(ForecastRequest request, ServerCallContext context)
     {
         logger.LogInformation($"Get current Forecast: {request}");
-        var response = await weatherApi.GetForecast(request.Latitude, request.Longitude, context.CancellationToken);
-        return response;
+        try
+        {
+            var response = await weatherApi.GetForecast(request.Latitude, request.Longitude, context.CancellationToken);
+            return response;
+        }
+        catch (ApiException errorResponse)
+        {
+            logger.LogError(errorResponse, "Failed to get current forecast");
+            throw;
+        }
     }
 
     public override async Task<HourlyForecastReply> HourlyForecast(ForecastRequest request, ServerCallContext context)
