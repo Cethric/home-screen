@@ -13,6 +13,133 @@ import type { AxiosInstance, AxiosRequestConfig, AxiosResponse, CancelToken } fr
 
 import { DateTime, Duration } from "luxon";
 
+export interface IMediaClient {
+    getRandomMediaItems(count?: number | undefined): Promise<SwaggerResponse<WeatherForecast>>;
+    toggleMediaItem(id?: string | undefined, enabled?: boolean | undefined): Promise<SwaggerResponse<WeatherForecast>>;
+}
+
+export class MediaClient implements IMediaClient {
+    protected instance: AxiosInstance;
+    protected baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(baseUrl?: string, instance?: AxiosInstance) {
+
+        this.instance = instance || axios.create();
+
+        this.baseUrl = baseUrl ?? "";
+
+    }
+
+    getRandomMediaItems(count?: number | undefined, signal?: AbortSignal): Promise<SwaggerResponse<WeatherForecast>> {
+        let url_ = this.baseUrl + "/Media/GetRandomMediaItems?";
+        if (count === null)
+            throw new Error("The parameter 'count' cannot be null.");
+        else if (count !== undefined)
+            url_ += "count=" + encodeURIComponent("" + count) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: AxiosRequestConfig = {
+            method: "GET",
+            url: url_,
+            headers: {
+                "Accept": "application/json"
+            },
+            signal
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processGetRandomMediaItems(_response);
+        });
+    }
+
+    protected processGetRandomMediaItems(response: AxiosResponse): Promise<SwaggerResponse<WeatherForecast>> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = WeatherForecast.fromJS(resultData200);
+            return Promise.resolve<SwaggerResponse<WeatherForecast>>(new SwaggerResponse<WeatherForecast>(status, _headers, result200));
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<SwaggerResponse<WeatherForecast>>(new SwaggerResponse(status, _headers, null as any));
+    }
+
+    toggleMediaItem(id?: string | undefined, enabled?: boolean | undefined, signal?: AbortSignal): Promise<SwaggerResponse<WeatherForecast>> {
+        let url_ = this.baseUrl + "/Media/ToggleMediaItem?";
+        if (id === null)
+            throw new Error("The parameter 'id' cannot be null.");
+        else if (id !== undefined)
+            url_ += "id=" + encodeURIComponent("" + id) + "&";
+        if (enabled === null)
+            throw new Error("The parameter 'enabled' cannot be null.");
+        else if (enabled !== undefined)
+            url_ += "enabled=" + encodeURIComponent("" + enabled) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: AxiosRequestConfig = {
+            method: "PATCH",
+            url: url_,
+            headers: {
+                "Accept": "application/json"
+            },
+            signal
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processToggleMediaItem(_response);
+        });
+    }
+
+    protected processToggleMediaItem(response: AxiosResponse): Promise<SwaggerResponse<WeatherForecast>> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 202) {
+            const _responseText = response.data;
+            let result202: any = null;
+            let resultData202  = _responseText;
+            result202 = WeatherForecast.fromJS(resultData202);
+            return Promise.resolve<SwaggerResponse<WeatherForecast>>(new SwaggerResponse<WeatherForecast>(status, _headers, result202));
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<SwaggerResponse<WeatherForecast>>(new SwaggerResponse(status, _headers, null as any));
+    }
+}
+
 export interface IWeatherForecastClient {
     getCurrentForecast(longitude?: number | undefined, latitude?: number | undefined): Promise<SwaggerResponse<WeatherForecast>>;
     getHourlyForecast(longitude?: number | undefined, latitude?: number | undefined): Promise<SwaggerResponse<HourlyForecast[]>>;

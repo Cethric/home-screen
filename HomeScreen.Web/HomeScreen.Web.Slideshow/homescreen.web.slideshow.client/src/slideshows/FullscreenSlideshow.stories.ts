@@ -16,7 +16,7 @@ const meta: Meta<typeof FullscreenSlideshow> = {
         value: {
           name: 'object',
           value: {
-            id: { type: 'string' },
+            id: { name: 'string' },
             src: {
               name: 'array',
               value: { name: 'string' },

@@ -370,3 +370,5 @@ test/
 .Trash-*
 .nfs*
 coverage*[.json, .xml, .info]
+
+secrets.json

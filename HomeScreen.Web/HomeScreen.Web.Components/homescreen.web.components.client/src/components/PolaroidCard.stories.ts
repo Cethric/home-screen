@@ -8,8 +8,8 @@ const meta: Meta<typeof PolaroidCard> = {
   tags: ['autodocs'],
   args: {
     image: {
-      src: ['https://picsum.photos/400/500'],
-      loading: 'https://picsum.photos/400/500/?blur=2',
+      images: ['https://picsum.photos/400/500'],
+      thumbnail: 'https://picsum.photos/400/500/?blur=2',
       width: 400,
       height: 500,
       dateTime: DateTime.now(),

@@ -1,7 +1,7 @@
 using Grpc.Core;
+using HomeScreen.Service.Proto.Services;
 using HomeScreen.Service.Weather;
 using HomeScreen.Web.Slideshow.Server.Entities;
-using HomeScreen.Web.Slideshow.Server.Infrastructure.Services;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using DailyForecast = HomeScreen.Web.Slideshow.Server.Entities.DailyForecast;
@@ -25,9 +25,8 @@ public class WeatherForecastController(ILogger<WeatherForecastController> logger
         logger.LogInformation("Request current weather forecast");
         var result = await client.CurrentForecastAsync(
             new ForecastRequest { Longitude = longitude, Latitude = latitude },
-            new Metadata(),
-            DateTimeOffset.Now.AddMinutes(2).UtcDateTime,
-            cancellationToken
+            new CallOptions().WithDeadline(DateTimeOffset.UtcNow.AddMinutes(2).UtcDateTime)
+                .WithCancellationToken(cancellationToken)
         );
         return Ok(
             new WeatherForecast
@@ -53,9 +52,8 @@ public class WeatherForecastController(ILogger<WeatherForecastController> logger
         logger.LogInformation("Request hourly weather forecast");
         var result = await client.HourlyForecastAsync(
             new ForecastRequest { Longitude = longitude, Latitude = latitude },
-            new Metadata(),
-            DateTimeOffset.Now.AddMinutes(2).UtcDateTime,
-            cancellationToken
+            new CallOptions().WithDeadline(DateTimeOffset.UtcNow.AddMinutes(2).UtcDateTime)
+                .WithCancellationToken(cancellationToken)
         );
         return result.Forecast.Select(
             forecast => new HourlyForecast
@@ -84,9 +82,8 @@ public class WeatherForecastController(ILogger<WeatherForecastController> logger
         logger.LogInformation("Request daily weather forecast");
         var result = await client.DailyForecastAsync(
             new ForecastRequest { Longitude = longitude, Latitude = latitude },
-            new Metadata(),
-            DateTimeOffset.Now.AddMinutes(2).UtcDateTime,
-            cancellationToken
+            new CallOptions().WithDeadline(DateTimeOffset.UtcNow.AddMinutes(2).UtcDateTime)
+                .WithCancellationToken(cancellationToken)
         );
         return result.Forecast.Select(
             forecast => new DailyForecast

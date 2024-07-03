@@ -21,7 +21,6 @@
 <script lang="ts" setup>
 import { type Direction, Directions, type Image } from '@components/properties';
 import type { IWeatherForecast } from '@/domain/api/homescreen-slideshow-api';
-import { useDateFormat, useNow } from '@vueuse/core';
 import { computed } from 'vue';
 import RollingSlider from '@/components/RollingSlider.vue';
 import {
@@ -44,8 +43,6 @@ const props = withDefaults(
     durationSeconds: 24,
   },
 );
-
-const format = useDateFormat(useNow(), 'HH:mm:ss');
 
 const imageGroups = computed(() =>
   Array.from({ length: props.count }).map((_, idx) =>

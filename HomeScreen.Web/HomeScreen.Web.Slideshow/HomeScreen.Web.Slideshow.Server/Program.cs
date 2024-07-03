@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
+using HomeScreen.Service.Proto.Services;
 using HomeScreen.ServiceDefaults;
-using HomeScreen.Web.Slideshow.Server.Infrastructure.Services;
 using NJsonSchema.Generation;
 
 var builder = WebApplication.CreateBuilder(args);

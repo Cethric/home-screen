@@ -28,7 +28,7 @@
       ]"
     >
       <picture>
-        <source v-for="src in image.src" :key="src" :srcset="src" />
+        <source v-for="src in image.images" :key="src" :srcset="src" />
         <img
           :class="[
             'size-auto max-h-full max-w-full rounded-md object-contain drop-shadow-md',
@@ -38,7 +38,7 @@
             },
           ]"
           :height="image.height"
-          :src="image.loading"
+          :src="image.thumbnail"
           :width="image.width"
           alt="Example media"
           loading="lazy"

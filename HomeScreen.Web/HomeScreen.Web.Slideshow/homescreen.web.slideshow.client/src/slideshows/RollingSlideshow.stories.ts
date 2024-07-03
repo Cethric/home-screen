@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/vue3';
 import RollingSlideshow from '@/slideshows/RollingSlideshow.vue';
-import { Directions } from '@components/properties';
+import { Directions } from '@homescreen/web-components-client/src/components/properties';
 import { picsumImages } from '@/stories/helpers';
 
 const meta: Meta<typeof RollingSlideshow> = {
@@ -17,7 +17,7 @@ const meta: Meta<typeof RollingSlideshow> = {
         value: {
           name: 'object',
           value: {
-            id: { type: 'string' },
+            id: { name: 'string' },
             src: {
               name: 'array',
               value: { name: 'string' },
@@ -42,12 +42,12 @@ const meta: Meta<typeof RollingSlideshow> = {
       type: {
         name: 'object',
         value: {
-          feelsLikeTemperature: { type: 'number' },
-          maxTemperature: { type: 'number' },
-          minTemperature: { type: 'number' },
-          chanceOfRain: { type: 'number' },
-          amountOfRain: { type: 'number' },
-          weatherCode: { type: 'string' },
+          feelsLikeTemperature: { name: 'number' },
+          maxTemperature: { name: 'number' },
+          minTemperature: { name: 'number' },
+          chanceOfRain: { name: 'number' },
+          amountOfRain: { name: 'number' },
+          weatherCode: { name: 'string' },
         },
       },
     },

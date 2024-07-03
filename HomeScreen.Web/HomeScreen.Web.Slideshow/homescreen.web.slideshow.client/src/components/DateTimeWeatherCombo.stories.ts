@@ -13,12 +13,12 @@ const meta: Meta<typeof DateTimeWeatherCombo> = {
       type: {
         name: 'object',
         value: {
-          feelsLikeTemperature: { type: 'number' },
-          maxTemperature: { type: 'number' },
-          minTemperature: { type: 'number' },
-          chanceOfRain: { type: 'number' },
-          amountOfRain: { type: 'number' },
-          weatherCode: { type: 'string' },
+          feelsLikeTemperature: { name: 'number' },
+          maxTemperature: { name: 'number' },
+          minTemperature: { name: 'number' },
+          chanceOfRain: { name: 'number' },
+          amountOfRain: { name: 'number' },
+          weatherCode: { name: 'string' },
         },
       },
     },

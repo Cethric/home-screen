@@ -16,7 +16,10 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="Azure.Maps.Search" Version="1.0.0-beta.5" />
         <PackageReference Include="Grpc.AspNetCore" Version="2.63.0"/>
+        <PackageReference Include="Magick.NET.Core" Version="13.9.1" />
+        <PackageReference Include="Magick.NET-Q16-HDRI-AnyCPU" Version="13.9.1" />
         <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.0" />
     </ItemGroup>
 

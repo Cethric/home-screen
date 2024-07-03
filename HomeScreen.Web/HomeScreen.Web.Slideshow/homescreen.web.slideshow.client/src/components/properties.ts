@@ -1,6 +1,6 @@
 export enum RollingDirections {
-  forward = 'forward',
-  backward = 'backward',
+  'forward' = 'forward',
+  'backward' = 'backward',
 }
 
 export type RollingDirection = keyof typeof RollingDirections;

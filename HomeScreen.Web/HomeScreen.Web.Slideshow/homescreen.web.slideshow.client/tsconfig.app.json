@@ -12,6 +12,7 @@
     "composite": true,
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
     "baseUrl": ".",
+    "verbatimModuleSyntax": true,
     "paths": {
       "@/*": [
         "./src/*"

@@ -1,6 +1,6 @@
 ﻿using Grpc.Core;
 
-namespace HomeScreen.Web.Slideshow.Server.Infrastructure.Services;
+namespace HomeScreen.Service.Proto.Services;
 
 public class WeatherGrpcClient : Service.Weather.Weather.WeatherClient
 {

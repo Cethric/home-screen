@@ -18,7 +18,7 @@ const meta: Meta<typeof RollingSlider> = {
         value: {
           name: 'object',
           value: {
-            id: { type: 'string' },
+            id: { name: 'string' },
             src: {
               name: 'array',
               value: { name: 'string' },

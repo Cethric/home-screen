@@ -23,8 +23,8 @@ export type Position = keyof typeof Positions;
 
 export interface Image {
   id: string;
-  src: string[];
-  loading: string;
+  images: string[];
+  thumbnail: string;
   width: number;
   height: number;
   dateTime: DateTime;

@@ -21,6 +21,7 @@ public static class Extensions
 #if !SwaggerBuild
         builder.AddSeqEndpoint("homescreen-seq");
         builder.AddRedisOutputCache("homescreen-redis");
+        builder.AddRedisDistributedCache("homescreen-redis");
 #endif
 
         builder.AddDefaultHealthChecks();
