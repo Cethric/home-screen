@@ -1,28 +1,26 @@
 <template>
-  <component
-    :is="activeComponent"
+  <RollingSlideshow
+    v-if="activeSlideshow === Slideshows.rolling_slideshow"
     :images="images"
     :weather-forecast="forecast"
   />
-  <!--  <RollingSlideshow-->
-  <!--    v-if="activeSlideshow === Slideshows.rolling_slideshow"-->
-  <!--    :images="images"-->
-  <!--    :weather-forecast="forecast"-->
-  <!--  />-->
-  <!--  <PolaroidSlideshow-->
-  <!--    v-if="activeSlideshow === Slideshows.polaroid_slideshow"-->
-  <!--    :images="images"-->
-  <!--    :weather-forecast="forecast"-->
-  <!--  />-->
-  <!--  <FullscreenSlideshow-->
-  <!--    v-if="activeSlideshow === Slideshows.fullscreen_slideshow"-->
-  <!--    :images="images"-->
-  <!--    :weather-forecast="forecast"-->
-  <!--  />-->
+  <PolaroidSlideshow
+    v-if="activeSlideshow === Slideshows.polaroid_slideshow"
+    :images="images"
+    :weather-forecast="forecast"
+  />
+  <FullscreenSlideshow
+    v-if="activeSlideshow === Slideshows.fullscreen_slideshow"
+    :images="images"
+    :weather-forecast="forecast"
+  />
 </template>
 
 <script async lang="ts" setup>
 import { DateTime } from 'luxon';
+import RollingSlideshow from '@/slideshows/RollingSlideshow.vue';
+import PolaroidSlideshow from '@/slideshows/PolaroidSlideshow.vue';
+import FullscreenSlideshow from '@/slideshows/FullscreenSlideshow.vue';
 import {
   MediaClient,
   WeatherForecast,
@@ -31,30 +29,10 @@ import {
 import { type Slideshow, Slideshows } from './properties';
 import { Image } from '@components/properties';
 import { v4 as uuid } from 'uuid';
-import { computed } from 'vue';
 
-const props = defineProps<{
+defineProps<{
   activeSlideshow: Slideshow;
 }>();
-
-const rollingComponent = async () =>
-  await import('@/slideshows/RollingSlideshow.vue');
-const polaroidComponent = async () =>
-  await import('@/slideshows/PolaroidSlideshow.vue');
-const fullscreenComponent = async () =>
-  await import('@/slideshows/FullscreenSlideshow.vue');
-
-const activeComponent = computed(() => {
-  switch (props.activeSlideshow) {
-    case Slideshows.rolling_slideshow:
-      return rollingComponent;
-    case Slideshows.polaroid_slideshow:
-      return polaroidComponent;
-    case Slideshows.fullscreen_slideshow:
-      return fullscreenComponent;
-  }
-  return null;
-});
 
 const weatherApi = new WeatherForecastClient('/api');
 
@@ -74,7 +52,7 @@ const mediaApi = new MediaClient('/api');
 
 let images: Image[];
 try {
-  const response = await mediaApi.getRandomMediaItems(1);
+  const response = await mediaApi.getRandomMediaItems(300);
   images = response.result.map(
     (item) =>
       ({

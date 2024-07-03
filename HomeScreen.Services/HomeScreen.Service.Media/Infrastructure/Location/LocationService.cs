@@ -50,7 +50,7 @@ public class LocationService(
             cancellationToken
         );
 
-        if (!response.HasValue && response.Value.Addresses.Count < 1) return "Unknown location";
+        if (!response.HasValue || response.Value.Addresses.Count == 0) return "Unknown location";
         var address = response.Value.Addresses[0];
 
         var formatted = string.Join(

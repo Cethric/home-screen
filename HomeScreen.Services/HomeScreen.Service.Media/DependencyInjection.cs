@@ -17,6 +17,7 @@ public static class DependencyInjection
         services.AddScoped<IMediaHasher, MediaHasher>();
         services.AddScoped<IMediaPaths, MediaPaths>();
         services.AddScoped<IMediaProcessor, MediaProcessor>();
+        services.AddScoped<IMediaTransformer, MediaTransformer>();
 
         return services;
     }

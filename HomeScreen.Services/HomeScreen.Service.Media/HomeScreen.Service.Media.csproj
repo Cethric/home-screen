@@ -4,6 +4,8 @@
         <TargetFramework>net9.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
+        <RuntimeIdentifiers>linux-x64</RuntimeIdentifiers>
+        <EnableSdkContainerDebugging>True</EnableSdkContainerDebugging>
         <UserSecretsId>7106f9ca-6049-4386-80e5-b1346ff1a293</UserSecretsId>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
         <Configurations>Debug;Release;SwaggerBuild</Configurations>
@@ -14,6 +16,12 @@
       <DebugSymbols Condition=" '$(DebugSymbols)' == '' ">true</DebugSymbols>
       <Optimize Condition=" '$(Optimize)' == '' ">false</Optimize>
     </PropertyGroup>
+
+    <ItemGroup>
+        <ContainerEnvironmentVariable Include="ASPNETCORE_HTTPS_PORTS">
+            <Value>8081</Value>
+        </ContainerEnvironmentVariable>
+    </ItemGroup>
 
     <ItemGroup>
         <PackageReference Include="Azure.Maps.Search" Version="1.0.0-beta.5" />

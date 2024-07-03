@@ -50,13 +50,13 @@ public class MediaPaths(ILogger<MediaPaths> logger, MediaDirectories mediaDirect
             mediaTransformOptions.Width,
             mediaTransformOptions.Height,
             mediaTransformOptions.BlurRadius,
-            mediaTransformOptions.ImageFormat
+            mediaTransformOptions.Format
         );
         var directory = GetTransformDirectory(fileHash);
         var fileInfo = new FileInfo(
             Path.Combine(
                 directory.FullName,
-                $"transformed-{mediaTransformOptions.Width}-{mediaTransformOptions.Height}-{mediaTransformOptions.BlurRadius}.{mediaTransformOptions.ImageFormat}"
+                $"transformed-{mediaTransformOptions.Width}-{mediaTransformOptions.Height}-{mediaTransformOptions.BlurRadius}.{mediaTransformOptions.Format}"
             )
         );
         logger.LogInformation(
@@ -65,7 +65,7 @@ public class MediaPaths(ILogger<MediaPaths> logger, MediaDirectories mediaDirect
             mediaTransformOptions.Width,
             mediaTransformOptions.Height,
             mediaTransformOptions.BlurRadius,
-            mediaTransformOptions.ImageFormat,
+            mediaTransformOptions.Format,
             fileInfo
         );
         return fileInfo;

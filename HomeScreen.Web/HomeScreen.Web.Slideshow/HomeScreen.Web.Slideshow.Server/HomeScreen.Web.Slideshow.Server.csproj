@@ -47,10 +47,6 @@
         </ProjectReference>
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Infrastructure\" />
-    </ItemGroup>
-
     <PropertyGroup>
         <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
     </PropertyGroup>

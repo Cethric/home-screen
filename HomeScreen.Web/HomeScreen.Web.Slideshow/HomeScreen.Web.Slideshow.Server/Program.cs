@@ -1,6 +1,7 @@
 using System.Text.Json.Serialization;
 using HomeScreen.Service.Proto.Services;
 using HomeScreen.ServiceDefaults;
+using HomeScreen.Web.Slideshow.Server.Services;
 using NJsonSchema.Generation;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -30,6 +31,11 @@ builder.Services.AddGrpcClient<WeatherGrpcClient>(
     "homescreen-service-weather",
     c => c.Address = new Uri("http://homescreen-service-weather:5016")
 );
+builder.Services.AddHttpClient(
+    "MediaDownloader",
+    client => { client.BaseAddress = new Uri("http://homescreen-service-media:5014"); }
+);
+builder.Services.AddScoped<IMediaDownloader, MediaDownloader>();
 
 var app = builder.Build();
 app.MapDefaultEndpoints();

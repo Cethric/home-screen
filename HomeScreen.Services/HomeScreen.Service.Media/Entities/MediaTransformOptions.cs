@@ -2,8 +2,8 @@
 
 public class MediaTransformOptions
 {
-    public long Width { get; set; }
-    public long Height { get; set; }
+    public int Width { get; set; }
+    public int Height { get; set; }
     public float BlurRadius { get; set; }
-    public string ImageFormat { get; set; } = string.Empty;
+    public MediaTransformOptionsFormat Format { get; set; }
 }

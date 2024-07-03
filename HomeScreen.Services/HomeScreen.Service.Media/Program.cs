@@ -1,8 +1,12 @@
 using HomeScreen.Database.MediaDb;
 using HomeScreen.Service.Media;
 using HomeScreen.Service.Media.Configuration;
+using HomeScreen.Service.Media.Entities;
+using HomeScreen.Service.Media.Infrastructure.Media;
 using HomeScreen.Service.Media.Services;
 using HomeScreen.ServiceDefaults;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -36,12 +40,43 @@ var app = builder.Build();
 
 app.MapDefaultEndpoints();
 
+app.UseHttpsRedirection();
+
 // Configure the HTTP request pipeline.
 app.MapGrpcService<MediaService>();
 app.MapGet(
     "/",
     () =>
         "Communication with gRPC endpoints must be made through a gRPC client. To learn how to create a client, visit: https://go.microsoft.com/fwlink/?linkid=2086909"
+);
+
+//    public int Width { get; set; }
+// public int Height { get; set; }
+// public float BlurRadius { get; set; }
+// public MediaTransformOptionsFormat Format { get; set; }
+
+app.MapGet(
+    "/download",
+    async (
+        [FromQuery] Guid mediaId,
+        [FromQuery] int width,
+        [FromQuery] int height,
+        [FromQuery] float blurRadius,
+        [FromQuery] MediaTransformOptionsFormat format,
+        IMediaApi mediaApi,
+        CancellationToken cancellationToken = default
+    ) =>
+    {
+        var result = await mediaApi.GetTransformedMedia(
+            mediaId,
+            new MediaTransformOptions { Width = width, Height = height, BlurRadius = blurRadius, Format = format },
+            cancellationToken
+        );
+
+        return result is null
+            ? Results.NotFound()
+            : Results.File(result.Open(FileMode.Open, FileAccess.Read), format.TransformFormatToMime());
+    }
 );
 
 app.Run();
