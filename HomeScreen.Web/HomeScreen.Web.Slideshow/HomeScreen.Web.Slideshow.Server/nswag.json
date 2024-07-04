@@ -8,7 +8,7 @@
       "msBuildProjectExtensionsPath": null,
       "configuration": "SwaggerBuild",
       "runtime": "",
-      "targetFramework": "net9.0",
+      "targetFramework": "net8.0",
       "noBuild": false,
       "msBuildOutputPath": null,
       "verbose": true,

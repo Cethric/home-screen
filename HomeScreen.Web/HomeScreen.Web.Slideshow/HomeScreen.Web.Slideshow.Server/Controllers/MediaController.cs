@@ -25,12 +25,7 @@ public class MediaController(
         CancellationToken cancellationToken = default
     )
     {
-        return Task.FromResult(
-            new JsonStreamingResult<MediaItem>(
-                GetRandomMediaItemsStream(count, cancellationToken),
-                JsonSerializerOptions.Web
-            )
-        );
+        return Task.FromResult(new JsonStreamingResult<MediaItem>(GetRandomMediaItemsStream(count, cancellationToken)));
     }
 
     private async IAsyncEnumerable<MediaItem> GetRandomMediaItemsStream(

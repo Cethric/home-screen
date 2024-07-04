@@ -21,8 +21,9 @@ public class JsonStreamingResultExecutor<T> : JsonStreamingResultExecutor, IJson
 
         await foreach (var value in result.Data)
         {
+            await using var stream = response.BodyWriter.AsStream();
             await JsonSerializer.SerializeAsync(
-                response.BodyWriter,
+                stream,
                 value,
                 result.JsonSerializerOptions,
                 context.HttpContext.RequestAborted
