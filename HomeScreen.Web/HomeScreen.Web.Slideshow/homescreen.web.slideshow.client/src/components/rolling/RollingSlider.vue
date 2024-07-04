@@ -15,18 +15,21 @@
     <RollingSlide
       :direction="direction"
       :images="images"
+      :load-image="loadImage"
       @pause="() => pause()"
       @resume="() => resume()"
     />
     <RollingSlide
       :direction="direction"
       :images="images"
+      :load-image="loadImage"
       @pause="() => pause()"
       @resume="() => resume()"
     />
     <RollingSlide
       :direction="direction"
       :images="images"
+      :load-image="loadImage"
       @pause="() => pause()"
       @resume="() => resume()"
     />
@@ -34,7 +37,11 @@
 </template>
 
 <script lang="ts" setup>
-import { type Direction, Directions, type Image } from '@components/properties';
+import {
+  type Direction,
+  Directions,
+  type Image,
+} from '@/helpers/component_properties';
 import {
   type RollingDirection,
   RollingDirections,
@@ -43,7 +50,8 @@ import { ref } from 'vue';
 import { useElementSize, useRafFn } from '@vueuse/core';
 import { reactiveTransform } from '@vueuse/motion';
 import { range } from '@/helpers/random';
-import RollingSlide from '@/components/RollingSlide.vue';
+import RollingSlide from '@/components/rolling/RollingSlide.vue';
+import { MediaTransformOptionsFormat } from '@/domain/api/homescreen-slideshow-api';
 
 const props = withDefaults(
   defineProps<{
@@ -51,6 +59,13 @@ const props = withDefaults(
     durationSeconds?: number;
     direction?: Direction;
     rolling: RollingDirection;
+    loadImage: (
+      imageId: string,
+      width: number,
+      height: number,
+      blur: number,
+      format: MediaTransformOptionsFormat,
+    ) => Promise<string>;
   }>(),
   {
     direction: Directions.horizontal,
@@ -92,8 +107,6 @@ const { pause, resume } = useRafFn(
         break;
     }
   },
-  { fpsLimit: 24 },
+  { fpsLimit: 24, immediate: true },
 );
 </script>
-
-<style lang="scss" scoped></style>

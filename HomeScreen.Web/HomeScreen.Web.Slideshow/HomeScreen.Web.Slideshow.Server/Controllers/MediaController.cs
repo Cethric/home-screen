@@ -1,4 +1,6 @@
 ﻿using System.Net;
+using System.Runtime.CompilerServices;
+using System.Text.Json;
 using Grpc.Core;
 using HomeScreen.Service.Media;
 using HomeScreen.Service.Proto.Services;
@@ -17,27 +19,47 @@ public class MediaController(
 ) : ControllerBase
 {
     [HttpGet(Name = "GetRandomMediaItems")]
-    [ProducesResponseType<IEnumerable<MediaItem>>(StatusCodes.Status200OK, "application/json")]
-    public async Task<ActionResult<IEnumerable<MediaItem>>> GetRandomMediaItems(
+    [ProducesResponseType<MediaItem>(StatusCodes.Status200OK, "application/json")]
+    public Task<JsonStreamingResult<MediaItem>> GetRandomMediaItems(
         [FromQuery] uint count,
         CancellationToken cancellationToken = default
     )
     {
+        return Task.FromResult(
+            new JsonStreamingResult<MediaItem>(
+                GetRandomMediaItemsStream(count, cancellationToken),
+                JsonSerializerOptions.Web
+            )
+        );
+    }
+
+    private async IAsyncEnumerable<MediaItem> GetRandomMediaItemsStream(
+        uint count,
+        [EnumeratorCancellation] CancellationToken cancellationToken = default
+    )
+    {
         logger.LogInformation("GetRandomMediaItems start");
-        var response = await mediaGrpcClient.RandomMediaAsync(
+
+        using var response = mediaGrpcClient.RandomMedia(
             new MediaRequest { Count = count },
             new CallOptions().WithDeadline(DateTimeOffset.UtcNow.AddMinutes(10).UtcDateTime)
                 .WithCancellationToken(cancellationToken)
+                .WithWaitForReady()
         );
-        if (response is null || response.Items.Count == 0)
+        if (response is null)
         {
-            logger.LogWarning("No available media items found");
-            logger.LogInformation("GetRandomMediaItems end");
-            return new List<MediaItem>();
+            logger.LogInformation("GetRandomMediaItems end - no random media items");
+            yield break;
         }
 
-        logger.LogInformation("GetRandomMediaItems end");
-        return Ok(response.Items.Select(TransformMedia));
+        while (await response.ResponseStream.MoveNext())
+        {
+            var entry = response.ResponseStream.Current;
+            logger.LogInformation("GetRandomMediaItems progress");
+            yield return TransformMedia(entry);
+        }
+
+        logger.LogInformation("GetRandomMediaItems end - processed all random media items");
     }
 
     [HttpPatch(Name = "ToggleMediaItem")]
@@ -60,10 +82,10 @@ public class MediaController(
     }
 
     [HttpGet(Name = "DownloadMediaItem")]
-    [ProducesResponseType<StreamContent>(StatusCodes.Status200OK, "application/x-octet-stream")]
-    [ProducesResponseType<StreamContent>(StatusCodes.Status404NotFound)]
-    [ProducesResponseType<StreamContent>(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<StreamContent>> DownloadMediaItem(
+    [ProducesResponseType<FileResult>(StatusCodes.Status200OK, "application/x-octet-stream")]
+    [ProducesResponseType<FileResult>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<FileResult>(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<FileResult>> DownloadMediaItem(
         [FromQuery] Guid id,
         [FromQuery] long width,
         [FromQuery] long height,
@@ -93,6 +115,41 @@ public class MediaController(
         );
 
         return result.StatusCode == HttpStatusCode.NotFound ? NotFound() : BadRequest();
+    }
+
+
+    [HttpGet(Name = "GetTransformMediaItemUrl")]
+    [ProducesResponseType<string>(StatusCodes.Status202Accepted, "application/json")]
+    public Task<AcceptedAtRouteResult> GetTransformMediaItemUrl(
+        [FromQuery] Guid id,
+        [FromQuery] long width,
+        [FromQuery] long height,
+        [FromQuery] float blur,
+        [FromQuery] MediaTransformOptionsFormat format,
+        CancellationToken cancellationToken = default
+    )
+    {
+        return Task.FromResult(
+            AcceptedAtRoute(
+                "DownloadMediaItem",
+                new
+                {
+                    id,
+                    width,
+                    height,
+                    blur,
+                    format
+                },
+                new
+                {
+                    id,
+                    width,
+                    height,
+                    blur,
+                    format
+                }
+            )
+        );
     }
 
     private static MediaItem TransformMedia(MediaEntry entry) =>

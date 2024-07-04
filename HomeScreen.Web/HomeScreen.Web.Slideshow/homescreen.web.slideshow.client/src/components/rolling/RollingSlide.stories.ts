@@ -1,14 +1,15 @@
 import type { Meta, StoryObj } from '@storybook/vue3';
-import RollingSlide from '@/components/RollingSlide.vue';
-import { Directions } from '@components/properties';
-import { picsumImages } from '@/stories/helpers';
+import RollingSlide from '@/components/rolling/RollingSlide.vue';
+import { Directions } from '@/helpers/component_properties';
+import { loadPicsumImage, picsumImages } from '@/stories/helpers';
 
 const meta: Meta<typeof RollingSlide> = {
   component: RollingSlide,
   tags: ['autodocs'],
   args: {
-    images: picsumImages(),
+    images: picsumImages(10),
     direction: Directions.horizontal,
+    loadImage: loadPicsumImage,
   },
   argTypes: {
     images: {
@@ -39,6 +40,7 @@ const meta: Meta<typeof RollingSlide> = {
       },
     },
     direction: { type: { name: 'enum', value: Object.values(Directions) } },
+    loadImage: { type: { name: 'function' } },
   },
 };
 export default meta;

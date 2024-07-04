@@ -7,8 +7,6 @@ import {
   type Direction,
   Directions,
   type Image,
-  type Position,
-  Positions,
   type Variant,
   Variants,
 } from './components/properties';
@@ -22,8 +20,6 @@ export {
   type Direction,
   Directions,
   type Image,
-  type Position,
-  Positions,
   type Variant,
   Variants,
 };

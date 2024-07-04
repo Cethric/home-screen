@@ -11,7 +11,7 @@ builder.AddServiceDefaults();
 
 builder.Services.AddControllers()
     .AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
-// builder.Services.AddSwaggerDocument();
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddOpenApiDocument(
     document =>
@@ -22,6 +22,7 @@ builder.Services.AddOpenApiDocument(
         document.SchemaSettings.GenerateEnumMappingDescription = true;
     }
 );
+builder.Services.AddTransient(typeof(IJsonStreamingResultExecutor<>), typeof(JsonStreamingResultExecutor<>));
 
 builder.Services.AddGrpcClient<MediaGrpcClient>(
     "homescreen-service-media",

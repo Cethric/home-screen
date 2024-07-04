@@ -1,5 +1,8 @@
 <template>
-  <main :class="['grid h-dvh w-dvw overflow-hidden', `grid-${direction}`]">
+  <main
+    v-if="props.images.length > 290"
+    :class="['grid h-dvh w-dvw overflow-hidden', `grid-${direction}`]"
+  >
     <RollingSlider
       v-for="(group, idx) in imageGroups"
       :key="idx"
@@ -7,10 +10,14 @@
       :direction="direction"
       :duration-seconds="durationSeconds"
       :images="group"
+      :load-image="loadImage"
       :rolling="
         idx % 2 === 0 ? RollingDirections.backward : RollingDirections.forward
       "
     />
+  </main>
+  <main v-else class="h-dvh w-dvw">
+    <LoadingSpinner :variant="Variants.primary" class="absolute size-full" />
   </main>
   <DateTimeWeatherCombo
     :kind="DateTimeWeatherComboKinds.footer"
@@ -19,15 +26,24 @@
 </template>
 
 <script lang="ts" setup>
-import { type Direction, Directions, type Image } from '@components/properties';
-import type { IWeatherForecast } from '@/domain/api/homescreen-slideshow-api';
+import {
+  type Direction,
+  Directions,
+  type Image,
+  Variants,
+} from '@/helpers/component_properties';
+import {
+  type IWeatherForecast,
+  MediaTransformOptionsFormat,
+} from '@/domain/api/homescreen-slideshow-api';
 import { computed } from 'vue';
-import RollingSlider from '@/components/RollingSlider.vue';
+import RollingSlider from '@/components/rolling/RollingSlider.vue';
 import {
   DateTimeWeatherComboKinds,
   RollingDirections,
 } from '@/components/properties';
 import DateTimeWeatherCombo from '@/components/DateTimeWeatherCombo.vue';
+import LoadingSpinner from '@components/LoadingSpinner.vue';
 
 const props = withDefaults(
   defineProps<{
@@ -36,6 +52,13 @@ const props = withDefaults(
     direction?: Direction;
     count?: number;
     durationSeconds?: number;
+    loadImage: (
+      imageId: string,
+      width: number,
+      height: number,
+      blur: number,
+      format: MediaTransformOptionsFormat,
+    ) => Promise<string>;
   }>(),
   {
     direction: Directions.horizontal,
@@ -45,13 +68,15 @@ const props = withDefaults(
 );
 
 const imageGroups = computed(() =>
-  Array.from({ length: props.count }).map((_, idx) =>
-    props.images.slice(
-      (props.images.length / props.count) * idx,
-      (props.images.length / props.count) * idx +
-        props.images.length / props.count,
-    ),
-  ),
+  props.images.length > 290
+    ? Array.from({ length: props.count }).map((_, idx) =>
+        props.images.slice(
+          (props.images.length / props.count) * idx,
+          (props.images.length / props.count) * idx +
+            props.images.length / props.count,
+        ),
+      )
+    : [],
 );
 </script>
 

@@ -1,46 +1,25 @@
 <template>
   <div
+    ref="polaroid"
     :class="[
       'polaroid',
       'flex size-fit origin-bottom items-center justify-center p-2',
       {
         'flex-col': direction === Directions.vertical,
         'flex-row': direction === Directions.horizontal,
-        absolute: !!location,
         'rounded-2xl bg-neutral-300 drop-shadow-lg': !flat,
       },
     ]"
     :data-direction="direction"
-    :data-translated="!!location"
-    :style="{
-      '--offset-top': location?.top,
-      '--offset-left': location?.left,
-      '--rotation': location?.rotation,
-    }"
   >
-    <div
-      :class="[
-        'grow',
-        {
-          'max-h-96': direction === Directions.vertical,
-          'max-w-72': direction === Directions.horizontal,
-        },
-      ]"
-    >
-      <picture>
-        <source v-for="src in image.images" :key="src" :srcset="src" />
+    <div class="grow">
+      <picture @click="onClick">
+        <source :srcset="fullAvif" />
+        <source :srcset="fullWebP" />
         <img
-          :class="[
-            'size-auto max-h-full max-w-full rounded-md object-contain drop-shadow-md',
-            {
-              '!max-h-96': direction === Directions.vertical,
-              '!max-w-72': direction === Directions.horizontal,
-            },
-          ]"
-          :height="image.height"
-          :src="image.thumbnail"
-          :width="image.width"
+          :src="loading"
           alt="Example media"
+          class="size-auto rounded-md object-contain drop-shadow-md"
           loading="lazy"
         />
       </picture>
@@ -64,43 +43,105 @@
   </div>
 </template>
 
-<script lang="ts" setup>
+<script async lang="ts" setup>
 import { type Direction, Directions, type Image } from './properties';
+import { computedAsync, useElementSize } from '@vueuse/core';
+import { ref } from 'vue';
 
-withDefaults(
+const props = withDefaults(
   defineProps<{
     direction?: Direction;
-    location?: { top: number; left: number; rotation: number };
     image: Image;
     flat?: boolean;
+    loadImage: (
+      imageId: string,
+      width: number,
+      height: number,
+      blur: number,
+      format: string
+    ) => Promise<string>;
+    onClick?: () => void;
   }>(),
   {
     direction: Directions.vertical,
-    flat: false,
-  },
+    flat: false
+  }
+);
+
+const polaroid = ref<HTMLDivElement>();
+const { width, height } = useElementSize(polaroid);
+
+const loading = computedAsync(
+  async () =>
+    await props.loadImage(
+      props.image.id,
+      Math.trunc(width.value / 2),
+      Math.trunc(height.value / 2),
+      20,
+      'Jpeg'
+    )
+);
+const fullAvif = computedAsync(
+  async () =>
+    await props.loadImage(
+      props.image.id,
+      Math.trunc(width.value),
+      Math.trunc(height.value),
+      0,
+      'Avif'
+    )
+);
+const fullWebP = computedAsync(
+  async () =>
+    await props.loadImage(
+      props.image.id,
+      Math.trunc(width.value),
+      Math.trunc(height.value),
+      0,
+      'WebP'
+    )
 );
 </script>
 
 <style lang="scss" scoped>
 .polaroid {
   &[data-direction='horizontal'] {
-    max-width: 40rem;
+    @media (orientation: landscape) {
+      max-width: 50dvw;
+    }
+    @media (orientation: portrait) {
+      max-width: 80dvw;
+    }
+
+    picture {
+      img {
+        @media (orientation: landscape) {
+          max-height: 50dvh;
+          max-width: 50dvw;
+        }
+        @media (orientation: portrait) {
+          max-height: 65dvh;
+          max-width: 80dvw;
+        }
+      }
+    }
   }
 
   &[data-direction='vertical'] {
     max-width: 27rem;
-  }
 
-  &[data-translated='true'] {
-    transform: translate(
-        calc(var(--offset-left) * 1dvw),
-        calc(var(--offset-top) * 1dvh)
-      )
-      rotate(calc(var(--rotation) * 1deg));
+    picture {
+      img {
+        max-height: 96rem;
+        max-width: 96rem;
+      }
+    }
   }
 
   picture {
-    min-width: 25rem;
+    img {
+      min-width: 20rem;
+    }
   }
 }
 </style>

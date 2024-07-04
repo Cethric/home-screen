@@ -1,10 +1,11 @@
-﻿using HomeScreen.Service.Media.Entities;
+﻿using System.Runtime.CompilerServices;
+using HomeScreen.Service.Media.Entities;
 
 namespace HomeScreen.Service.Media.Infrastructure.Media;
 
 public interface IMediaApi
 {
-    Task<IList<MediaEntry>> GetRandomMedia(uint count, CancellationToken cancellationToken);
+    IAsyncEnumerable<MediaEntry> GetRandomMedia(uint count, CancellationToken cancellationToken = default);
 
     Task<MediaEntry> ToggleMedia(Guid mediaId, bool state, CancellationToken cancellationToken);
 

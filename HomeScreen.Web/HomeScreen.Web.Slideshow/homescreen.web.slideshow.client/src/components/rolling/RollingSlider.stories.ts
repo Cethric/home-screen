@@ -1,14 +1,15 @@
 import type { Meta, StoryObj } from '@storybook/vue3';
-import RollingSlider from '@/components/RollingSlider.vue';
-import { Directions } from '@components/properties';
+import RollingSlider from '@/components/rolling/RollingSlider.vue';
+import { Directions } from '@/helpers/component_properties';
 import { RollingDirections } from '@/components/properties';
-import { picsumImages } from '@/stories/helpers';
+import { loadPicsumImage, picsumImages } from '@/stories/helpers';
 
 const meta: Meta<typeof RollingSlider> = {
   component: RollingSlider,
   tags: ['autodocs'],
   args: {
     images: picsumImages(),
+    loadImage: loadPicsumImage,
     rolling: RollingDirections.forward,
   },
   argTypes: {
@@ -44,6 +45,7 @@ const meta: Meta<typeof RollingSlider> = {
     rolling: {
       type: { name: 'enum', value: Object.values(RollingDirections) },
     },
+    loadImage: { type: 'function' },
   },
 };
 export default meta;
@@ -53,7 +55,7 @@ type RollingSliderStory = StoryObj<typeof RollingSlider>;
 export const Default: RollingSliderStory = {
   render: (args) => ({
     template:
-      '<main class="overflow-clip"><RollingSlider v-bind="args" /></main>',
+      '<main class="overflow-clip"><RollingSlider v-bind="args"  /></main>',
     components: { RollingSlider },
     setup() {
       return { args };
@@ -64,7 +66,7 @@ export const Default: RollingSliderStory = {
 export const Horizontal: RollingSliderStory = {
   render: (args) => ({
     template:
-      '<main class="overflow-clip"><RollingSlider v-bind="args" /></main>',
+      '<main class="overflow-clip"><RollingSlider v-bind="args"  /></main>',
     components: { RollingSlider },
     setup() {
       return { args };

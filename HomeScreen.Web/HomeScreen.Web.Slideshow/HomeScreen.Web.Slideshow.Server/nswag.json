@@ -24,7 +24,7 @@
       "moduleName": "",
       "namespace": "",
       "typeScriptVersion": 4.3,
-      "template": "Axios",
+      "template": "Fetch",
       "promiseType": "Promise",
       "httpClass": "HttpClient",
       "withCredentials": false,
@@ -44,7 +44,9 @@
       "wrapResponseMethods": [],
       "generateResponseClasses": true,
       "responseClass": "SwaggerResponse",
-      "protectedMethods": [],
+      "protectedMethods": [
+        "MediaClient.processGetRandomMediaItems"
+      ],
       "configurationClass": null,
       "useTransformOptionsMethod": false,
       "useTransformResultMethod": false,
@@ -56,7 +58,9 @@
       "enumStyle": "Enum",
       "useLeafType": true,
       "classTypes": [],
-      "extendedClasses": [],
+      "extendedClasses": [
+        "BaseClient"
+      ],
       "extensionCode": null,
       "generateDefaultValues": true,
       "excludedTypeNames": [],
@@ -73,7 +77,7 @@
       "inlineNamedDictionaries": false,
       "inlineNamedAny": false,
       "includeHttpContext": false,
-      "templateDirectory": null,
+      "templateDirectory": "../homescreen.web.slideshow.client/src/domain/api-template",
       "serviceHost": null,
       "serviceSchemes": null,
       "output": "../homescreen.web.slideshow.client/src/domain/api/homescreen-slideshow-api.ts",

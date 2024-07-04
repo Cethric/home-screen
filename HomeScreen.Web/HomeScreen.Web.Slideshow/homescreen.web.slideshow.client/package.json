@@ -22,16 +22,27 @@
     "@fortawesome/free-regular-svg-icons": "^6.5.2",
     "@fortawesome/free-solid-svg-icons": "^6.5.2",
     "@fortawesome/vue-fontawesome": "^3.0.8",
-    "axios": "^1.7.2",
     "luxon": "^3.4.4",
     "vue": "^3.4.31",
-    "vue-router": "^4.4.0",
     "uuid": "^10.0.0",
     "@vueuse/core": "^10.11.0",
     "@vueuse/motion": "^2.2.3",
     "animate.css": "^4.1.1",
+    "@homescreen/web-components-client": "workspace:*",
+    "seedrandom": "^3.0.5",
     "ol": "^9.2.4",
-    "@homescreen/web-components-client": "workspace:*"
+    "@vueuse/integrations": "^10.11.0",
+    "async-validator": "^4.2.5",
+    "change-case": "^4.1.2",
+    "universal-cookie": "^6.1.3",
+    "drauu": "^0.3.7",
+    "focus-trap": "^7.5.4",
+    "fuse.js": "^6.6.2",
+    "idb-keyval": "^6.2.1",
+    "jwt-decode": "^3.1.2",
+    "qrcode": "^1.5.3",
+    "sortablejs": "^1.15.2",
+    "nprogress": "^0.2.0"
   },
   "devDependencies": {
     "@chromatic-com/storybook": "1.6.0",
@@ -68,7 +79,8 @@
     "vue-tsc": "^2.0.22",
     "vitest": "^1.6.0",
     "jsdom": "^24.1.0",
-    "@types/jsdom": "^21.1.7"
+    "@types/jsdom": "^21.1.7",
+    "@types/seedrandom": "^3.0.8"
   },
   "packageManager": "pnpm@9.1.0",
   "engines": {

@@ -19,7 +19,7 @@
           <div class="flex grow flex-row items-center justify-end">
             <slot name="header-end" />
             <button
-              class="border-none text-stone-800 outline-none hover:border-none hover:text-stone-900 focus:border-none active:text-stone-950"
+              class="border-none p-2 text-2xl text-stone-800 outline-none hover:border-none hover:text-stone-900 focus:border-none active:text-stone-950"
               @click="closeDialog"
             >
               <FontAwesomeIcon :icon="faClose" />

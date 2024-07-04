@@ -14,13 +14,6 @@ export enum Directions {
 
 export type Direction = keyof typeof Directions;
 
-export enum Positions {
-  relative = 'relative',
-  absolute = 'absolute',
-}
-
-export type Position = keyof typeof Positions;
-
 export interface Image {
   id: string;
   images: string[];

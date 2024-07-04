@@ -5,7 +5,7 @@ option csharp_namespace = "HomeScreen.Service.Media";
 package media;
 
 service Media {
-  rpc RandomMedia(MediaRequest) returns (MediaResponse);
+  rpc RandomMedia(MediaRequest) returns (stream MediaEntry);
 
   rpc ToggleMedia(ToggleMediaRequest) returns (MediaEntry);
 }

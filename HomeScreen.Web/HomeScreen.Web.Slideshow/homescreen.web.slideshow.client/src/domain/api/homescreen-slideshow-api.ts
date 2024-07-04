@@ -8,31 +8,30 @@
 /* eslint-disable */
 // ReSharper disable InconsistentNaming
 
-import axios, { AxiosError } from 'axios';
-import type { AxiosInstance, AxiosRequestConfig, AxiosResponse, CancelToken } from 'axios';
-
 import { DateTime, Duration } from "luxon";
 
 export interface IMediaClient {
-    getRandomMediaItems(count?: number | undefined): Promise<SwaggerResponse<MediaItem[]>>;
+
+    getRandomMediaItems(count?: number | undefined): Promise<SwaggerResponse<MediaItem>>;
+
     toggleMediaItem(id?: string | undefined, enabled?: boolean | undefined): Promise<SwaggerResponse<MediaItem>>;
-    downloadMediaItem(id?: string | undefined, width?: number | undefined, height?: number | undefined, blur?: number | undefined, format?: MediaTransformOptionsFormat | undefined): Promise<SwaggerResponse<StreamContent>>;
+
+    downloadMediaItem(id?: string | undefined, width?: number | undefined, height?: number | undefined, blur?: number | undefined, format?: MediaTransformOptionsFormat | undefined): Promise<SwaggerResponse<FileResponse>>;
+
+    getTransformMediaItemUrl(id?: string | undefined, width?: number | undefined, height?: number | undefined, blur?: number | undefined, format?: MediaTransformOptionsFormat | undefined): Promise<SwaggerResponse<string>>;
 }
 
 export class MediaClient implements IMediaClient {
-    protected instance: AxiosInstance;
-    protected baseUrl: string;
+    private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
+    private baseUrl: string;
     protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
 
-    constructor(baseUrl?: string, instance?: AxiosInstance) {
-
-        this.instance = instance || axios.create();
-
+    constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
+        this.http = http ? http : window as any;
         this.baseUrl = baseUrl ?? "";
-
     }
 
-    getRandomMediaItems(count?: number | undefined, signal?: AbortSignal): Promise<SwaggerResponse<MediaItem[]>> {
+    getRandomMediaItems(count?: number | undefined, signal?: AbortSignal): Promise<SwaggerResponse<MediaItem>> {
         let url_ = this.baseUrl + "/Media/GetRandomMediaItems?";
         if (count === null)
             throw new Error("The parameter 'count' cannot be null.");
@@ -40,55 +39,35 @@ export class MediaClient implements IMediaClient {
             url_ += "count=" + encodeURIComponent("" + count) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
-        let options_: AxiosRequestConfig = {
+        let options_: RequestInit = {
             method: "GET",
-            url: url_,
+            signal,
             headers: {
                 "Accept": "application/json"
-            },
-            signal
+            }
         };
 
-        return this.instance.request(options_).catch((_error: any) => {
-            if (isAxiosError(_error) && _error.response) {
-                return _error.response;
-            } else {
-                throw _error;
-            }
-        }).then((_response: AxiosResponse) => {
+        return this.http.fetch(url_, options_).then((_response: Response) => {
             return this.processGetRandomMediaItems(_response);
         });
     }
 
-    protected processGetRandomMediaItems(response: AxiosResponse): Promise<SwaggerResponse<MediaItem[]>> {
+    protected processGetRandomMediaItems(response: Response): Promise<SwaggerResponse<MediaItem>> {
         const status = response.status;
-        let _headers: any = {};
-        if (response.headers && typeof response.headers === "object") {
-            for (const k in response.headers) {
-                if (response.headers.hasOwnProperty(k)) {
-                    _headers[k] = response.headers[k];
-                }
-            }
-        }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
-            const _responseText = response.data;
+            return response.text().then((_responseText) => {
             let result200: any = null;
-            let resultData200  = _responseText;
-            if (Array.isArray(resultData200)) {
-                result200 = [] as any;
-                for (let item of resultData200)
-                    result200!.push(MediaItem.fromJS(item));
-            }
-            else {
-                result200 = <any>null;
-            }
-            return Promise.resolve<SwaggerResponse<MediaItem[]>>(new SwaggerResponse<MediaItem[]>(status, _headers, result200));
-
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = MediaItem.fromJS(resultData200);
+            return new SwaggerResponse(status, _headers, result200);
+            });
         } else if (status !== 200 && status !== 204) {
-            const _responseText = response.data;
+            return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
         }
-        return Promise.resolve<SwaggerResponse<MediaItem[]>>(new SwaggerResponse(status, _headers, null as any));
+        return Promise.resolve<SwaggerResponse<MediaItem>>(new SwaggerResponse(status, _headers, null as any));
     }
 
     toggleMediaItem(id?: string | undefined, enabled?: boolean | undefined, signal?: AbortSignal): Promise<SwaggerResponse<MediaItem>> {
@@ -103,58 +82,45 @@ export class MediaClient implements IMediaClient {
             url_ += "enabled=" + encodeURIComponent("" + enabled) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
-        let options_: AxiosRequestConfig = {
+        let options_: RequestInit = {
             method: "PATCH",
-            url: url_,
+            signal,
             headers: {
                 "Accept": "application/json"
-            },
-            signal
+            }
         };
 
-        return this.instance.request(options_).catch((_error: any) => {
-            if (isAxiosError(_error) && _error.response) {
-                return _error.response;
-            } else {
-                throw _error;
-            }
-        }).then((_response: AxiosResponse) => {
+        return this.http.fetch(url_, options_).then((_response: Response) => {
             return this.processToggleMediaItem(_response);
         });
     }
 
-    protected processToggleMediaItem(response: AxiosResponse): Promise<SwaggerResponse<MediaItem>> {
+    protected processToggleMediaItem(response: Response): Promise<SwaggerResponse<MediaItem>> {
         const status = response.status;
-        let _headers: any = {};
-        if (response.headers && typeof response.headers === "object") {
-            for (const k in response.headers) {
-                if (response.headers.hasOwnProperty(k)) {
-                    _headers[k] = response.headers[k];
-                }
-            }
-        }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 202) {
-            const _responseText = response.data;
+            return response.text().then((_responseText) => {
             let result202: any = null;
-            let resultData202  = _responseText;
+            let resultData202 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
             result202 = MediaItem.fromJS(resultData202);
-            return Promise.resolve<SwaggerResponse<MediaItem>>(new SwaggerResponse<MediaItem>(status, _headers, result202));
-
+            return new SwaggerResponse(status, _headers, result202);
+            });
         } else if (status === 404) {
-            const _responseText = response.data;
+            return response.text().then((_responseText) => {
             let result404: any = null;
-            let resultData404  = _responseText;
+            let resultData404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
             result404 = MediaItem.fromJS(resultData404);
             return throwException("A server side error occurred.", status, _responseText, _headers, result404);
-
+            });
         } else if (status !== 200 && status !== 204) {
-            const _responseText = response.data;
+            return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
         }
         return Promise.resolve<SwaggerResponse<MediaItem>>(new SwaggerResponse(status, _headers, null as any));
     }
 
-    downloadMediaItem(id?: string | undefined, width?: number | undefined, height?: number | undefined, blur?: number | undefined, format?: MediaTransformOptionsFormat | undefined, signal?: AbortSignal): Promise<SwaggerResponse<StreamContent>> {
+    downloadMediaItem(id?: string | undefined, width?: number | undefined, height?: number | undefined, blur?: number | undefined, format?: MediaTransformOptionsFormat | undefined, signal?: AbortSignal): Promise<SwaggerResponse<FileResponse>> {
         let url_ = this.baseUrl + "/Media/DownloadMediaItem?";
         if (id === null)
             throw new Error("The parameter 'id' cannot be null.");
@@ -178,82 +144,131 @@ export class MediaClient implements IMediaClient {
             url_ += "format=" + encodeURIComponent("" + format) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
-        let options_: AxiosRequestConfig = {
+        let options_: RequestInit = {
             method: "GET",
-            url: url_,
+            signal,
             headers: {
-                "Accept": "application/json"
-            },
-            signal
+                "Accept": "application/octet-stream"
+            }
         };
 
-        return this.instance.request(options_).catch((_error: any) => {
-            if (isAxiosError(_error) && _error.response) {
-                return _error.response;
-            } else {
-                throw _error;
-            }
-        }).then((_response: AxiosResponse) => {
+        return this.http.fetch(url_, options_).then((_response: Response) => {
             return this.processDownloadMediaItem(_response);
         });
     }
 
-    protected processDownloadMediaItem(response: AxiosResponse): Promise<SwaggerResponse<StreamContent>> {
+    protected processDownloadMediaItem(response: Response): Promise<SwaggerResponse<FileResponse>> {
         const status = response.status;
-        let _headers: any = {};
-        if (response.headers && typeof response.headers === "object") {
-            for (const k in response.headers) {
-                if (response.headers.hasOwnProperty(k)) {
-                    _headers[k] = response.headers[k];
-                }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
             }
-        }
-        if (status === 200) {
-            const _responseText = response.data;
-            let result200: any = null;
-            let resultData200  = _responseText;
-            result200 = StreamContent.fromJS(resultData200);
-            return Promise.resolve<SwaggerResponse<StreamContent>>(new SwaggerResponse<StreamContent>(status, _headers, result200));
-
+            return response.blob().then(blob => { return new SwaggerResponse(status, _headers, { fileName: fileName, data: blob, status: status, headers: _headers }); });
         } else if (status === 404) {
-            const _responseText = response.data;
+            return response.text().then((_responseText) => {
             let result404: any = null;
-            let resultData404  = _responseText;
-            result404 = StreamContent.fromJS(resultData404);
+            let resultData404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                result404 = resultData404 !== undefined ? resultData404 : <any>null;
+    
             return throwException("A server side error occurred.", status, _responseText, _headers, result404);
-
+            });
         } else if (status === 400) {
-            const _responseText = response.data;
+            return response.text().then((_responseText) => {
             let result400: any = null;
-            let resultData400  = _responseText;
-            result400 = StreamContent.fromJS(resultData400);
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                result400 = resultData400 !== undefined ? resultData400 : <any>null;
+    
             return throwException("A server side error occurred.", status, _responseText, _headers, result400);
-
+            });
         } else if (status !== 200 && status !== 204) {
-            const _responseText = response.data;
+            return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
         }
-        return Promise.resolve<SwaggerResponse<StreamContent>>(new SwaggerResponse(status, _headers, null as any));
+        return Promise.resolve<SwaggerResponse<FileResponse>>(new SwaggerResponse(status, _headers, null as any));
+    }
+
+    getTransformMediaItemUrl(id?: string | undefined, width?: number | undefined, height?: number | undefined, blur?: number | undefined, format?: MediaTransformOptionsFormat | undefined, signal?: AbortSignal): Promise<SwaggerResponse<string>> {
+        let url_ = this.baseUrl + "/Media/GetTransformMediaItemUrl?";
+        if (id === null)
+            throw new Error("The parameter 'id' cannot be null.");
+        else if (id !== undefined)
+            url_ += "id=" + encodeURIComponent("" + id) + "&";
+        if (width === null)
+            throw new Error("The parameter 'width' cannot be null.");
+        else if (width !== undefined)
+            url_ += "width=" + encodeURIComponent("" + width) + "&";
+        if (height === null)
+            throw new Error("The parameter 'height' cannot be null.");
+        else if (height !== undefined)
+            url_ += "height=" + encodeURIComponent("" + height) + "&";
+        if (blur === null)
+            throw new Error("The parameter 'blur' cannot be null.");
+        else if (blur !== undefined)
+            url_ += "blur=" + encodeURIComponent("" + blur) + "&";
+        if (format === null)
+            throw new Error("The parameter 'format' cannot be null.");
+        else if (format !== undefined)
+            url_ += "format=" + encodeURIComponent("" + format) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            signal,
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetTransformMediaItemUrl(_response);
+        });
+    }
+
+    protected processGetTransformMediaItemUrl(response: Response): Promise<SwaggerResponse<string>> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 202) {
+            return response.text().then((_responseText) => {
+            let result202: any = null;
+            let resultData202 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                result202 = resultData202 !== undefined ? resultData202 : <any>null;
+    
+            return new SwaggerResponse(status, _headers, result202);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<SwaggerResponse<string>>(new SwaggerResponse(status, _headers, null as any));
     }
 }
 
 export interface IWeatherForecastClient {
+
     getCurrentForecast(longitude?: number | undefined, latitude?: number | undefined): Promise<SwaggerResponse<WeatherForecast>>;
+
     getHourlyForecast(longitude?: number | undefined, latitude?: number | undefined): Promise<SwaggerResponse<HourlyForecast[]>>;
+
     getDailyForecast(longitude?: number | undefined, latitude?: number | undefined): Promise<SwaggerResponse<DailyForecast[]>>;
 }
 
 export class WeatherForecastClient implements IWeatherForecastClient {
-    protected instance: AxiosInstance;
-    protected baseUrl: string;
+    private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
+    private baseUrl: string;
     protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
 
-    constructor(baseUrl?: string, instance?: AxiosInstance) {
-
-        this.instance = instance || axios.create();
-
+    constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
+        this.http = http ? http : window as any;
         this.baseUrl = baseUrl ?? "";
-
     }
 
     getCurrentForecast(longitude?: number | undefined, latitude?: number | undefined, signal?: AbortSignal): Promise<SwaggerResponse<WeatherForecast>> {
@@ -268,46 +283,33 @@ export class WeatherForecastClient implements IWeatherForecastClient {
             url_ += "latitude=" + encodeURIComponent("" + latitude) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
-        let options_: AxiosRequestConfig = {
+        let options_: RequestInit = {
             method: "GET",
-            url: url_,
+            signal,
             headers: {
                 "Accept": "application/json"
-            },
-            signal
+            }
         };
 
-        return this.instance.request(options_).catch((_error: any) => {
-            if (isAxiosError(_error) && _error.response) {
-                return _error.response;
-            } else {
-                throw _error;
-            }
-        }).then((_response: AxiosResponse) => {
+        return this.http.fetch(url_, options_).then((_response: Response) => {
             return this.processGetCurrentForecast(_response);
         });
     }
 
-    protected processGetCurrentForecast(response: AxiosResponse): Promise<SwaggerResponse<WeatherForecast>> {
+    protected processGetCurrentForecast(response: Response): Promise<SwaggerResponse<WeatherForecast>> {
         const status = response.status;
-        let _headers: any = {};
-        if (response.headers && typeof response.headers === "object") {
-            for (const k in response.headers) {
-                if (response.headers.hasOwnProperty(k)) {
-                    _headers[k] = response.headers[k];
-                }
-            }
-        }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
-            const _responseText = response.data;
+            return response.text().then((_responseText) => {
             let result200: any = null;
-            let resultData200  = _responseText;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
             result200 = WeatherForecast.fromJS(resultData200);
-            return Promise.resolve<SwaggerResponse<WeatherForecast>>(new SwaggerResponse<WeatherForecast>(status, _headers, result200));
-
+            return new SwaggerResponse(status, _headers, result200);
+            });
         } else if (status !== 200 && status !== 204) {
-            const _responseText = response.data;
+            return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
         }
         return Promise.resolve<SwaggerResponse<WeatherForecast>>(new SwaggerResponse(status, _headers, null as any));
     }
@@ -324,40 +326,26 @@ export class WeatherForecastClient implements IWeatherForecastClient {
             url_ += "latitude=" + encodeURIComponent("" + latitude) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
-        let options_: AxiosRequestConfig = {
+        let options_: RequestInit = {
             method: "GET",
-            url: url_,
+            signal,
             headers: {
                 "Accept": "application/json"
-            },
-            signal
+            }
         };
 
-        return this.instance.request(options_).catch((_error: any) => {
-            if (isAxiosError(_error) && _error.response) {
-                return _error.response;
-            } else {
-                throw _error;
-            }
-        }).then((_response: AxiosResponse) => {
+        return this.http.fetch(url_, options_).then((_response: Response) => {
             return this.processGetHourlyForecast(_response);
         });
     }
 
-    protected processGetHourlyForecast(response: AxiosResponse): Promise<SwaggerResponse<HourlyForecast[]>> {
+    protected processGetHourlyForecast(response: Response): Promise<SwaggerResponse<HourlyForecast[]>> {
         const status = response.status;
-        let _headers: any = {};
-        if (response.headers && typeof response.headers === "object") {
-            for (const k in response.headers) {
-                if (response.headers.hasOwnProperty(k)) {
-                    _headers[k] = response.headers[k];
-                }
-            }
-        }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
-            const _responseText = response.data;
+            return response.text().then((_responseText) => {
             let result200: any = null;
-            let resultData200  = _responseText;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
             if (Array.isArray(resultData200)) {
                 result200 = [] as any;
                 for (let item of resultData200)
@@ -366,11 +354,12 @@ export class WeatherForecastClient implements IWeatherForecastClient {
             else {
                 result200 = <any>null;
             }
-            return Promise.resolve<SwaggerResponse<HourlyForecast[]>>(new SwaggerResponse<HourlyForecast[]>(status, _headers, result200));
-
+            return new SwaggerResponse(status, _headers, result200);
+            });
         } else if (status !== 200 && status !== 204) {
-            const _responseText = response.data;
+            return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
         }
         return Promise.resolve<SwaggerResponse<HourlyForecast[]>>(new SwaggerResponse(status, _headers, null as any));
     }
@@ -387,40 +376,26 @@ export class WeatherForecastClient implements IWeatherForecastClient {
             url_ += "latitude=" + encodeURIComponent("" + latitude) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
-        let options_: AxiosRequestConfig = {
+        let options_: RequestInit = {
             method: "GET",
-            url: url_,
+            signal,
             headers: {
                 "Accept": "application/json"
-            },
-            signal
+            }
         };
 
-        return this.instance.request(options_).catch((_error: any) => {
-            if (isAxiosError(_error) && _error.response) {
-                return _error.response;
-            } else {
-                throw _error;
-            }
-        }).then((_response: AxiosResponse) => {
+        return this.http.fetch(url_, options_).then((_response: Response) => {
             return this.processGetDailyForecast(_response);
         });
     }
 
-    protected processGetDailyForecast(response: AxiosResponse): Promise<SwaggerResponse<DailyForecast[]>> {
+    protected processGetDailyForecast(response: Response): Promise<SwaggerResponse<DailyForecast[]>> {
         const status = response.status;
-        let _headers: any = {};
-        if (response.headers && typeof response.headers === "object") {
-            for (const k in response.headers) {
-                if (response.headers.hasOwnProperty(k)) {
-                    _headers[k] = response.headers[k];
-                }
-            }
-        }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
-            const _responseText = response.data;
+            return response.text().then((_responseText) => {
             let result200: any = null;
-            let resultData200  = _responseText;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
             if (Array.isArray(resultData200)) {
                 result200 = [] as any;
                 for (let item of resultData200)
@@ -429,11 +404,12 @@ export class WeatherForecastClient implements IWeatherForecastClient {
             else {
                 result200 = <any>null;
             }
-            return Promise.resolve<SwaggerResponse<DailyForecast[]>>(new SwaggerResponse<DailyForecast[]>(status, _headers, result200));
-
+            return new SwaggerResponse(status, _headers, result200);
+            });
         } else if (status !== 200 && status !== 204) {
-            const _responseText = response.data;
+            return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
         }
         return Promise.resolve<SwaggerResponse<DailyForecast[]>>(new SwaggerResponse(status, _headers, null as any));
     }
@@ -534,508 +510,6 @@ export interface IMediaItemLocation {
     name?: string;
     latitude?: number;
     longitude?: number;
-}
-
-export abstract class HttpContent implements IHttpContent {
-    headers?: HttpContentHeaders;
-    allowDuplex?: boolean;
-
-    constructor(data?: IHttpContent) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-            this.headers = data.headers && !(<any>data.headers).toJSON ? new HttpContentHeaders(data.headers) : <HttpContentHeaders>this.headers;
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.headers = _data["headers"] ? HttpContentHeaders.fromJS(_data["headers"]) : <any>undefined;
-            this.allowDuplex = _data["allowDuplex"];
-        }
-    }
-
-    static fromJS(data: any): HttpContent {
-        data = typeof data === 'object' ? data : {};
-        throw new Error("The abstract class 'HttpContent' cannot be instantiated.");
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["headers"] = this.headers ? this.headers.toJSON() : <any>undefined;
-        data["allowDuplex"] = this.allowDuplex;
-        return data;
-    }
-}
-
-export interface IHttpContent {
-    headers?: IHttpContentHeaders;
-    allowDuplex?: boolean;
-}
-
-export class StreamContent extends HttpContent implements IStreamContent {
-    allowDuplex?: boolean;
-
-    constructor(data?: IStreamContent) {
-        super(data);
-    }
-
-    override init(_data?: any) {
-        super.init(_data);
-        if (_data) {
-            this.allowDuplex = _data["allowDuplex"];
-        }
-    }
-
-    static override fromJS(data: any): StreamContent {
-        data = typeof data === 'object' ? data : {};
-        let result = new StreamContent();
-        result.init(data);
-        return result;
-    }
-
-    override toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["allowDuplex"] = this.allowDuplex;
-        super.toJSON(data);
-        return data;
-    }
-}
-
-export interface IStreamContent extends IHttpContent {
-    allowDuplex?: boolean;
-}
-
-export class Anonymous implements IAnonymous {
-    allow?: string[];
-    contentDisposition?: ContentDispositionHeaderValue | undefined;
-    contentEncoding?: string[];
-    contentLanguage?: string[];
-    contentLength?: number | undefined;
-    contentLocation?: string | undefined;
-    contentMD5?: string | undefined;
-    contentRange?: ContentRangeHeaderValue | undefined;
-    contentType?: MediaTypeHeaderValue | undefined;
-    expires?: DateTime | undefined;
-    lastModified?: DateTime | undefined;
-
-    constructor(data?: IAnonymous) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-            this.contentDisposition = data.contentDisposition && !(<any>data.contentDisposition).toJSON ? new ContentDispositionHeaderValue(data.contentDisposition) : <ContentDispositionHeaderValue>this.contentDisposition;
-            this.contentRange = data.contentRange && !(<any>data.contentRange).toJSON ? new ContentRangeHeaderValue(data.contentRange) : <ContentRangeHeaderValue>this.contentRange;
-            this.contentType = data.contentType && !(<any>data.contentType).toJSON ? new MediaTypeHeaderValue(data.contentType) : <MediaTypeHeaderValue>this.contentType;
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            if (Array.isArray(_data["allow"])) {
-                this.allow = [] as any;
-                for (let item of _data["allow"])
-                    this.allow!.push(item);
-            }
-            this.contentDisposition = _data["contentDisposition"] ? ContentDispositionHeaderValue.fromJS(_data["contentDisposition"]) : <any>undefined;
-            if (Array.isArray(_data["contentEncoding"])) {
-                this.contentEncoding = [] as any;
-                for (let item of _data["contentEncoding"])
-                    this.contentEncoding!.push(item);
-            }
-            if (Array.isArray(_data["contentLanguage"])) {
-                this.contentLanguage = [] as any;
-                for (let item of _data["contentLanguage"])
-                    this.contentLanguage!.push(item);
-            }
-            this.contentLength = _data["contentLength"];
-            this.contentLocation = _data["contentLocation"];
-            this.contentMD5 = _data["contentMD5"];
-            this.contentRange = _data["contentRange"] ? ContentRangeHeaderValue.fromJS(_data["contentRange"]) : <any>undefined;
-            this.contentType = _data["contentType"] ? MediaTypeHeaderValue.fromJS(_data["contentType"]) : <any>undefined;
-            this.expires = _data["expires"] ? DateTime.fromISO(_data["expires"].toString()) : <any>undefined;
-            this.lastModified = _data["lastModified"] ? DateTime.fromISO(_data["lastModified"].toString()) : <any>undefined;
-        }
-    }
-
-    static fromJS(data: any): Anonymous {
-        data = typeof data === 'object' ? data : {};
-        let result = new Anonymous();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        if (Array.isArray(this.allow)) {
-            data["allow"] = [];
-            for (let item of this.allow)
-                data["allow"].push(item);
-        }
-        data["contentDisposition"] = this.contentDisposition ? this.contentDisposition.toJSON() : <any>undefined;
-        if (Array.isArray(this.contentEncoding)) {
-            data["contentEncoding"] = [];
-            for (let item of this.contentEncoding)
-                data["contentEncoding"].push(item);
-        }
-        if (Array.isArray(this.contentLanguage)) {
-            data["contentLanguage"] = [];
-            for (let item of this.contentLanguage)
-                data["contentLanguage"].push(item);
-        }
-        data["contentLength"] = this.contentLength;
-        data["contentLocation"] = this.contentLocation;
-        data["contentMD5"] = this.contentMD5;
-        data["contentRange"] = this.contentRange ? this.contentRange.toJSON() : <any>undefined;
-        data["contentType"] = this.contentType ? this.contentType.toJSON() : <any>undefined;
-        data["expires"] = this.expires ? this.expires.toString() : <any>undefined;
-        data["lastModified"] = this.lastModified ? this.lastModified.toString() : <any>undefined;
-        return data;
-    }
-}
-
-export interface IAnonymous {
-    allow?: string[];
-    contentDisposition?: IContentDispositionHeaderValue | undefined;
-    contentEncoding?: string[];
-    contentLanguage?: string[];
-    contentLength?: number | undefined;
-    contentLocation?: string | undefined;
-    contentMD5?: string | undefined;
-    contentRange?: IContentRangeHeaderValue | undefined;
-    contentType?: IMediaTypeHeaderValue | undefined;
-    expires?: DateTime | undefined;
-    lastModified?: DateTime | undefined;
-}
-
-export class HttpContentHeaders extends Anonymous implements IHttpContentHeaders {
-
-    [key: string]: any;
-
-    constructor(data?: IHttpContentHeaders) {
-        super(data);
-    }
-
-    override init(_data?: any) {
-        super.init(_data);
-        if (_data) {
-            for (var property in _data) {
-                if (_data.hasOwnProperty(property))
-                    this[property] = _data[property];
-            }
-        }
-    }
-
-    static override fromJS(data: any): HttpContentHeaders {
-        data = typeof data === 'object' ? data : {};
-        let result = new HttpContentHeaders();
-        result.init(data);
-        return result;
-    }
-
-    override toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        for (var property in this) {
-            if (this.hasOwnProperty(property))
-                data[property] = this[property];
-        }
-        super.toJSON(data);
-        return data;
-    }
-}
-
-export interface IHttpContentHeaders extends IAnonymous {
-
-    [key: string]: any;
-}
-
-export class ContentDispositionHeaderValue implements IContentDispositionHeaderValue {
-    dispositionType?: string;
-    parameters?: NameValueHeaderValue[];
-    name?: string | undefined;
-    fileName?: string | undefined;
-    fileNameStar?: string | undefined;
-    creationDate?: DateTime | undefined;
-    modificationDate?: DateTime | undefined;
-    readDate?: DateTime | undefined;
-    size?: number | undefined;
-
-    constructor(data?: IContentDispositionHeaderValue) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-            if (data.parameters) {
-                this.parameters = [];
-                for (let i = 0; i < data.parameters.length; i++) {
-                    let item = data.parameters[i];
-                    this.parameters[i] = item && !(<any>item).toJSON ? new NameValueHeaderValue(item) : <NameValueHeaderValue>item;
-                }
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.dispositionType = _data["dispositionType"];
-            if (Array.isArray(_data["parameters"])) {
-                this.parameters = [] as any;
-                for (let item of _data["parameters"])
-                    this.parameters!.push(NameValueHeaderValue.fromJS(item));
-            }
-            this.name = _data["name"];
-            this.fileName = _data["fileName"];
-            this.fileNameStar = _data["fileNameStar"];
-            this.creationDate = _data["creationDate"] ? DateTime.fromISO(_data["creationDate"].toString()) : <any>undefined;
-            this.modificationDate = _data["modificationDate"] ? DateTime.fromISO(_data["modificationDate"].toString()) : <any>undefined;
-            this.readDate = _data["readDate"] ? DateTime.fromISO(_data["readDate"].toString()) : <any>undefined;
-            this.size = _data["size"];
-        }
-    }
-
-    static fromJS(data: any): ContentDispositionHeaderValue {
-        data = typeof data === 'object' ? data : {};
-        let result = new ContentDispositionHeaderValue();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["dispositionType"] = this.dispositionType;
-        if (Array.isArray(this.parameters)) {
-            data["parameters"] = [];
-            for (let item of this.parameters)
-                data["parameters"].push(item.toJSON());
-        }
-        data["name"] = this.name;
-        data["fileName"] = this.fileName;
-        data["fileNameStar"] = this.fileNameStar;
-        data["creationDate"] = this.creationDate ? this.creationDate.toString() : <any>undefined;
-        data["modificationDate"] = this.modificationDate ? this.modificationDate.toString() : <any>undefined;
-        data["readDate"] = this.readDate ? this.readDate.toString() : <any>undefined;
-        data["size"] = this.size;
-        return data;
-    }
-}
-
-export interface IContentDispositionHeaderValue {
-    dispositionType?: string;
-    parameters?: INameValueHeaderValue[];
-    name?: string | undefined;
-    fileName?: string | undefined;
-    fileNameStar?: string | undefined;
-    creationDate?: DateTime | undefined;
-    modificationDate?: DateTime | undefined;
-    readDate?: DateTime | undefined;
-    size?: number | undefined;
-}
-
-export class NameValueHeaderValue implements INameValueHeaderValue {
-    name?: string;
-    value?: string | undefined;
-
-    constructor(data?: INameValueHeaderValue) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.name = _data["name"];
-            this.value = _data["value"];
-        }
-    }
-
-    static fromJS(data: any): NameValueHeaderValue {
-        data = typeof data === 'object' ? data : {};
-        let result = new NameValueHeaderValue();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["name"] = this.name;
-        data["value"] = this.value;
-        return data;
-    }
-}
-
-export interface INameValueHeaderValue {
-    name?: string;
-    value?: string | undefined;
-}
-
-export class ContentRangeHeaderValue implements IContentRangeHeaderValue {
-    unit?: string;
-    from?: number | undefined;
-    to?: number | undefined;
-    length?: number | undefined;
-    hasLength?: boolean;
-    hasRange?: boolean;
-
-    constructor(data?: IContentRangeHeaderValue) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.unit = _data["unit"];
-            this.from = _data["from"];
-            this.to = _data["to"];
-            this.length = _data["length"];
-            this.hasLength = _data["hasLength"];
-            this.hasRange = _data["hasRange"];
-        }
-    }
-
-    static fromJS(data: any): ContentRangeHeaderValue {
-        data = typeof data === 'object' ? data : {};
-        let result = new ContentRangeHeaderValue();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["unit"] = this.unit;
-        data["from"] = this.from;
-        data["to"] = this.to;
-        data["length"] = this.length;
-        data["hasLength"] = this.hasLength;
-        data["hasRange"] = this.hasRange;
-        return data;
-    }
-}
-
-export interface IContentRangeHeaderValue {
-    unit?: string;
-    from?: number | undefined;
-    to?: number | undefined;
-    length?: number | undefined;
-    hasLength?: boolean;
-    hasRange?: boolean;
-}
-
-export class MediaTypeHeaderValue implements IMediaTypeHeaderValue {
-    charSet?: string | undefined;
-    parameters?: NameValueHeaderValue[];
-    mediaType?: string | undefined;
-
-    constructor(data?: IMediaTypeHeaderValue) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-            if (data.parameters) {
-                this.parameters = [];
-                for (let i = 0; i < data.parameters.length; i++) {
-                    let item = data.parameters[i];
-                    this.parameters[i] = item && !(<any>item).toJSON ? new NameValueHeaderValue(item) : <NameValueHeaderValue>item;
-                }
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.charSet = _data["charSet"];
-            if (Array.isArray(_data["parameters"])) {
-                this.parameters = [] as any;
-                for (let item of _data["parameters"])
-                    this.parameters!.push(NameValueHeaderValue.fromJS(item));
-            }
-            this.mediaType = _data["mediaType"];
-        }
-    }
-
-    static fromJS(data: any): MediaTypeHeaderValue {
-        data = typeof data === 'object' ? data : {};
-        let result = new MediaTypeHeaderValue();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["charSet"] = this.charSet;
-        if (Array.isArray(this.parameters)) {
-            data["parameters"] = [];
-            for (let item of this.parameters)
-                data["parameters"].push(item.toJSON());
-        }
-        data["mediaType"] = this.mediaType;
-        return data;
-    }
-}
-
-export interface IMediaTypeHeaderValue {
-    charSet?: string | undefined;
-    parameters?: INameValueHeaderValue[];
-    mediaType?: string | undefined;
-}
-
-export class KeyValuePairOfStringAndIEnumerableOfString implements IKeyValuePairOfStringAndIEnumerableOfString {
-    key?: string;
-    value?: string[];
-
-    constructor(data?: IKeyValuePairOfStringAndIEnumerableOfString) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.key = _data["key"];
-            if (Array.isArray(_data["value"])) {
-                this.value = [] as any;
-                for (let item of _data["value"])
-                    this.value!.push(item);
-            }
-        }
-    }
-
-    static fromJS(data: any): KeyValuePairOfStringAndIEnumerableOfString {
-        data = typeof data === 'object' ? data : {};
-        let result = new KeyValuePairOfStringAndIEnumerableOfString();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["key"] = this.key;
-        if (Array.isArray(this.value)) {
-            data["value"] = [];
-            for (let item of this.value)
-                data["value"].push(item);
-        }
-        return data;
-    }
-}
-
-export interface IKeyValuePairOfStringAndIEnumerableOfString {
-    key?: string;
-    value?: string[];
 }
 
 export enum MediaTransformOptionsFormat {
@@ -1296,6 +770,13 @@ export class SwaggerResponse<TResult> {
     }
 }
 
+export interface FileResponse {
+    data: Blob;
+    status: number;
+    fileName?: string;
+    headers?: { [name: string]: any };
+}
+
 export class ApiException extends Error {
     override message: string;
     status: number;
@@ -1322,8 +803,4 @@ export class ApiException extends Error {
 
 function throwException(message: string, status: number, response: string, headers: { [key: string]: any; }, result?: any): any {
     throw new ApiException(message, status, response, headers, result);
-}
-
-function isAxiosError(obj: any): obj is AxiosError {
-    return obj && obj.isAxiosError === true;
 }

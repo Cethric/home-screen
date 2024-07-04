@@ -30,7 +30,7 @@ import { type Slideshow, Slideshows } from '@/slideshows/properties';
 import { choice } from '@/helpers/random';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { faHome } from '@fortawesome/free-solid-svg-icons';
-import { Variants } from '@components/properties';
+import { Variants } from '@/helpers/component_properties';
 import LoadingSpinner from '@components/LoadingSpinner.vue';
 
 const location = useBrowserLocation({});

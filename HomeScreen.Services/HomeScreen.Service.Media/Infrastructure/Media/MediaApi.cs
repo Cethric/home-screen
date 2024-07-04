@@ -1,4 +1,5 @@
-﻿using HomeScreen.Database.MediaDb.Contexts;
+﻿using System.Runtime.CompilerServices;
+using HomeScreen.Database.MediaDb.Contexts;
 using HomeScreen.Service.Media.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,11 +14,13 @@ public class MediaApi(
     MediaDbContext context
 ) : IMediaApi
 {
-    public async Task<IList<MediaEntry>> GetRandomMedia(uint count, CancellationToken cancellationToken)
+    public async IAsyncEnumerable<MediaEntry> GetRandomMedia(
+        uint count,
+        [EnumeratorCancellation] CancellationToken cancellationToken = default
+    )
     {
-        logger.LogInformation("GetRandomMedia {Count}", count);
+        logger.LogInformation("GetRandomMedia Start {Count}", count);
         var files = mediaPaths.GetRawFiles();
-        var entries = new List<Database.MediaDb.Entities.MediaEntry>();
         foreach (var file in Random.Shared.GetItems(files.ToArray(), (int)count))
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -30,12 +33,12 @@ public class MediaApi(
                 await context.MediaEntries.AddAsync(entry, cancellationToken);
             }
 
-            entries.Add(entry);
+            await context.SaveChangesAsync(cancellationToken);
+            logger.LogInformation("GetRandomMedia Progress {FileName}", file.Name);
+            yield return TransformMediaEntry(entry);
         }
 
-        await context.SaveChangesAsync(cancellationToken);
-
-        return entries.Select(TransformMediaEntry).ToList();
+        logger.LogInformation("GetRandomMedia End {Count}", count);
     }
 
     public async Task<MediaEntry> ToggleMedia(Guid mediaId, bool state, CancellationToken cancellationToken)
