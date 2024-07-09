@@ -34,10 +34,11 @@
         :direction="Directions.horizontal"
         :image="image"
         :load-image="loadImage"
-        flat
+        :flat="true"
       >
         <template #details="{ image }">
           <OpenLayersMap
+            v-if="image.location?.latitude && image.location?.longitude"
             :latitude="image.location.latitude"
             :longitude="image.location.longitude"
           />
@@ -66,7 +67,7 @@ const props = defineProps<{
     imageId: string,
     width: number,
     height: number,
-    blur: number,
+    blur: boolean,
     format: MediaTransformOptionsFormat,
   ) => Promise<string>;
 }>();
@@ -77,23 +78,23 @@ const { width, height } = useWindowSize();
 
 const loading = await props.loadImage(
   props.image.id,
-  Math.trunc(width.value / 2),
-  Math.trunc(height.value / 2),
-  20,
+  Math.trunc(width.value / 3),
+  Math.trunc(height.value / 3),
+  true,
   MediaTransformOptionsFormat.Jpeg,
 );
 const fullAvif = await props.loadImage(
   props.image.id,
   Math.trunc(width.value - 50),
   Math.trunc(height.value - 50),
-  0,
+  false,
   MediaTransformOptionsFormat.Avif,
 );
 const fullWebP = await props.loadImage(
   props.image.id,
   Math.trunc(width.value - 50),
   Math.trunc(height.value - 50),
-  0,
+  false,
   MediaTransformOptionsFormat.WebP,
 );
 </script>

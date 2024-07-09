@@ -1,19 +1,17 @@
 <template>
   <main
-    v-if="props.images.length > 290"
+    v-if="hasImages"
     :class="['grid h-dvh w-dvw overflow-hidden', `grid-${direction}`]"
   >
     <RollingSlider
-      v-for="(group, idx) in imageGroups"
-      :key="idx"
+      v-for="group in imageGroups"
+      :key="group.id"
       :count="count"
       :direction="direction"
       :duration-seconds="durationSeconds"
-      :images="group"
+      :images="group.images"
       :load-image="loadImage"
-      :rolling="
-        idx % 2 === 0 ? RollingDirections.backward : RollingDirections.forward
-      "
+      :rolling="group.direction"
     />
   </main>
   <main v-else class="h-dvh w-dvw">
@@ -44,6 +42,8 @@ import {
 } from '@/components/properties';
 import DateTimeWeatherCombo from '@/components/DateTimeWeatherCombo.vue';
 import LoadingSpinner from '@components/LoadingSpinner.vue';
+import { v4 as uuid } from 'uuid';
+import { range } from '@/helpers/random';
 
 const props = withDefaults(
   defineProps<{
@@ -56,9 +56,10 @@ const props = withDefaults(
       imageId: string,
       width: number,
       height: number,
-      blur: number,
+      blur: boolean,
       format: MediaTransformOptionsFormat,
     ) => Promise<string>;
+    total: number;
   }>(),
   {
     direction: Directions.horizontal,
@@ -67,15 +68,26 @@ const props = withDefaults(
   },
 );
 
+const hasImages = computed(() => props.images.length > props.total - 20);
+
+const images = computed(() =>
+  hasImages.value ? props.images.slice(range(0, props.images.length), 75) : [],
+);
+
 const imageGroups = computed(() =>
-  props.images.length > 290
-    ? Array.from({ length: props.count }).map((_, idx) =>
-        props.images.slice(
-          (props.images.length / props.count) * idx,
-          (props.images.length / props.count) * idx +
-            props.images.length / props.count,
+  hasImages.value
+    ? Array.from({ length: props.count }).map((_, idx) => ({
+        images: images.value.slice(
+          (images.value.length / props.count) * idx,
+          (images.value.length / props.count) * idx +
+            images.value.length / props.count,
         ),
-      )
+        id: uuid(),
+        direction:
+          idx % 2 === 0
+            ? RollingDirections.backward
+            : RollingDirections.forward,
+      }))
     : [],
 );
 </script>

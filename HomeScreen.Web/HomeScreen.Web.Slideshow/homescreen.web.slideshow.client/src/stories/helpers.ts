@@ -14,7 +14,7 @@ export const loadPicsumImage = (
   id: string,
   width: number,
   height: number,
-  blur: number,
+  blur: boolean,
   // format: MediaTransformOptionsFormat,
 ) => {
   return Promise.resolve(

@@ -27,6 +27,7 @@
             >
               <template #details="{ image }">
                 <OpenLayersMap
+                  v-if="image.location?.latitude && image.location?.longitude"
                   :latitude="image.location.latitude"
                   :longitude="image.location.longitude"
                 />
@@ -70,7 +71,7 @@ defineProps<{
     imageId: string,
     width: number,
     height: number,
-    blur: number,
+    blur: boolean,
     format: MediaTransformOptionsFormat,
   ) => Promise<string>;
 }>();

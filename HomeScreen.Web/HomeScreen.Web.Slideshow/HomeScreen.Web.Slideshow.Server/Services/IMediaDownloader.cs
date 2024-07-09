@@ -8,7 +8,7 @@ public interface IMediaDownloader
         Guid id,
         long width,
         long height,
-        float blur,
+        bool blur,
         MediaTransformOptionsFormat format,
         CancellationToken cancellationToken = default
     );

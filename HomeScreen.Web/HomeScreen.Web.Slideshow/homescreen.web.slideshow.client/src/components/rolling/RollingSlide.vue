@@ -57,7 +57,7 @@ defineProps<{
     imageId: string,
     width: number,
     height: number,
-    blur: number,
+    blur: boolean,
     format: MediaTransformOptionsFormat,
   ) => Promise<string>;
 }>();

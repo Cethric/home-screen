@@ -1,1 +1,15 @@
 @use 'nprogress/nprogress.css';
+
+#nprogress {
+  .bar {
+    @apply bg-orange-500;
+  }
+
+  .peg {
+    @apply shadow-orange-500 shadow-md;
+  }
+
+  .spinner-icon {
+    @apply border-t-orange-500 border-l-orange-500;
+  }
+}

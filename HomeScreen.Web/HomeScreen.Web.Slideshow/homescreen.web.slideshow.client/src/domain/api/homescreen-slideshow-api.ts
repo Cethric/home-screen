@@ -16,9 +16,9 @@ export interface IMediaClient {
 
     toggleMediaItem(id?: string | undefined, enabled?: boolean | undefined): Promise<SwaggerResponse<MediaItem>>;
 
-    downloadMediaItem(id?: string | undefined, width?: number | undefined, height?: number | undefined, blur?: number | undefined, format?: MediaTransformOptionsFormat | undefined): Promise<SwaggerResponse<FileResponse>>;
+    downloadMediaItem(id?: string | undefined, width?: number | undefined, height?: number | undefined, blur?: boolean | undefined, format?: MediaTransformOptionsFormat | undefined): Promise<SwaggerResponse<FileResponse>>;
 
-    getTransformMediaItemUrl(id?: string | undefined, width?: number | undefined, height?: number | undefined, blur?: number | undefined, format?: MediaTransformOptionsFormat | undefined): Promise<SwaggerResponse<string>>;
+    getTransformMediaItemUrl(id?: string | undefined, width?: number | undefined, height?: number | undefined, blur?: boolean | undefined, format?: MediaTransformOptionsFormat | undefined): Promise<SwaggerResponse<string>>;
 }
 
 export class MediaClient implements IMediaClient {
@@ -109,7 +109,8 @@ export class MediaClient implements IMediaClient {
             return response.text().then((_responseText) => {
             let result404: any = null;
             let resultData404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result404 = MediaItem.fromJS(resultData404);
+                result404 = resultData404 !== undefined ? resultData404 : <any>null;
+    
             return throwException("A server side error occurred.", status, _responseText, _headers, result404);
             });
         } else if (status !== 200 && status !== 204) {
@@ -120,7 +121,7 @@ export class MediaClient implements IMediaClient {
         return Promise.resolve<SwaggerResponse<MediaItem>>(new SwaggerResponse(status, _headers, null as any));
     }
 
-    downloadMediaItem(id?: string | undefined, width?: number | undefined, height?: number | undefined, blur?: number | undefined, format?: MediaTransformOptionsFormat | undefined, signal?: AbortSignal): Promise<SwaggerResponse<FileResponse>> {
+    downloadMediaItem(id?: string | undefined, width?: number | undefined, height?: number | undefined, blur?: boolean | undefined, format?: MediaTransformOptionsFormat | undefined, signal?: AbortSignal): Promise<SwaggerResponse<FileResponse>> {
         let url_ = this.baseUrl + "/Media/DownloadMediaItem?";
         if (id === null)
             throw new Error("The parameter 'id' cannot be null.");
@@ -195,7 +196,7 @@ export class MediaClient implements IMediaClient {
         return Promise.resolve<SwaggerResponse<FileResponse>>(new SwaggerResponse(status, _headers, null as any));
     }
 
-    getTransformMediaItemUrl(id?: string | undefined, width?: number | undefined, height?: number | undefined, blur?: number | undefined, format?: MediaTransformOptionsFormat | undefined, signal?: AbortSignal): Promise<SwaggerResponse<string>> {
+    getTransformMediaItemUrl(id?: string | undefined, width?: number | undefined, height?: number | undefined, blur?: boolean | undefined, format?: MediaTransformOptionsFormat | undefined, signal?: AbortSignal): Promise<SwaggerResponse<string>> {
         let url_ = this.baseUrl + "/Media/GetTransformMediaItemUrl?";
         if (id === null)
             throw new Error("The parameter 'id' cannot be null.");

@@ -33,7 +33,7 @@
         },
       ]"
     >
-      <p>Location: {{ image.location.name }}</p>
+      <p v-if="image.location?.name">Location: {{ image.location?.name }}</p>
       <p>
         Time: {{ image.dateTime.toFormat('DDDD') }}
         {{ image.dateTime.toFormat('TTT') }}
@@ -57,15 +57,15 @@ const props = withDefaults(
       imageId: string,
       width: number,
       height: number,
-      blur: number,
-      format: string
+      blur: boolean,
+      format: string,
     ) => Promise<string>;
     onClick?: () => void;
   }>(),
   {
     direction: Directions.vertical,
-    flat: false
-  }
+    flat: false,
+  },
 );
 
 const polaroid = ref<HTMLDivElement>();
@@ -75,11 +75,11 @@ const loading = computedAsync(
   async () =>
     await props.loadImage(
       props.image.id,
-      Math.trunc(width.value / 2),
-      Math.trunc(height.value / 2),
-      20,
-      'Jpeg'
-    )
+      Math.trunc(width.value / 3),
+      Math.trunc(height.value / 3),
+      true,
+      'Jpeg',
+    ),
 );
 const fullAvif = computedAsync(
   async () =>
@@ -87,9 +87,9 @@ const fullAvif = computedAsync(
       props.image.id,
       Math.trunc(width.value),
       Math.trunc(height.value),
-      0,
-      'Avif'
-    )
+      false,
+      'Avif',
+    ),
 );
 const fullWebP = computedAsync(
   async () =>
@@ -97,9 +97,9 @@ const fullWebP = computedAsync(
       props.image.id,
       Math.trunc(width.value),
       Math.trunc(height.value),
-      0,
-      'WebP'
-    )
+      false,
+      'WebP',
+    ),
 );
 </script>
 
@@ -132,8 +132,8 @@ const fullWebP = computedAsync(
 
     picture {
       img {
-        max-height: 96rem;
-        max-width: 96rem;
+        max-height: 24rem;
+        max-width: 24rem;
       }
     }
   }

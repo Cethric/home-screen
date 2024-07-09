@@ -11,24 +11,31 @@ public class JsonStreamingResultExecutor
     protected static readonly ReadOnlyMemory<byte> Line = new([(byte)'\n']);
 }
 
-public class JsonStreamingResultExecutor<T> : JsonStreamingResultExecutor, IJsonStreamingResultExecutor<T>
+public class JsonStreamingResultExecutor<T>(ILogger<JsonStreamingResult<T>> logger)
+    : JsonStreamingResultExecutor, IJsonStreamingResultExecutor<T>
 {
     public async Task ExecuteAsync(ActionContext context, JsonStreamingResult<T> result)
     {
-        HttpResponse response = context.HttpContext.Response;
+        logger.LogInformation("Executing JsonStreamingResult");
+        var response = context.HttpContext.Response;
         response.StatusCode = (int)HttpStatusCode.OK;
         response.ContentType = $"{MediaTypeNames.Application.JsonSequence};charset={Encoding.UTF8.WebName}";
 
+        // await context.HttpContext.Response.Body.FlushAsync(context.HttpContext.RequestAborted);
         await foreach (var value in result.Data)
         {
-            await using var stream = response.BodyWriter.AsStream();
+            context.HttpContext.RequestAborted.ThrowIfCancellationRequested();
+            logger.LogInformation("Progressing JsonStreamingResult");
             await JsonSerializer.SerializeAsync(
-                stream,
+                response.Body,
                 value,
                 result.JsonSerializerOptions,
                 context.HttpContext.RequestAborted
             );
             await response.BodyWriter.WriteAsync(Line, context.HttpContext.RequestAborted);
+            await response.BodyWriter.FlushAsync(context.HttpContext.RequestAborted);
         }
+
+        logger.LogInformation("Executed JsonStreamingResult");
     }
 }

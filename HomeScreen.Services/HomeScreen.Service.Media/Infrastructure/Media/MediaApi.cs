@@ -20,8 +20,11 @@ public class MediaApi(
     )
     {
         logger.LogInformation("GetRandomMedia Start {Count}", count);
-        var files = mediaPaths.GetRawFiles();
-        foreach (var file in Random.Shared.GetItems(files.ToArray(), (int)count))
+        var disabled = await context.MediaEntries.Where(entry => !entry.Enabled).ToListAsync(cancellationToken);
+        var files = mediaPaths.GetRawFiles()
+            .Where(f => !disabled.Exists(d => d.OriginalFile.Contains(f.FullName)))
+            .ToArray();
+        foreach (var file in Random.Shared.GetItems(files, (int)count))
         {
             cancellationToken.ThrowIfCancellationRequested();
             var hash = await mediaHasher.HashMedia(file, cancellationToken);

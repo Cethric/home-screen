@@ -16,10 +16,11 @@ export type Direction = keyof typeof Directions;
 
 export interface Image {
   id: string;
-  images: string[];
-  thumbnail: string;
-  width: number;
-  height: number;
   dateTime: DateTime;
-  location: { longitude: number; latitude: number; name: string };
+  enabled: boolean;
+  location?: {
+    name: string;
+    latitude: string;
+    longitude: string;
+  };
 }

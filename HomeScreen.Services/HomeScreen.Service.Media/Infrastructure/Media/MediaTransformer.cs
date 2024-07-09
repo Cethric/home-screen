@@ -32,16 +32,14 @@ public class MediaTransformer(ILogger<MediaTransformer> logger, IMediaPaths medi
         await image.ReadAsync(info, cancellationToken);
         image.AutoOrient();
 
-        image.InterpolativeResize(
-            options.Width,
-            options.Height,
-            PixelInterpolateMethod.Mesh
-        );
-
-        if (options.BlurRadius > 0.01)
+        if (options.Blur)
         {
-            var degrees = 360 * (options.BlurRadius / 100);
-            image.GaussianBlur(degrees * Math.PI / 180);
+            image.FilterType = FilterType.Gaussian;
+            image.Blur(0, 5);
+        }
+        else
+        {
+            image.InterpolativeResize(options.Width, options.Height, PixelInterpolateMethod.Mesh);
         }
 
         image.Format = options.Format.TransformFormatToMagickFormat();

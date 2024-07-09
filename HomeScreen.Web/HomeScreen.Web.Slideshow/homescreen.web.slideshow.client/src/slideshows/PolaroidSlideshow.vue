@@ -3,7 +3,7 @@
     :kind="DateTimeWeatherComboKinds.header"
     :weather-forecast="weatherForecast"
   />
-  <main class="h-dvh w-dvw overflow-hidden">
+  <main v-if="hasImages" class="h-dvh w-dvw overflow-hidden">
     <Suspense>
       <template #fallback>
         <div class="relative size-full">
@@ -31,11 +31,18 @@
       </transition-group>
     </Suspense>
   </main>
+  <main v-else class="h-dvh w-dvw">
+    <LoadingSpinner :variant="Variants.primary" class="absolute size-full" />
+  </main>
 </template>
 
 <script lang="ts" setup>
-import { computed, ref } from 'vue';
-import { type Image, Variants } from '@/helpers/component_properties';
+import { computed, ref, watch } from 'vue';
+import {
+  type Direction,
+  type Image,
+  Variants,
+} from '@/helpers/component_properties';
 import { useIntervalFn } from '@vueuse/core';
 import {
   type IWeatherForecast,
@@ -52,21 +59,24 @@ const props = withDefaults(
   defineProps<{
     images: Image[];
     intervalSeconds?: number;
-    visibleCount?: number;
     weatherForecast: IWeatherForecast;
+    direction?: Direction;
+    count?: number;
     loadImage: (
       imageId: string,
       width: number,
       height: number,
-      blur: number,
+      blur: boolean,
       format: MediaTransformOptionsFormat,
     ) => Promise<string>;
+    total: number;
   }>(),
   {
     intervalSeconds: 8,
-    visibleCount: 40,
+    count: 40,
   },
 );
+const hasImages = computed(() => props.images.length > props.total - 20);
 
 const items = computed(() =>
   props.images.map((image) => {
@@ -80,38 +90,27 @@ const items = computed(() =>
   }),
 );
 
-const start = range(0, items.value.length);
-const head = ref<number>((start + props.visibleCount) % items.value.length);
-const tail = ref<number>(start);
+const head = ref<number>(0);
+const tail = ref<number>(0);
 const slice = computed(() =>
-  props.images.length > 2
-    ? head.value < tail.value
-      ? [...items.value.slice(tail.value), ...items.value.slice(0, head.value)]
-      : items.value.slice(tail.value, head.value)
-    : [],
+  head.value < tail.value
+    ? [...items.value.slice(tail.value), ...items.value.slice(0, head.value)]
+    : items.value.slice(tail.value, head.value),
 );
 
+watch(hasImages, (val, last) => {
+  if (val && val !== last) {
+    console.log('Update start images');
+    const start = range(0, items.value.length);
+    head.value = (start + props.count) % items.value.length;
+    tail.value = start;
+  }
+});
+
 const { pause, resume } = useIntervalFn(() => {
-  if (props.images.length > 2) {
+  if (hasImages.value) {
     tail.value = (tail.value + 1) % items.value.length;
-    head.value = (tail.value + props.visibleCount) % items.value.length;
-
-    const next = (head.value + 1) % items.value.length;
-    props
-      .loadImage(
-        props.images[next].id,
-        900,
-        900,
-        0,
-        MediaTransformOptionsFormat.Avif,
-      )
-      .then((src) => {
-        const elm = document.createElement('img');
-        elm.src = src;
-      });
-
-    document.createElement('img').src =
-      items.value[head.value + (1 % items.value.length)].image.loading;
+    head.value = (tail.value + props.count) % items.value.length;
   }
 }, props.intervalSeconds * 1000);
 </script>

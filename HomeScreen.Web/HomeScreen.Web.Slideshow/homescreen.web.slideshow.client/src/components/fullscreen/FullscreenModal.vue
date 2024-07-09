@@ -17,14 +17,17 @@
         :direction="Directions.horizontal"
         :image="image"
         :load-image="loadImage"
-        flat
+        :flat="true"
       >
         <template #details="{ image }">
           <OpenLayersMap
-            v-if="image.location.name.trim().length > 0"
+            v-if="image.location?.latitude && image.location?.longitude"
             :latitude="image.location.latitude"
             :longitude="image.location.longitude"
           />
+          <ActionButton :disabled="isLoading" @click="() => execute()">
+            Toggle Media
+          </ActionButton>
         </template>
       </PolaroidCard>
     </template>
@@ -36,8 +39,10 @@ import { Directions, type Image } from '@/helpers/component_properties';
 import PolaroidCard from '@components/PolaroidCard.vue';
 import ModalDialog from '@components/ModalDialog.vue';
 import OpenLayersMap from '@components/OpenLayersMap.vue';
+import ActionButton from '@components/ActionButton.vue';
 import { MediaTransformOptionsFormat } from '@/domain/api/homescreen-slideshow-api';
-import { useWindowSize } from '@vueuse/core';
+import { useAsyncState, useWindowSize } from '@vueuse/core';
+import { toggleMedia } from '@/domain/media';
 
 const props = defineProps<{
   image: Image;
@@ -45,34 +50,44 @@ const props = defineProps<{
     imageId: string,
     width: number,
     height: number,
-    blur: number,
+    blur: boolean,
     format: MediaTransformOptionsFormat,
   ) => Promise<string>;
 }>();
 
 const emits = defineEmits<{ pause: []; resume: [] }>();
 
+const { execute, isLoading } = useAsyncState(
+  async () => {
+    console.log('Toggle Media start', props.image.id, props.image.enabled);
+    const result = await toggleMedia(props.image.id, !props.image.enabled);
+    console.log('Toggled Media end', result.id, result.enabled);
+  },
+  undefined,
+  { immediate: false },
+);
+
 const { width, height } = useWindowSize();
 
 const loading = await props.loadImage(
   props.image.id,
-  Math.trunc(width.value / 2),
-  Math.trunc(height.value / 2),
-  20,
+  Math.trunc(width.value / 3),
+  Math.trunc(height.value / 3),
+  true,
   MediaTransformOptionsFormat.Jpeg,
 );
 const fullAvif = await props.loadImage(
   props.image.id,
   Math.trunc(width.value - 50),
   Math.trunc(height.value - 50),
-  0,
+  false,
   MediaTransformOptionsFormat.Avif,
 );
 const fullWebP = await props.loadImage(
   props.image.id,
   Math.trunc(width.value - 50),
   Math.trunc(height.value - 50),
-  0,
+  false,
   MediaTransformOptionsFormat.WebP,
 );
 </script>

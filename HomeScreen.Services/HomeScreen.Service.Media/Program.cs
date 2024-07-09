@@ -61,7 +61,7 @@ app.MapGet(
         [FromQuery] Guid mediaId,
         [FromQuery] int width,
         [FromQuery] int height,
-        [FromQuery] float blurRadius,
+        [FromQuery] bool blur,
         [FromQuery] MediaTransformOptionsFormat format,
         IMediaApi mediaApi,
         CancellationToken cancellationToken = default
@@ -69,7 +69,7 @@ app.MapGet(
     {
         var result = await mediaApi.GetTransformedMedia(
             mediaId,
-            new MediaTransformOptions { Width = width, Height = height, BlurRadius = blurRadius, Format = format },
+            new MediaTransformOptions { Width = width, Height = height, Blur = blur, Format = format },
             cancellationToken
         );
 

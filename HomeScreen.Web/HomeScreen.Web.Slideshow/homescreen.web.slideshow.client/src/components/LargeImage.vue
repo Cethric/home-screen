@@ -21,7 +21,7 @@ const props = defineProps<{
     imageId: string,
     width: number,
     height: number,
-    blur: number,
+    blur: boolean,
     format: MediaTransformOptionsFormat,
   ) => Promise<string>;
 }>();
@@ -32,9 +32,9 @@ const loading = computedAsync(
   async () =>
     await props.loadImage(
       props.image.id,
-      Math.trunc(width.value / 2),
-      Math.trunc(height.value / 2),
-      20,
+      Math.trunc(width.value / 3),
+      Math.trunc(height.value / 3),
+      true,
       MediaTransformOptionsFormat.Jpeg,
     ),
 );
@@ -44,7 +44,7 @@ const fullAvif = computedAsync(
       props.image.id,
       Math.trunc(width.value - 200),
       Math.trunc(height.value - 200),
-      0,
+      false,
       MediaTransformOptionsFormat.Avif,
     ),
 );
@@ -54,7 +54,7 @@ const fullWebP = computedAsync(
       props.image.id,
       Math.trunc(width.value - 200),
       Math.trunc(height.value - 200),
-      0,
+      false,
       MediaTransformOptionsFormat.WebP,
     ),
 );

@@ -25,7 +25,13 @@ public class MediaController(
         CancellationToken cancellationToken = default
     )
     {
-        return Task.FromResult(new JsonStreamingResult<MediaItem>(GetRandomMediaItemsStream(count, cancellationToken)));
+        cancellationToken.ThrowIfCancellationRequested();
+        return Task.FromResult(
+            new JsonStreamingResult<MediaItem>(
+                GetRandomMediaItemsStream(count, cancellationToken),
+                new JsonSerializerOptions(JsonSerializerDefaults.Web)
+            )
+        );
     }
 
     private async IAsyncEnumerable<MediaItem> GetRandomMediaItemsStream(
@@ -47,8 +53,9 @@ public class MediaController(
             yield break;
         }
 
-        while (await response.ResponseStream.MoveNext())
+        while (await response.ResponseStream.MoveNext(cancellationToken))
         {
+            cancellationToken.ThrowIfCancellationRequested();
             var entry = response.ResponseStream.Current;
             logger.LogInformation("GetRandomMediaItems progress");
             yield return TransformMedia(entry);
@@ -59,7 +66,7 @@ public class MediaController(
 
     [HttpPatch(Name = "ToggleMediaItem")]
     [ProducesResponseType<MediaItem>(StatusCodes.Status202Accepted, "application/json")]
-    [ProducesResponseType<MediaItem>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<NotFoundResult>(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<MediaItem>> ToggleMediaItem(
         [FromQuery] Guid id,
         [FromQuery] bool enabled,
@@ -78,13 +85,13 @@ public class MediaController(
 
     [HttpGet(Name = "DownloadMediaItem")]
     [ProducesResponseType<FileResult>(StatusCodes.Status200OK, "application/x-octet-stream")]
-    [ProducesResponseType<FileResult>(StatusCodes.Status404NotFound)]
-    [ProducesResponseType<FileResult>(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<FileResult>> DownloadMediaItem(
+    [ProducesResponseType<NotFoundResult>(StatusCodes.Status404NotFound, "application/json")]
+    [ProducesResponseType<BadRequestResult>(StatusCodes.Status400BadRequest, "application/json")]
+    public async Task<ActionResult> DownloadMediaItem(
         [FromQuery] Guid id,
         [FromQuery] long width,
         [FromQuery] long height,
-        [FromQuery] float blur,
+        [FromQuery] bool blur,
         [FromQuery] MediaTransformOptionsFormat format,
         CancellationToken cancellationToken = default
     )
@@ -119,11 +126,12 @@ public class MediaController(
         [FromQuery] Guid id,
         [FromQuery] long width,
         [FromQuery] long height,
-        [FromQuery] float blur,
+        [FromQuery] bool blur,
         [FromQuery] MediaTransformOptionsFormat format,
         CancellationToken cancellationToken = default
     )
     {
+        cancellationToken.ThrowIfCancellationRequested();
         return Task.FromResult(
             AcceptedAtRoute(
                 "DownloadMediaItem",
@@ -148,7 +156,7 @@ public class MediaController(
     }
 
     private static MediaItem TransformMedia(MediaEntry entry) =>
-        new MediaItem
+        new()
         {
             Id = Guid.Parse(entry.Id),
             Created = DateTimeOffset.FromUnixTimeMilliseconds(entry.UtcDatetime),

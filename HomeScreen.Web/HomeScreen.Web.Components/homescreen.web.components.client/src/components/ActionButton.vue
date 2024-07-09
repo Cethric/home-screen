@@ -21,5 +21,3 @@ import { type Variant, Variants } from './properties';
 
 defineProps<{ variant?: Variant }>();
 </script>
-
-<style lang="scss" scoped></style>

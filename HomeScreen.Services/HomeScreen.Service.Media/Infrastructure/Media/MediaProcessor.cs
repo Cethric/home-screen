@@ -20,7 +20,7 @@ public class MediaProcessor(ILogger<MediaProcessor> logger, IMediaPaths mediaPat
             using var image = new MagickImage();
             await image.ReadAsync(file, cancellationToken);
             var profile = image.GetExifProfile();
-            var entry = new Database.MediaDb.Entities.MediaEntry(file, hash);
+            var entry = new Database.MediaDb.Entities.MediaEntry(file, hash) { Enabled = true };
 
             if (profile != null)
             {

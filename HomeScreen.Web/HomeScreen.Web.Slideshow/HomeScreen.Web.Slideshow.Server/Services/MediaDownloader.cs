@@ -10,7 +10,7 @@ public class MediaDownloader(ILogger<MediaDownloader> logger, IHttpClientFactory
         Guid id,
         long width,
         long height,
-        float blur,
+        bool blur,
         MediaTransformOptionsFormat format,
         CancellationToken cancellationToken = default
     )
@@ -23,7 +23,7 @@ public class MediaDownloader(ILogger<MediaDownloader> logger, IHttpClientFactory
             { "mediaId", id.ToString() },
             { "width", width.ToString() },
             { "height", height.ToString() },
-            { "blurRadius", blur.ToString(CultureInfo.InvariantCulture) },
+            { "blur", blur.ToString() },
             { "format", format.ToString() }
         };
         builder.Path = "download";
