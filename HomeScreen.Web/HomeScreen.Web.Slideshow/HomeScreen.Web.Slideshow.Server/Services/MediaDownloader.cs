@@ -22,6 +22,7 @@ public class MediaDownloader(ILogger<MediaDownloader> logger, IMediaFileClient m
             format,
             cancellationToken
         );
+        logger.LogInformation("Downloaded media for {MediaId} - {StatusCode}", id, response.StatusCode);
         return response;
     }
 }
