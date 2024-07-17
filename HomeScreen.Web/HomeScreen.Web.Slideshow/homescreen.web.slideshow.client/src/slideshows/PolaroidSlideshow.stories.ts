@@ -9,6 +9,7 @@ const meta: Meta<typeof PolaroidSlideshow> = {
     images: picsumImages(),
     loadImage: loadPicsumImage,
     weatherForecast: { feelsLikeTemperature: 0, weatherCode: 'Sunny' },
+    count: 40,
   },
   argTypes: {
     images: {
@@ -39,7 +40,7 @@ const meta: Meta<typeof PolaroidSlideshow> = {
       },
     },
     intervalSeconds: { type: 'number', min: 1, max: 60, value: 8 },
-    visibleCount: { type: 'number', min: 1, max: 150, value: 40 },
+    count: { type: 'number', min: 1, max: 150, value: 40 },
     weatherForecast: {
       name: 'object',
       value: {

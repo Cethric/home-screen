@@ -38,6 +38,8 @@ Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "homescreen.web.components.c
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeScreen.Database.MediaDb.Migrations", "HomeScreen.Database\HomeScreen.Database.MediaDb.Migrations\HomeScreen.Database.MediaDb.Migrations.csproj", "{F2152CB1-332F-4167-9B3F-84E09757ABA5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeScreen.Service.MediaClient", "HomeScreen.Services\HomeScreen.Service.MediaClient\HomeScreen.Service.MediaClient.csproj", "{756F1DA2-DBEC-46BE-B68B-6145AEF35C14}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -121,6 +123,12 @@ Global
 		{F2152CB1-332F-4167-9B3F-84E09757ABA5}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F2152CB1-332F-4167-9B3F-84E09757ABA5}.SwaggerBuild|Any CPU.ActiveCfg = Debug|Any CPU
 		{F2152CB1-332F-4167-9B3F-84E09757ABA5}.SwaggerBuild|Any CPU.Build.0 = Debug|Any CPU
+		{756F1DA2-DBEC-46BE-B68B-6145AEF35C14}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{756F1DA2-DBEC-46BE-B68B-6145AEF35C14}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{756F1DA2-DBEC-46BE-B68B-6145AEF35C14}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{756F1DA2-DBEC-46BE-B68B-6145AEF35C14}.Release|Any CPU.Build.0 = Release|Any CPU
+		{756F1DA2-DBEC-46BE-B68B-6145AEF35C14}.SwaggerBuild|Any CPU.ActiveCfg = Debug|Any CPU
+		{756F1DA2-DBEC-46BE-B68B-6145AEF35C14}.SwaggerBuild|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -142,5 +150,6 @@ Global
 		{03926BA8-3C64-468A-B708-82876E6A61B9} = {4BCA5DD8-E458-44C6-B072-9A2565371C38}
 		{02BB561A-2BF7-40D8-B13A-D0EEA3A09FA4} = {03926BA8-3C64-468A-B708-82876E6A61B9}
 		{F2152CB1-332F-4167-9B3F-84E09757ABA5} = {193F2384-196B-4E6C-B8B8-D48F385F9D96}
+		{756F1DA2-DBEC-46BE-B68B-6145AEF35C14} = {07486666-21D4-4C1F-AD73-362FE563626B}
 	EndGlobalSection
 EndGlobal

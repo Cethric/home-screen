@@ -22,4 +22,6 @@ RUN dotnet publish "./HomeScreen.Service.Media.csproj" -c $BUILD_CONFIGURATION -
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+VOLUME /media
+VOLUME /cache
 ENTRYPOINT ["dotnet", "HomeScreen.Service.Media.dll"]

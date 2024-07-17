@@ -1,12 +1,10 @@
+using System.Text.Json.Serialization;
 using HomeScreen.Database.MediaDb;
 using HomeScreen.Service.Media;
 using HomeScreen.Service.Media.Configuration;
-using HomeScreen.Service.Media.Entities;
-using HomeScreen.Service.Media.Infrastructure.Media;
 using HomeScreen.Service.Media.Services;
 using HomeScreen.ServiceDefaults;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
+using NJsonSchema.Generation;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -34,15 +32,35 @@ builder.Services.AddSingleton(
 
 // Add services to the container.
 builder.Services.AddInfrastructure();
-builder.Services.AddGrpc();
+builder.Services.AddGrpc(options => { options.EnableDetailedErrors = true; });
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddControllers()
+    .AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+builder.Services.AddOpenApiDocument(
+    document =>
+    {
+        document.Description = "Home Screen Media API";
+        document.SchemaSettings.DefaultReferenceTypeNullHandling = ReferenceTypeNullHandling.NotNull;
+        document.SchemaSettings.GenerateExamples = true;
+        document.SchemaSettings.GenerateEnumMappingDescription = true;
+    }
+);
 
 var app = builder.Build();
 
 app.MapDefaultEndpoints();
 
+if (app.Environment.IsDevelopment())
+{
+    app.UseOpenApi(p => p.Path = "/swagger/{documentName}/swagger.yaml");
+    app.UseSwaggerUi(p => p.DocumentPath = "/swagger/{documentName}/swagger.yaml");
+    app.UseDeveloperExceptionPage();
+}
+
 app.UseHttpsRedirection();
 
 // Configure the HTTP request pipeline.
+app.MapControllers();
 app.MapGrpcService<MediaService>();
 app.MapGet(
     "/",
@@ -50,33 +68,4 @@ app.MapGet(
         "Communication with gRPC endpoints must be made through a gRPC client. To learn how to create a client, visit: https://go.microsoft.com/fwlink/?linkid=2086909"
 );
 
-//    public int Width { get; set; }
-// public int Height { get; set; }
-// public float BlurRadius { get; set; }
-// public MediaTransformOptionsFormat Format { get; set; }
-
-app.MapGet(
-    "/download",
-    async (
-        [FromQuery] Guid mediaId,
-        [FromQuery] int width,
-        [FromQuery] int height,
-        [FromQuery] bool blur,
-        [FromQuery] MediaTransformOptionsFormat format,
-        IMediaApi mediaApi,
-        CancellationToken cancellationToken = default
-    ) =>
-    {
-        var result = await mediaApi.GetTransformedMedia(
-            mediaId,
-            new MediaTransformOptions { Width = width, Height = height, Blur = blur, Format = format },
-            cancellationToken
-        );
-
-        return result is null
-            ? Results.NotFound()
-            : Results.File(result.Open(FileMode.Open, FileAccess.Read), format.TransformFormatToMime());
-    }
-);
-
-app.Run();
+await app.RunAsync();

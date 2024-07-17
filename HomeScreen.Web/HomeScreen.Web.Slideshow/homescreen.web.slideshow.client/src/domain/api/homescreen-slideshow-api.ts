@@ -32,7 +32,7 @@ export class MediaClient implements IMediaClient {
     }
 
     getRandomMediaItems(count?: number | undefined, signal?: AbortSignal): Promise<SwaggerResponse<MediaItem>> {
-        let url_ = this.baseUrl + "/Media/GetRandomMediaItems?";
+        let url_ = this.baseUrl + "/api/Media/GetRandomMediaItems?";
         if (count === null)
             throw new Error("The parameter 'count' cannot be null.");
         else if (count !== undefined)
@@ -71,7 +71,7 @@ export class MediaClient implements IMediaClient {
     }
 
     toggleMediaItem(id?: string | undefined, enabled?: boolean | undefined, signal?: AbortSignal): Promise<SwaggerResponse<MediaItem>> {
-        let url_ = this.baseUrl + "/Media/ToggleMediaItem?";
+        let url_ = this.baseUrl + "/api/Media/ToggleMediaItem?";
         if (id === null)
             throw new Error("The parameter 'id' cannot be null.");
         else if (id !== undefined)
@@ -122,7 +122,7 @@ export class MediaClient implements IMediaClient {
     }
 
     downloadMediaItem(id?: string | undefined, width?: number | undefined, height?: number | undefined, blur?: boolean | undefined, format?: MediaTransformOptionsFormat | undefined, signal?: AbortSignal): Promise<SwaggerResponse<FileResponse>> {
-        let url_ = this.baseUrl + "/Media/DownloadMediaItem?";
+        let url_ = this.baseUrl + "/api/Media/DownloadMediaItem?";
         if (id === null)
             throw new Error("The parameter 'id' cannot be null.");
         else if (id !== undefined)
@@ -197,7 +197,7 @@ export class MediaClient implements IMediaClient {
     }
 
     getTransformMediaItemUrl(id?: string | undefined, width?: number | undefined, height?: number | undefined, blur?: boolean | undefined, format?: MediaTransformOptionsFormat | undefined, signal?: AbortSignal): Promise<SwaggerResponse<string>> {
-        let url_ = this.baseUrl + "/Media/GetTransformMediaItemUrl?";
+        let url_ = this.baseUrl + "/api/Media/GetTransformMediaItemUrl?";
         if (id === null)
             throw new Error("The parameter 'id' cannot be null.");
         else if (id !== undefined)
@@ -273,7 +273,7 @@ export class WeatherForecastClient implements IWeatherForecastClient {
     }
 
     getCurrentForecast(longitude?: number | undefined, latitude?: number | undefined, signal?: AbortSignal): Promise<SwaggerResponse<WeatherForecast>> {
-        let url_ = this.baseUrl + "/WeatherForecast/GetCurrentForecast?";
+        let url_ = this.baseUrl + "/api/WeatherForecast/GetCurrentForecast?";
         if (longitude === null)
             throw new Error("The parameter 'longitude' cannot be null.");
         else if (longitude !== undefined)
@@ -316,7 +316,7 @@ export class WeatherForecastClient implements IWeatherForecastClient {
     }
 
     getHourlyForecast(longitude?: number | undefined, latitude?: number | undefined, signal?: AbortSignal): Promise<SwaggerResponse<HourlyForecast[]>> {
-        let url_ = this.baseUrl + "/WeatherForecast/GetHourlyForecast?";
+        let url_ = this.baseUrl + "/api/WeatherForecast/GetHourlyForecast?";
         if (longitude === null)
             throw new Error("The parameter 'longitude' cannot be null.");
         else if (longitude !== undefined)
@@ -366,7 +366,7 @@ export class WeatherForecastClient implements IWeatherForecastClient {
     }
 
     getDailyForecast(longitude?: number | undefined, latitude?: number | undefined, signal?: AbortSignal): Promise<SwaggerResponse<DailyForecast[]>> {
-        let url_ = this.baseUrl + "/WeatherForecast/GetDailyForecast?";
+        let url_ = this.baseUrl + "/api/WeatherForecast/GetDailyForecast?";
         if (longitude === null)
             throw new Error("The parameter 'longitude' cannot be null.");
         else if (longitude !== undefined)

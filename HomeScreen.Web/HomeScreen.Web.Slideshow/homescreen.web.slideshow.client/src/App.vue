@@ -23,7 +23,18 @@ import LoadingSpinner from '@components/LoadingSpinner.vue';
 import SlideshowView from '@/SlideshowView.vue';
 import { loadWeather } from '@/domain/weather';
 import { loadMedia } from '@/domain/media';
+import { useSeoMeta } from '@vueuse/head';
 
 const weatherLoader = loadWeather;
 const mediaLoader = loadMedia;
+
+useSeoMeta(
+  {
+    colorScheme: 'dark light',
+    themeColor: { content: '#4285f4', media: '(prefers-color-scheme: dark)' },
+    author: 'Cethric',
+    robots: 'noindex, nofollow',
+  },
+  {},
+);
 </script>

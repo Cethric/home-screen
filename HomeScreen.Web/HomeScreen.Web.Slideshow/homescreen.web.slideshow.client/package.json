@@ -27,6 +27,8 @@
     "uuid": "^10.0.0",
     "@vueuse/core": "^10.11.0",
     "@vueuse/motion": "^2.2.3",
+    "@vueuse/metadata": "^10.11.0",
+    "@vueuse/head": "^2.0.0",
     "animate.css": "^4.1.1",
     "@homescreen/web-components-client": "workspace:*",
     "seedrandom": "^3.0.5",

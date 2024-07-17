@@ -3,7 +3,7 @@ import {
   WeatherForecastClient,
 } from '@/domain/api/homescreen-slideshow-api';
 
-const weatherApi = new WeatherForecastClient('/api');
+const weatherApi = new WeatherForecastClient();
 
 export const loadWeather = async (): Promise<WeatherForecast> => {
   try {

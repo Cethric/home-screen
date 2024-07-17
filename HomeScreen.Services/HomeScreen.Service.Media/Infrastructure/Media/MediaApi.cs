@@ -63,6 +63,7 @@ public class MediaApi(
         CancellationToken cancellationToken
     )
     {
+        logger.LogInformation("Attempting to download media for {MediaId}", mediaId);
         var mediaEntry = await context.MediaEntries.Where(x => x.MediaId == mediaId)
             .FirstOrDefaultAsync(cancellationToken);
         if (mediaEntry == null)

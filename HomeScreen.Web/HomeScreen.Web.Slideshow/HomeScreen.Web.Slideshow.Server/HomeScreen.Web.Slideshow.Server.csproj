@@ -41,6 +41,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\..\..\HomeScreen.ServiceDefaults\HomeScreen.ServiceDefaults.csproj"/>
+        <ProjectReference Include="..\..\..\HomeScreen.Services\HomeScreen.Service.MediaClient\HomeScreen.Service.MediaClient.csproj" />
         <ProjectReference Include="..\..\..\HomeScreen.Services\HomeScreen.Service.Proto\HomeScreen.Service.Proto.csproj"/>
         <ProjectReference Include="..\homescreen.web.slideshow.client\homescreen.web.slideshow.client.esproj">
             <ReferenceOutputAssembly>false</ReferenceOutputAssembly>

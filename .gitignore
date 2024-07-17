@@ -372,3 +372,7 @@ test/
 coverage*[.json, .xml, .info]
 
 secrets.json
+aspirate.json
+aspirate-state.json
+manifest.json
+aspirate-output/

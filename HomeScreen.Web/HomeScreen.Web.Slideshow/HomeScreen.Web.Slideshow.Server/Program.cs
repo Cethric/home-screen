@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using HomeScreen.Service.MediaClient.Generated;
 using HomeScreen.Service.Proto.Services;
 using HomeScreen.ServiceDefaults;
 using HomeScreen.Web.Slideshow.Server.Services;
@@ -34,7 +35,15 @@ builder.Services.AddGrpcClient<WeatherGrpcClient>(
 );
 builder.Services.AddHttpClient(
     "MediaDownloader",
-    client => { client.BaseAddress = new Uri("http://homescreen-service-media:5014"); }
+    client =>
+    {
+        client.BaseAddress = new Uri("http://homescreen-service-media:5014");
+        client.DefaultRequestVersion = new Version(2, 0);
+        client.DefaultVersionPolicy = HttpVersionPolicy.RequestVersionOrHigher;
+    }
+);
+builder.Services.AddScoped<IMediaFileClient, MediaFileClient>(
+    sp => new MediaFileClient("", sp.GetRequiredService<IHttpClientFactory>().CreateClient("MediaDownloader"))
 );
 builder.Services.AddScoped<IMediaDownloader, MediaDownloader>();
 
@@ -59,4 +68,4 @@ app.MapControllers();
 
 app.MapFallbackToFile("/index.html");
 
-app.Run();
+await app.RunAsync();

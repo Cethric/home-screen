@@ -1,11 +1,6 @@
-namespace HomeScreen.Web.Slideshow.Server.Entities;
+using HomeScreen.Service.MediaClient.Generated;
 
-public enum MediaTransformOptionsFormat
-{
-    Jpeg,
-    WebP,
-    Avif
-}
+namespace HomeScreen.Web.Slideshow.Server.Entities;
 
 public static class MediaTransformOptionsFormatExtensions
 {

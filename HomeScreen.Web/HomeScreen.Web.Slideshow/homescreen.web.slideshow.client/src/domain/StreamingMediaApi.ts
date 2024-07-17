@@ -19,7 +19,7 @@ function throwException(
 
 export class StreamingMediaApi extends MediaClient {
   public constructor() {
-    super('/api');
+    super();
   }
 
   async *getRandomMediaItemsStream(
@@ -27,7 +27,7 @@ export class StreamingMediaApi extends MediaClient {
     signal?: AbortSignal,
   ): AsyncGenerator<SwaggerResponse<MediaItem>> {
     // @ts-ignore
-    let url_ = this.baseUrl + '/Media/GetRandomMediaItems?';
+    let url_ = this.baseUrl + '/api/Media/GetRandomMediaItems?';
     if (count === null)
       throw new Error("The parameter 'count' cannot be null.");
     else if (count !== undefined)

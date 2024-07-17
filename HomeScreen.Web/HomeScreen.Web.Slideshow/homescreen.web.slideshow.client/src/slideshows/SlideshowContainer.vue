@@ -1,5 +1,5 @@
 <template>
-  <template v-if="images.length >= 60">
+  <template v-if="images.length >= Math.ceil(Math.max(total / 10, 20))">
     <component
       :is="slideshows[activeSlideshow]"
       :count="count[activeSlideshow]"
@@ -11,30 +11,31 @@
     />
   </template>
   <template v-else>
-    <main class="relative h-dvh w-dvw">
-      <LoadingSpinner :variant="Variants.primary" class="absolute size-full" />
-    </main>
+    <FullscreenMainLoader />
   </template>
 </template>
 
 <script async lang="ts" setup>
-import RollingSlideshow from '@/slideshows/RollingSlideshow.vue';
-import PolaroidSlideshow from '@/slideshows/PolaroidSlideshow.vue';
-import FullscreenSlideshow from '@/slideshows/FullscreenSlideshow.vue';
 import { type Slideshow, Slideshows } from './properties';
-import {
-  Directions,
-  type Image,
-  Variants,
-} from '@/helpers/component_properties';
-import LoadingSpinner from '@components/LoadingSpinner.vue';
+import { Directions, type Image } from '@/helpers/component_properties';
 import { loadImage } from '@/domain/media';
 import type { WeatherForecast } from '@/domain/api/homescreen-slideshow-api';
+import { defineAsyncComponent } from 'vue';
+import FullscreenMainLoader from '@/components/FullscreenMainLoader.vue';
 
 const slideshows = {
-  [Slideshows.rolling_slideshow]: RollingSlideshow,
-  [Slideshows.polaroid_slideshow]: PolaroidSlideshow,
-  [Slideshows.fullscreen_slideshow]: FullscreenSlideshow,
+  [Slideshows.rolling_slideshow]: defineAsyncComponent({
+    loader: () => import('@/slideshows/RollingSlideshow.vue'),
+    loadingComponent: FullscreenMainLoader,
+  }),
+  [Slideshows.polaroid_slideshow]: defineAsyncComponent({
+    loader: () => import('@/slideshows/PolaroidSlideshow.vue'),
+    loadingComponent: FullscreenMainLoader,
+  }),
+  [Slideshows.fullscreen_slideshow]: defineAsyncComponent({
+    loader: () => import('@/slideshows/FullscreenSlideshow.vue'),
+    loadingComponent: FullscreenMainLoader,
+  }),
 };
 const count = {
   [Slideshows.rolling_slideshow]: 3,

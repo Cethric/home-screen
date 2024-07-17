@@ -8,4 +8,5 @@ builder.AddServiceDefaults();
 builder.AddMediaDb();
 
 var host = builder.Build();
-host.Run();
+
+await host.RunAsync();

@@ -13,8 +13,8 @@
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'SwaggerBuild' ">
-      <DebugSymbols Condition=" '$(DebugSymbols)' == '' ">true</DebugSymbols>
-      <Optimize Condition=" '$(Optimize)' == '' ">false</Optimize>
+        <DebugSymbols Condition=" '$(DebugSymbols)' == '' ">true</DebugSymbols>
+        <Optimize Condition=" '$(Optimize)' == '' ">false</Optimize>
     </PropertyGroup>
 
     <ItemGroup>
@@ -24,11 +24,17 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Azure.Maps.Search" Version="1.0.0-beta.5" />
+        <PackageReference Include="Azure.Maps.Search" Version="1.0.0-beta.5"/>
         <PackageReference Include="Grpc.AspNetCore" Version="2.63.0"/>
-        <PackageReference Include="Magick.NET.Core" Version="13.9.1" />
-        <PackageReference Include="Magick.NET-Q16-HDRI-AnyCPU" Version="13.9.1" />
-        <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.0" />
+        <PackageReference Include="Magick.NET.Core" Version="13.9.1"/>
+        <PackageReference Include="Magick.NET-Q16-HDRI-AnyCPU" Version="13.9.1"/>
+        <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="8.0.0" />
+        <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.0"/>
+        <PackageReference Include="NSwag.AspNetCore" Version="14.0.8"/>
+        <PackageReference Include="NSwag.MSBuild" Version="14.0.8">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
     </ItemGroup>
 
     <ItemGroup>
@@ -36,5 +42,12 @@
         <ProjectReference Include="..\..\HomeScreen.ServiceDefaults\HomeScreen.ServiceDefaults.csproj"/>
         <ProjectReference Include="..\HomeScreen.Service.Proto\HomeScreen.Service.Proto.csproj"/>
     </ItemGroup>
+    
+    <PropertyGroup>
+        <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+    </PropertyGroup>
 
+    <Target Name="NSwag" AfterTargets="PostBuildEvent">
+        <Exec WorkingDirectory="$(ProjectDir)" EnvironmentVariables="ASPNETCORE_ENVIRONMENT=Development" Command="dotnet nswag run media.nswag /variables:Configuration=$(Configuration)"/>
+    </Target>
 </Project>

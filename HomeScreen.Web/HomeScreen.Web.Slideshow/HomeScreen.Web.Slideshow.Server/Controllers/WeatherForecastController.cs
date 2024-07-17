@@ -10,7 +10,7 @@ using HourlyForecast = HomeScreen.Web.Slideshow.Server.Entities.HourlyForecast;
 namespace HomeScreen.Web.Slideshow.Server.Controllers;
 
 [ApiController]
-[Route("[controller]/[action]")]
+[Route("api/[controller]/[action]")]
 public class WeatherForecastController(ILogger<WeatherForecastController> logger, WeatherGrpcClient client)
     : ControllerBase
 {

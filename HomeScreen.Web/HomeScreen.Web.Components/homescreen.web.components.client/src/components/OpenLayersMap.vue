@@ -25,9 +25,6 @@ onMounted(() => {
       target: openLayersMapViewDiv.value,
       layers: [
         new Tile({ source: new TileDebug() }),
-        // new Tile({
-        //   source: new OSM(),
-        // }),
         new Tile({
           source: new BingMaps({
             key: import.meta.env.VITE_BING_MAPS_API_KEY,
@@ -59,5 +56,3 @@ onBeforeUnmount(() => {
   openLayersMap.value = undefined;
 });
 </script>
-
-<style lang="scss" scoped></style>

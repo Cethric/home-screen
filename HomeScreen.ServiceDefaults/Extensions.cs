@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
@@ -23,6 +24,8 @@ public static class Extensions
         builder.AddSeqEndpoint("homescreen-seq");
         builder.AddRedisOutputCache("homescreen-redis");
         builder.AddRedisDistributedCache("homescreen-redis");
+#else
+        builder.Services.AddDistributedMemoryCache();
 #endif
 
         builder.AddDefaultHealthChecks();

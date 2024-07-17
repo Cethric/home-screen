@@ -58,7 +58,7 @@ const props = withDefaults(
       width: number,
       height: number,
       blur: boolean,
-      format: string,
+      format: 'Jpeg' | 'WebP' | 'Avif',
     ) => Promise<string>;
     onClick?: () => void;
   }>(),

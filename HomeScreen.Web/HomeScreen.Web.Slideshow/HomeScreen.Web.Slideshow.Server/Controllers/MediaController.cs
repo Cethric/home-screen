@@ -1,8 +1,8 @@
-﻿using System.Net;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using System.Text.Json;
 using Grpc.Core;
 using HomeScreen.Service.Media;
+using HomeScreen.Service.MediaClient.Generated;
 using HomeScreen.Service.Proto.Services;
 using HomeScreen.Web.Slideshow.Server.Entities;
 using HomeScreen.Web.Slideshow.Server.Services;
@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace HomeScreen.Web.Slideshow.Server.Controllers;
 
 [ApiController]
-[Route("[controller]/[action]")]
+[Route("api/[controller]/[action]")]
 public class MediaController(
     ILogger<MediaController> logger,
     MediaGrpcClient mediaGrpcClient,
@@ -89,8 +89,8 @@ public class MediaController(
     [ProducesResponseType<BadRequestResult>(StatusCodes.Status400BadRequest, "application/json")]
     public async Task<ActionResult> DownloadMediaItem(
         [FromQuery] Guid id,
-        [FromQuery] long width,
-        [FromQuery] long height,
+        [FromQuery] int width,
+        [FromQuery] int height,
         [FromQuery] bool blur,
         [FromQuery] MediaTransformOptionsFormat format,
         CancellationToken cancellationToken = default
@@ -105,18 +105,14 @@ public class MediaController(
             cancellationToken
         );
 
-        if (result.StatusCode == HttpStatusCode.OK)
+        if (result.StatusCode == StatusCodes.Status200OK)
         {
-            return File(await result.Content.ReadAsStreamAsync(cancellationToken), format.TransformFormatToMime());
+            return File(result.Stream, format.TransformFormatToMime());
         }
 
-        logger.LogWarning(
-            "Failed to download media item {StatusCode} {Reason}",
-            result.StatusCode,
-            await result.Content.ReadAsStringAsync(cancellationToken)
-        );
+        logger.LogWarning("Failed to download media item {StatusCode}", result.StatusCode);
 
-        return result.StatusCode == HttpStatusCode.NotFound ? NotFound() : BadRequest();
+        return result.StatusCode == StatusCodes.Status404NotFound ? NotFound() : BadRequest();
     }
 
 

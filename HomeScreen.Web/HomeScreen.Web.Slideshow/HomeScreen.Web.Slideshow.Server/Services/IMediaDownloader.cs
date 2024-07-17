@@ -1,13 +1,13 @@
-﻿using HomeScreen.Web.Slideshow.Server.Entities;
+﻿using HomeScreen.Service.MediaClient.Generated;
 
 namespace HomeScreen.Web.Slideshow.Server.Services;
 
 public interface IMediaDownloader
 {
-    Task<HttpResponseMessage> DownloadMedia(
+    Task<FileResponse> DownloadMedia(
         Guid id,
-        long width,
-        long height,
+        int width,
+        int height,
         bool blur,
         MediaTransformOptionsFormat format,
         CancellationToken cancellationToken = default

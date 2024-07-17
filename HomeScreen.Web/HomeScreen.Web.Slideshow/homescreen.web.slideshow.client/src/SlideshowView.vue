@@ -135,6 +135,7 @@ useIntervalFn(
     } else {
       activeSlideshow.value = choice(Object.values(Slideshows));
     }
+    console.log('Loading slideshow variant', activeSlideshow.value);
   },
   15 * 60 * 1000,
   { immediateCallback: true },

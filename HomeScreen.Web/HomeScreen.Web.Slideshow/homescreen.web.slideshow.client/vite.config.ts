@@ -7,7 +7,7 @@ import path from 'node:path';
 import child_process from 'node:child_process';
 
 // https://vitejs.dev/config/
-export default defineConfig(({ command }) => {
+export default defineConfig(({ command, mode }) => {
   let keyFilePath: string | undefined = undefined;
   let certFilePath: string | undefined = undefined;
   if (command === 'serve') {
@@ -68,7 +68,7 @@ export default defineConfig(({ command }) => {
               '/api': {
                 target: target,
                 changeOrigin: true,
-                rewrite: (path) => path.replace(/^\/api/, ''),
+                // rewrite: (path) => path.replace(/^\/api/, ''),
                 secure: false,
               },
             },
