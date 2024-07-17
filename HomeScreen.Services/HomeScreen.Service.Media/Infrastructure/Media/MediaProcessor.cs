@@ -86,6 +86,7 @@ public class MediaProcessor(ILogger<MediaProcessor> logger, IMediaPaths mediaPat
         {
             var offset = TimeSpan.TryParse(
                 profile.GetValue(ExifTag.OffsetTimeOriginal)?.Value.Replace("+", ""),
+                new CultureInfo("en-AU"),
                 out var tryOffset
             )
                 ? tryOffset
@@ -103,6 +104,7 @@ public class MediaProcessor(ILogger<MediaProcessor> logger, IMediaPaths mediaPat
         {
             var offset = TimeSpan.TryParse(
                 profile.GetValue(ExifTag.OffsetTime)?.Value.Replace("+", ""),
+                new CultureInfo("en-AU"),
                 out var tryOffset
             )
                 ? tryOffset
@@ -139,29 +141,10 @@ public class MediaProcessor(ILogger<MediaProcessor> logger, IMediaPaths mediaPat
         }
 
         var lonRef = profile.GetValue(ExifTag.GPSLongitudeRef)?.Value;
-        entry.LongitudeDirection = lonRef switch
-        {
-            "W" => LongitudeDirection.West,
-            "E" => LongitudeDirection.East,
-            _ => throw new ArgumentOutOfRangeException(
-                nameof(lonRef),
-                lonRef,
-                "Invalid longitude reference value provided"
-            )
-        };
+        entry.LongitudeDirection = GpsLongitudeRefToLongitudeDirection(lonRef);
         var latRef = profile.GetValue(ExifTag.GPSLatitudeRef)?.Value;
-        entry.LatitudeDirection = latRef switch
-        {
-            "N" => LatitudeDirection.North,
-            "S" => LatitudeDirection.South,
-            _ => throw new ArgumentOutOfRangeException(
-                nameof(latRef),
-                latRef,
-                "Invalid latitude reference value provided"
-            )
-        };
-        var longitude = profile.GetValue(ExifTag.GPSLongitude)?.Value;
-        if (longitude != null)
+        entry.LatitudeDirection = GpsLatitudeRefToLatitudeDirection(latRef);
+        if (profile.GetValue(ExifTag.GPSLongitude)?.Value is { } longitude)
         {
             var longitudeDegrees = longitude[0].ToDouble();
             var longitudeMinutes = longitude[1].ToDouble();
@@ -171,8 +154,7 @@ public class MediaProcessor(ILogger<MediaProcessor> logger, IMediaPaths mediaPat
             entry.Longitude = entry.LongitudeDirection == LongitudeDirection.East ? entry.Longitude : -entry.Longitude;
         }
 
-        var latitude = profile.GetValue(ExifTag.GPSLatitude)?.Value;
-        if (latitude != null)
+        if (profile.GetValue(ExifTag.GPSLatitude)?.Value is { } latitude)
         {
             var latitudeDegrees = latitude[0].ToDouble();
             var latitudeMinutes = latitude[1].ToDouble();
@@ -192,4 +174,28 @@ public class MediaProcessor(ILogger<MediaProcessor> logger, IMediaPaths mediaPat
             cancellationToken
         );
     }
+
+    private static LongitudeDirection GpsLongitudeRefToLongitudeDirection(string? lonRef) =>
+        lonRef switch
+        {
+            "W" => LongitudeDirection.West,
+            "E" => LongitudeDirection.East,
+            _ => throw new ArgumentOutOfRangeException(
+                nameof(lonRef),
+                lonRef,
+                "Invalid longitude reference value provided"
+            )
+        };
+
+    private static LatitudeDirection GpsLatitudeRefToLatitudeDirection(string? latRef) =>
+        latRef switch
+        {
+            "N" => LatitudeDirection.North,
+            "S" => LatitudeDirection.South,
+            _ => throw new ArgumentOutOfRangeException(
+                nameof(latRef),
+                latRef,
+                "Invalid latitude reference value provided"
+            )
+        };
 }

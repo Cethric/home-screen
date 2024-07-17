@@ -21,7 +21,6 @@ public class JsonStreamingResultExecutor<T>(ILogger<JsonStreamingResult<T>> logg
         response.StatusCode = (int)HttpStatusCode.OK;
         response.ContentType = $"{MediaTypeNames.Application.JsonSequence};charset={Encoding.UTF8.WebName}";
 
-        // await context.HttpContext.Response.Body.FlushAsync(context.HttpContext.RequestAborted);
         await foreach (var value in result.Data)
         {
             context.HttpContext.RequestAborted.ThrowIfCancellationRequested();

@@ -17,7 +17,7 @@ public class Worker(
     private const string ActivitySourceName = "Migrations";
     private static readonly ActivitySource ActivitySource = new(ActivitySourceName);
 
-    protected override async Task ExecuteAsync(CancellationToken cancellationToken)
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         using var activity = ActivitySource.StartActivity("Migrating database", ActivityKind.Client);
         logger.LogInformation("Migrating database");
@@ -27,9 +27,9 @@ public class Worker(
             using var scope = serviceProvider.CreateScope();
             var dbContext = scope.ServiceProvider.GetRequiredService<MediaDbContext>();
 
-            await EnsureDatabaseAsync(dbContext, cancellationToken);
-            await RunMigrationAsync(dbContext, cancellationToken);
-            await SeedDataAsync(dbContext, cancellationToken);
+            await EnsureDatabaseAsync(dbContext, stoppingToken);
+            await RunMigrationAsync(dbContext, stoppingToken);
+            await SeedDataAsync(dbContext, stoppingToken);
         }
         catch (Exception ex)
         {

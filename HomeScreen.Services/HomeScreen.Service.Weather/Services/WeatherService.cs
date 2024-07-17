@@ -7,7 +7,7 @@ public class WeatherService(ILogger<WeatherService> logger, IWeatherApi weatherA
 {
     public override async Task<CurrentForecastReply> CurrentForecast(ForecastRequest request, ServerCallContext context)
     {
-        logger.LogInformation($"Get current Forecast: {request}");
+        logger.LogInformation("Get current Forecast: {Request}", request);
         try
         {
             var response = await weatherApi.GetForecast(request.Latitude, request.Longitude, context.CancellationToken);
@@ -22,7 +22,7 @@ public class WeatherService(ILogger<WeatherService> logger, IWeatherApi weatherA
 
     public override async Task<HourlyForecastReply> HourlyForecast(ForecastRequest request, ServerCallContext context)
     {
-        logger.LogInformation($"Get hourly Forecast: {request}");
+        logger.LogInformation("Get hourly Forecast: {Request}", request);
         var response = await weatherApi.GetHourlyForecast(
             request.Latitude,
             request.Longitude,
@@ -33,7 +33,7 @@ public class WeatherService(ILogger<WeatherService> logger, IWeatherApi weatherA
 
     public override async Task<DailyForecastReply> DailyForecast(ForecastRequest request, ServerCallContext context)
     {
-        logger.LogInformation($"Get daily Forecast: {request}");
+        logger.LogInformation("Get daily Forecast: {Request}", request);
         var response = await weatherApi.GetDailyForecast(
             request.Latitude,
             request.Longitude,
