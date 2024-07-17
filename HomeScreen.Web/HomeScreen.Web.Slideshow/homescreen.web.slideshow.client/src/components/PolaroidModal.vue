@@ -26,10 +26,12 @@
               v-bind="props"
             >
               <template #details="{ image }">
-                <OpenLayersMap
+                <component
+                  :is="LeafletMapAsync"
                   v-if="image.location?.latitude && image.location?.longitude"
                   :latitude="image.location.latitude"
                   :longitude="image.location.longitude"
+                  :tooltip="image.location.name"
                 />
               </template>
             </PolaroidCard>
@@ -58,12 +60,12 @@ import { Directions, Variants } from '@/helpers/component_properties';
 import LargeImage from '@/components/LargeImage.vue';
 import PolaroidCard from '@components/PolaroidCard.vue';
 import ModalDialog from '@components/ModalDialog.vue';
-import OpenLayersMap from '@components/OpenLayersMap.vue';
 import {
   MediaItem,
   MediaTransformOptionsFormat,
 } from '@/domain/api/homescreen-slideshow-api';
 import LoadingSpinner from '@components/LoadingSpinner.vue';
+import { LeafletMapAsync } from '@/components/LeafletMapAsync';
 
 defineProps<{
   item: { image: MediaItem; top: number; left: number; rotation: number };

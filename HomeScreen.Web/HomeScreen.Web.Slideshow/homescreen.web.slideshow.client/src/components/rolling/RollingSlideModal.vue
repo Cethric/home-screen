@@ -32,15 +32,17 @@
     <template #default>
       <PolaroidCard
         :direction="Directions.horizontal"
+        :flat="true"
         :image="image"
         :load-image="loadImage"
-        :flat="true"
       >
         <template #details="{ image }">
-          <OpenLayersMap
+          <component
+            :is="LeafletMapAsync"
             v-if="image.location?.latitude && image.location?.longitude"
             :latitude="image.location.latitude"
             :longitude="image.location.longitude"
+            :tooltip="image.location.name"
           />
         </template>
       </PolaroidCard>
@@ -56,9 +58,9 @@ import {
 } from '@/helpers/component_properties';
 import PolaroidCard from '@components/PolaroidCard.vue';
 import ModalDialog from '@components/ModalDialog.vue';
-import OpenLayersMap from '@components/OpenLayersMap.vue';
 import { MediaTransformOptionsFormat } from '@/domain/api/homescreen-slideshow-api';
 import { useWindowSize } from '@vueuse/core';
+import { LeafletMapAsync } from '@/components/LeafletMapAsync';
 
 const props = defineProps<{
   image: Image;

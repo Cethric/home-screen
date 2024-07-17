@@ -25,7 +25,10 @@
     "uuid": "^10.0.0",
     "@vueuse/core": "^10.11.0",
     "animate.css": "^4.1.1",
-    "ol": "^9.2.4"
+    "leaflet": "^1.9.4",
+    "@vue-leaflet/vue-leaflet": "^0.10.1",
+    "geojson": "^0.5.0",
+    "@turf/turf": "^7.0.0"
   },
   "devDependencies": {
     "@chromatic-com/storybook": "1.6.0",
@@ -62,7 +65,8 @@
     "vitest": "^1.6.0",
     "jsdom": "^24.1.0",
     "@types/jsdom": "^21.1.7",
-    "vite-plugin-dts": "^3.9.1"
+    "vite-plugin-dts": "^3.9.1",
+    "@types/geojson": "^7946.0.14"
   },
   "packageManager": "pnpm@9.1.0",
   "engines": {

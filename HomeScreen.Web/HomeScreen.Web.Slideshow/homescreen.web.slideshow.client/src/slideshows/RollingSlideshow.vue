@@ -14,10 +14,9 @@
       :rolling="group.direction"
     />
   </main>
-  <main v-else class="h-dvh w-dvw">
-    <LoadingSpinner :variant="Variants.primary" class="absolute size-full" />
-  </main>
-  <DateTimeWeatherCombo
+  <FullscreenMainLoader v-else />
+  <component
+    :is="DateTimeWeatherComboAsync"
     :kind="DateTimeWeatherComboKinds.footer"
     :weather-forecast="weatherForecast"
   />
@@ -28,7 +27,6 @@ import {
   type Direction,
   Directions,
   type Image,
-  Variants,
 } from '@/helpers/component_properties';
 import {
   type IWeatherForecast,
@@ -40,10 +38,10 @@ import {
   DateTimeWeatherComboKinds,
   RollingDirections,
 } from '@/components/properties';
-import DateTimeWeatherCombo from '@/components/DateTimeWeatherCombo.vue';
-import LoadingSpinner from '@components/LoadingSpinner.vue';
 import { v4 as uuid } from 'uuid';
 import { range } from '@/helpers/random';
+import FullscreenMainLoader from '@/components/FullscreenMainLoader.vue';
+import { DateTimeWeatherComboAsync } from '@/components/DateTimeWeatherComboAsync';
 
 const props = withDefaults(
   defineProps<{

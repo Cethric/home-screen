@@ -11,7 +11,7 @@
       :class="[
         {
           'flex size-full flex-row': direction === Directions.horizontal,
-          'grid-vertical grid w-full grow gap-4 py-2':
+          'grid-vertical grid min-h-12 w-full grow gap-4 py-2':
             direction === Directions.vertical,
         },
       ]"

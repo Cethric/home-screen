@@ -1,5 +1,6 @@
 <template>
-  <DateTimeWeatherCombo
+  <component
+    :is="DateTimeWeatherComboAsync"
     :kind="DateTimeWeatherComboKinds.header"
     :weather-forecast="weatherForecast"
   />
@@ -31,9 +32,7 @@
       </transition-group>
     </Suspense>
   </main>
-  <main v-else class="h-dvh w-dvw">
-    <LoadingSpinner :variant="Variants.primary" class="absolute size-full" />
-  </main>
+  <FullscreenMainLoader v-else />
 </template>
 
 <script lang="ts" setup>
@@ -49,11 +48,12 @@ import {
   MediaTransformOptionsFormat,
 } from '@/domain/api/homescreen-slideshow-api';
 import { range, rangeRNG } from '@/helpers/random';
-import DateTimeWeatherCombo from '@/components/DateTimeWeatherCombo.vue';
 import { DateTimeWeatherComboKinds } from '@/components/properties';
-import LoadingSpinner from '@components/LoadingSpinner.vue';
 import seedrandom from 'seedrandom';
 import PolaroidModal from '@/components/PolaroidModal.vue';
+import FullscreenMainLoader from '@/components/FullscreenMainLoader.vue';
+import { DateTimeWeatherComboAsync } from '@/components/DateTimeWeatherComboAsync';
+import LoadingSpinner from '@components/LoadingSpinner.vue';
 
 const props = withDefaults(
   defineProps<{
