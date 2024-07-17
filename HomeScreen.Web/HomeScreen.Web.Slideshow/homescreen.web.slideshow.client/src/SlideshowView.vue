@@ -8,12 +8,7 @@
     />
 
     <template #fallback>
-      <main class="relative h-dvh w-dvw">
-        <LoadingSpinner
-          :variant="Variants.primary"
-          class="absolute size-full"
-        />
-      </main>
+      <FullscreenMainLoader />
     </template>
   </Suspense>
   <div class="fixed bottom-4 left-4 z-50">
@@ -35,11 +30,11 @@ import { type Slideshow, Slideshows } from '@/slideshows/properties';
 import { choice } from '@/helpers/random';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { faHome } from '@fortawesome/free-solid-svg-icons';
-import { type Image, Variants } from '@/helpers/component_properties';
-import LoadingSpinner from '@components/LoadingSpinner.vue';
+import { type Image } from '@/helpers/component_properties';
 import { useNProgress } from '@vueuse/integrations';
 import { loadWeather as loadWeatherBase } from '@/domain/weather';
 import { loadMedia as loadMediaBase } from '@/domain/media';
+import FullscreenMainLoader from '@/components/FullscreenMainLoader.vue';
 
 const props = defineProps<{
   total: number;
