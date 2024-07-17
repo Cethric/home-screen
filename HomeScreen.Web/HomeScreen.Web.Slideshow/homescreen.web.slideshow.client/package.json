@@ -15,9 +15,11 @@
     "format:check": "prettier . --check",
     "format:fix": "prettier . --write",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "clean": "rimraf dist/"
   },
   "dependencies": {
+    "rimraf": "^6.0.1",
     "@fortawesome/free-brands-svg-icons": "^6.5.2",
     "@fortawesome/free-regular-svg-icons": "^6.5.2",
     "@fortawesome/free-solid-svg-icons": "^6.5.2",
