@@ -9,7 +9,7 @@ using NJsonSchema.Generation;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.AddServiceDefaults();
+builder.AddServiceDefaults(GitVersionInformation.InformationalVersion);
 builder.AddMediaDb();
 
 
@@ -68,4 +68,6 @@ app.MapGet(
         "Communication with gRPC endpoints must be made through a gRPC client. To learn how to create a client, visit: https://go.microsoft.com/fwlink/?linkid=2086909"
 );
 
+app.Services.GetRequiredService<ILogger<Program>>()
+    .LogInformation("Launching version: {Version}", GitVersionInformation.InformationalVersion);
 await app.RunAsync();

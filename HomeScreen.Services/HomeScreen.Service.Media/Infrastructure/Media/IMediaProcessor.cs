@@ -2,5 +2,9 @@
 
 public interface IMediaProcessor
 {
-    Task<Database.MediaDb.Entities.MediaEntry> ProcessMediaEntry(FileInfo file, string hash, CancellationToken cancellationToken);
+    Task<Database.MediaDb.Entities.MediaEntry> ProcessMediaEntry(
+        FileInfo file,
+        string hash,
+        CancellationToken cancellationToken
+    );
 }

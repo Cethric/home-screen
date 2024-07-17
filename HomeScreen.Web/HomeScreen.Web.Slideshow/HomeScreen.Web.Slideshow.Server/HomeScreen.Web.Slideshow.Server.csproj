@@ -22,6 +22,10 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="GitVersion.MsBuild" Version="5.12.0">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
         <PackageReference Include="Grpc.AspNetCore" Version="2.63.0"/>
         <PackageReference Include="Microsoft.AspNetCore.SpaProxy">
             <Version>8.0.6</Version>

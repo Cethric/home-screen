@@ -1,0 +1,7 @@
+﻿mode: Mainline
+branches:
+  main:
+    is-release-branch: true
+  pull-request:
+    tag: pr
+update-build-number: true

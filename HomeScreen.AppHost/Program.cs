@@ -1,3 +1,5 @@
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Projects;
 
 var builder = DistributedApplication.CreateBuilder(args);
@@ -60,4 +62,7 @@ builder.AddProject<HomeScreen_Web_Dashboard_Server>("homescreen-web-dashboard-se
     .WithReference(media)
     .WithReference(dashboardDb);
 
-await builder.Build().RunAsync();
+var app = builder.Build();
+app.Services.GetRequiredService<ILogger<Program>>()
+    .LogInformation("Launching version: {Version}", GitVersionInformation.InformationalVersion);
+await app.RunAsync();

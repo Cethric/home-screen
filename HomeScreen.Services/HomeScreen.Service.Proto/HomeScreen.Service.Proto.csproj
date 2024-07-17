@@ -14,16 +14,20 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Grpc.AspNetCore" Version="2.63.0"/>
+        <PackageReference Include="GitVersion.MsBuild" Version="5.12.0">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Grpc.AspNetCore" Version="2.63.0" />
     </ItemGroup>
 
     <ItemGroup>
-        <Protobuf Include="Protos\media.proto"/>
-        <Protobuf Include="Protos\weather.proto"/>
+        <Protobuf Include="Protos\media.proto" />
+        <Protobuf Include="Protos\weather.proto" />
     </ItemGroup>
 
     <ItemGroup>
-        <Folder Include="obj\Debug\net9.0\Protos"/>
+        <Folder Include="obj\Debug\net9.0\Protos" />
     </ItemGroup>
 
 </Project>

@@ -8,6 +8,7 @@ using Microsoft.Extensions.Http.Resilience;
 using Microsoft.Extensions.Logging;
 using OpenTelemetry;
 using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 
 namespace HomeScreen.ServiceDefaults;
@@ -17,18 +18,19 @@ namespace HomeScreen.ServiceDefaults;
 // To learn more about using this project, see https://aka.ms/dotnet/aspire/service-defaults
 public static class Extensions
 {
-    public static IHostApplicationBuilder AddServiceDefaults(this IHostApplicationBuilder builder)
+    public static IHostApplicationBuilder AddServiceDefaults(this IHostApplicationBuilder builder, string version)
     {
-        builder.ConfigureOpenTelemetry();
+        builder.ConfigureOpenTelemetry(version);
 #if !SwaggerBuild
         builder.AddSeqEndpoint("homescreen-seq");
+        builder.Logging.AddConsole();
         builder.AddRedisOutputCache("homescreen-redis");
         builder.AddRedisDistributedCache("homescreen-redis");
 #else
         builder.Services.AddDistributedMemoryCache();
 #endif
 
-        builder.AddDefaultHealthChecks();
+        builder.AddDefaultHealthChecks(version);
 
         builder.Services.AddServiceDiscovery();
 
@@ -53,7 +55,7 @@ public static class Extensions
         return builder;
     }
 
-    public static IHostApplicationBuilder ConfigureOpenTelemetry(this IHostApplicationBuilder builder)
+    public static IHostApplicationBuilder ConfigureOpenTelemetry(this IHostApplicationBuilder builder, string version)
     {
         builder.Logging.AddOpenTelemetry(
             logging =>
@@ -80,18 +82,34 @@ public static class Extensions
                 }
             );
 
-        builder.AddOpenTelemetryExporters();
+        builder.AddOpenTelemetryExporters(version);
 
         return builder;
     }
 
-    private static IHostApplicationBuilder AddOpenTelemetryExporters(this IHostApplicationBuilder builder)
+    private static IHostApplicationBuilder AddOpenTelemetryExporters(
+        this IHostApplicationBuilder builder,
+        string version
+    )
     {
         var useOtlpExporter = !string.IsNullOrWhiteSpace(builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"]);
 
         if (useOtlpExporter)
         {
-            builder.Services.AddOpenTelemetry().UseOtlpExporter();
+            builder.Services.AddOpenTelemetry()
+                .UseOtlpExporter()
+                .ConfigureResource(
+                    c =>
+                    {
+                        c.AddAttributes(
+                            new List<KeyValuePair<string, object>>
+                            {
+                                new("service-defaults-version", GitVersionInformation.InformationalVersion),
+                                new("version", version)
+                            }
+                        );
+                    }
+                );
         }
 
         // Uncomment the following lines to enable the Azure Monitor exporter (requires the Azure.Monitor.OpenTelemetry.AspNetCore package)
@@ -104,11 +122,21 @@ public static class Extensions
         return builder;
     }
 
-    public static IHostApplicationBuilder AddDefaultHealthChecks(this IHostApplicationBuilder builder)
+    public static IHostApplicationBuilder AddDefaultHealthChecks(this IHostApplicationBuilder builder, string version)
     {
         builder.Services.AddHealthChecks()
             // Add a default liveness check to ensure app is responsive
-            .AddCheck("self", () => HealthCheckResult.Healthy(), ["live"]);
+            .AddCheck(
+                "self",
+                () => HealthCheckResult.Healthy(
+                    data: new Dictionary<string, object>
+                    {
+                        { "service-defaults-version", GitVersionInformation.InformationalVersion },
+                        { "version", version }
+                    }
+                ),
+                ["live"]
+            );
 
         return builder;
     }

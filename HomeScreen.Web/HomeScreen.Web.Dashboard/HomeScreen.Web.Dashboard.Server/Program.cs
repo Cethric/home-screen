@@ -3,7 +3,7 @@ using HomeScreen.ServiceDefaults;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.AddServiceDefaults();
+builder.AddServiceDefaults(GitVersionInformation.InformationalVersion);
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -31,4 +31,6 @@ app.MapControllers();
 
 app.MapFallbackToFile("/index.html");
 
+app.Services.GetRequiredService<ILogger<Program>>()
+    .LogInformation("Launching version: {Version}", GitVersionInformation.InformationalVersion);
 await app.RunAsync();

@@ -8,7 +8,7 @@ using NJsonSchema.Generation;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.AddServiceDefaults();
+builder.AddServiceDefaults(GitVersionInformation.InformationalVersion);
 
 builder.Services.AddControllers()
     .AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
@@ -68,4 +68,6 @@ app.MapControllers();
 
 app.MapFallbackToFile("/index.html");
 
+app.Services.GetRequiredService<ILogger<Program>>()
+    .LogInformation("Launching version: {Version}", GitVersionInformation.InformationalVersion);
 await app.RunAsync();

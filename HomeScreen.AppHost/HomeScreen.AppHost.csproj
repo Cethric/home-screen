@@ -13,11 +13,15 @@
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'SwaggerBuild' ">
-      <DebugSymbols Condition=" '$(DebugSymbols)' == '' ">true</DebugSymbols>
-      <Optimize Condition=" '$(Optimize)' == '' ">false</Optimize>
+        <DebugSymbols Condition=" '$(DebugSymbols)' == '' ">true</DebugSymbols>
+        <Optimize Condition=" '$(Optimize)' == '' ">false</Optimize>
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="GitVersion.MsBuild" Version="5.12.0">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
         <PackageReference Include="Aspire.Hosting" Version="8.0.2" />
         <PackageReference Include="Aspire.Hosting.AppHost" Version="8.0.2" />
         <PackageReference Include="Aspire.Hosting.Redis" Version="8.0.2" />
@@ -26,11 +30,14 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\HomeScreen.Database\HomeScreen.Database.MediaDb.Migrations\HomeScreen.Database.MediaDb.Migrations.csproj" />
-      <ProjectReference Include="..\HomeScreen.Services\HomeScreen.Service.Media\HomeScreen.Service.Media.csproj" />
-      <ProjectReference Include="..\HomeScreen.Services\HomeScreen.Service.Weather\HomeScreen.Service.Weather.csproj" />
-      <ProjectReference Include="..\HomeScreen.Web\HomeScreen.Web.Dashboard\HomeScreen.Web.Dashboard.Server\HomeScreen.Web.Dashboard.Server.csproj" />
-      <ProjectReference Include="..\HomeScreen.Web\HomeScreen.Web.Slideshow\HomeScreen.Web.Slideshow.Server\HomeScreen.Web.Slideshow.Server.csproj" />
+        <ProjectReference
+            Include="..\HomeScreen.Database\HomeScreen.Database.MediaDb.Migrations\HomeScreen.Database.MediaDb.Migrations.csproj" />
+        <ProjectReference Include="..\HomeScreen.Services\HomeScreen.Service.Media\HomeScreen.Service.Media.csproj" />
+        <ProjectReference Include="..\HomeScreen.Services\HomeScreen.Service.Weather\HomeScreen.Service.Weather.csproj" />
+        <ProjectReference
+            Include="..\HomeScreen.Web\HomeScreen.Web.Dashboard\HomeScreen.Web.Dashboard.Server\HomeScreen.Web.Dashboard.Server.csproj" />
+        <ProjectReference
+            Include="..\HomeScreen.Web\HomeScreen.Web.Slideshow\HomeScreen.Web.Slideshow.Server\HomeScreen.Web.Slideshow.Server.csproj" />
     </ItemGroup>
 
 </Project>
