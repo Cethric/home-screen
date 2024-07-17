@@ -52,8 +52,7 @@
         <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
     </PropertyGroup>
 
-    <Target Name="NSwag" AfterTargets="PostBuildEvent">
-        <Exec WorkingDirectory="$(ProjectDir)" EnvironmentVariables="ASPNETCORE_ENVIRONMENT=Development"
-              Command="dotnet nswag run media.nswag /variables:Configuration=$(Configuration)" />
+    <Target Name="NSwag" AfterTargets="PostBuildEvent" Condition=" '$(Configuration)' == 'Debug' ">
+        <Exec WorkingDirectory="$(ProjectDir)" EnvironmentVariables="ASPNETCORE_ENVIRONMENT=Development" Command="$(NSwagExe_Net80) run media.nswag /variables:Configuration=SwaggerBuild"/>
     </Target>
 </Project>

@@ -20,8 +20,8 @@
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Grpc.AspNetCore" Version="2.63.0" />
-        <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.0" />
+        <PackageReference Include="Grpc.AspNetCore" Version="2.63.0"/>
+        <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.0"/>
         <PackageReference Include="NSwag.MSBuild" Version="14.0.8">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -29,13 +29,14 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\HomeScreen.ServiceDefaults\HomeScreen.ServiceDefaults.csproj" />
-        <ProjectReference Include="..\HomeScreen.Service.Proto\HomeScreen.Service.Proto.csproj" />
+        <ProjectReference Include="..\..\HomeScreen.ServiceDefaults\HomeScreen.ServiceDefaults.csproj"/>
+        <ProjectReference Include="..\HomeScreen.Service.Proto\HomeScreen.Service.Proto.csproj"/>
     </ItemGroup>
 
     <Target Name="NSwag" BeforeTargets="PreBuildEvent">
         <Exec WorkingDirectory="$(ProjectDir)"
-              Command="dotnet nswag run open_meteo.nswag /variables:Configuration=$(Configuration)" />
+              EnvironmentVariables="ASPNETCORE_ENVIRONMENT=Development"
+              Command="$(NSwagExe_Net80) run open_meteo.nswag /variables:Configuration=$(Configuration)"/>
     </Target>
 
 </Project>

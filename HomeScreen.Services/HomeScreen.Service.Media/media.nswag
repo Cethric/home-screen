@@ -9,7 +9,7 @@
       "configuration": "SwaggerBuild",
       "runtime": "",
       "targetFramework": "net8.0",
-      "noBuild": true,
+      "noBuild": false,
       "msBuildOutputPath": null,
       "verbose": true,
       "workingDirectory": null,
