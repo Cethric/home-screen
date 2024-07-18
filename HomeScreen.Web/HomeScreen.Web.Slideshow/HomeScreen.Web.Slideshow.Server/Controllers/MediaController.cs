@@ -118,18 +118,37 @@ public class MediaController(
 
     [HttpGet(Name = "GetTransformMediaItemUrl")]
     [ProducesResponseType<string>(StatusCodes.Status202Accepted, "application/json")]
-    public Task<AcceptedAtRouteResult> GetTransformMediaItemUrl(
+    [ProducesResponseType<string>(StatusCodes.Status404NotFound, "application/json")]
+    public async Task<ActionResult> GetTransformMediaItemUrl(
         [FromQuery] Guid id,
-        [FromQuery] long width,
-        [FromQuery] long height,
+        [FromQuery] int width,
+        [FromQuery] int height,
         [FromQuery] bool blur,
         [FromQuery] MediaTransformOptionsFormat format,
         CancellationToken cancellationToken = default
     )
     {
-        cancellationToken.ThrowIfCancellationRequested();
-        return Task.FromResult(
-            AcceptedAtRoute(
+        var result = await mediaGrpcClient.TransformMediaAsync(
+            new TransformMediaRequest
+            {
+                Id = id.ToString("D"),
+                Width = width,
+                Height = height,
+                Blur = blur,
+                MediaFormat = format switch
+                {
+                    MediaTransformOptionsFormat.Jpeg => TransformMediaFormat.Jpeg,
+                    MediaTransformOptionsFormat.WebP => TransformMediaFormat.WebP,
+                    MediaTransformOptionsFormat.Avif => TransformMediaFormat.Avif,
+                    _ => throw new ArgumentOutOfRangeException(nameof(format), format, "Invalid media format requested")
+                }
+            },
+            new CallOptions().WithDeadline(DateTimeOffset.UtcNow.AddMinutes(5).UtcDateTime)
+                .WithCancellationToken(cancellationToken)
+        );
+        if (result.State == TransformMediaState.Transformed)
+        {
+            return AcceptedAtRoute(
                 "DownloadMediaItem",
                 new
                 {
@@ -147,8 +166,10 @@ public class MediaController(
                     blur,
                     format
                 }
-            )
-        );
+            );
+        }
+
+        return NotFound();
     }
 
     private static MediaItem TransformMedia(MediaEntry entry) =>

@@ -5,7 +5,7 @@ namespace HomeScreen.Service.Media.Infrastructure.Media;
 
 public class MediaTransformer(ILogger<MediaTransformer> logger, IMediaPaths mediaPaths) : IMediaTransformer
 {
-    public async Task<FileInfo> GetTransformedMedia(
+    public async Task<TransformState> TransformedMedia(
         Database.MediaDb.Entities.MediaEntry mediaEntry,
         MediaTransformOptions options,
         CancellationToken cancellationToken
@@ -19,7 +19,7 @@ public class MediaTransformer(ILogger<MediaTransformer> logger, IMediaPaths medi
                 mediaEntry.OriginalFile,
                 transformedInfo.FullName
             );
-            return transformedInfo;
+            return TransformState.Transformed;
         }
 
         logger.LogInformation(
@@ -50,6 +50,23 @@ public class MediaTransformer(ILogger<MediaTransformer> logger, IMediaPaths medi
             transformedInfo.FullName
         );
         await image.WriteAsync(transformedInfo, cancellationToken);
+        return TransformState.Transformed;
+    }
+
+    public FileInfo? GetTransformedMedia(
+        Database.MediaDb.Entities.MediaEntry mediaEntry,
+        MediaTransformOptions options
+    )
+    {
+        var transformedInfo = mediaPaths.GetCachePath(options, mediaEntry.OriginalHash);
+        if (!transformedInfo.Exists) return null;
+        
+        logger.LogInformation(
+            "{OriginalPath} has already been transformed at {TransformedPath}",
+            mediaEntry.OriginalFile,
+            transformedInfo.FullName
+        );
         return transformedInfo;
+
     }
 }

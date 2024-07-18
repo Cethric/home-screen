@@ -1,4 +1,5 @@
 ﻿using Grpc.Core;
+using HomeScreen.Service.Media.Entities;
 using HomeScreen.Service.Media.Infrastructure;
 using HomeScreen.Service.Media.Infrastructure.Media;
 
@@ -22,11 +23,55 @@ public class MediaService(ILogger<MediaService> logger, IMediaApi mediaApi) : Me
     public override async Task<MediaEntry> ToggleMedia(ToggleMediaRequest request, ServerCallContext context)
     {
         logger.LogInformation("Requested toggle media: {Id}", request.Id);
-        if (Guid.TryParse(request.Id, out var id))
+        if (!Guid.TryParse(request.Id, out var id))
         {
-            return await mediaApi.ToggleMedia(id, request.Enabled, context.CancellationToken);
+            throw new RpcException(new Status(StatusCode.InvalidArgument, $"The provided id is invalid."));
         }
 
-        throw new RpcException(new Status(StatusCode.InvalidArgument, $"The provided id is invalid."));
+        return await mediaApi.ToggleMedia(id, request.Enabled, context.CancellationToken);
     }
+
+    public override async Task<TransformMediaResponse> TransformMedia(
+        TransformMediaRequest request,
+        ServerCallContext context
+    )
+    {
+        logger.LogInformation("Requested transform media: {Id}", request.Id);
+        if (!Guid.TryParse(request.Id, out var id))
+        {
+            throw new RpcException(new Status(StatusCode.InvalidArgument, $"The provided id is invalid."));
+        }
+
+        var response = await mediaApi.TransformMedia(
+            id,
+            new MediaTransformOptions
+            {
+                Width = request.Width,
+                Height = request.Height,
+                Blur = request.Blur,
+                Format = TransformMediaFormatToMediaTransformOptionsFormat(request.MediaFormat),
+            },
+            context.CancellationToken
+        );
+        return new TransformMediaResponse { State = TransformStateToTransformMediaState(response) };
+    }
+
+    private static MediaTransformOptionsFormat TransformMediaFormatToMediaTransformOptionsFormat(
+        TransformMediaFormat format
+    ) =>
+        format switch
+        {
+            TransformMediaFormat.Avif => MediaTransformOptionsFormat.Avif,
+            TransformMediaFormat.WebP => MediaTransformOptionsFormat.WebP,
+            TransformMediaFormat.Jpeg => MediaTransformOptionsFormat.Jpeg,
+            _ => throw new ArgumentOutOfRangeException(nameof(format), format, "Invalid media format requested")
+        };
+
+    private static TransformMediaState TransformStateToTransformMediaState(TransformState response) =>
+        response switch
+        {
+            TransformState.Transformed => TransformMediaState.Transformed,
+            TransformState.NotFound => TransformMediaState.NotFound,
+            _ => throw new ArgumentOutOfRangeException(nameof(response), response, "Invalid transform response")
+        };
 }

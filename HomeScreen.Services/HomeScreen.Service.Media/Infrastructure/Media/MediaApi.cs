@@ -57,6 +57,25 @@ public class MediaApi(
         return TransformMediaEntry(mediaEntry);
     }
 
+    public async Task<TransformState> TransformMedia(
+        Guid mediaId,
+        MediaTransformOptions options,
+        CancellationToken cancellationToken
+    )
+    {
+        logger.LogInformation("Attempting to download media for {MediaId}", mediaId);
+        var mediaEntry = await context.MediaEntries.Where(x => x.MediaId == mediaId)
+            .FirstOrDefaultAsync(cancellationToken);
+        if (mediaEntry == null)
+        {
+            logger.LogInformation("No media found {MediaId} while try to transform media", mediaId);
+            return TransformState.NotFound;
+        }
+
+        logger.LogInformation("Attempting to get transformed media for {MediaId}", mediaId);
+        return await mediaTransformer.TransformedMedia(mediaEntry, options, cancellationToken);
+    }
+
     public async Task<FileInfo?> GetTransformedMedia(
         Guid mediaId,
         MediaTransformOptions options,
@@ -73,7 +92,7 @@ public class MediaApi(
         }
 
         logger.LogInformation("Attempting to get transformed media for {MediaId}", mediaId);
-        return await mediaTransformer.GetTransformedMedia(mediaEntry, options, cancellationToken);
+        return mediaTransformer.GetTransformedMedia(mediaEntry, options);
     }
 
     private static MediaEntry TransformMediaEntry(Database.MediaDb.Entities.MediaEntry entry) =>

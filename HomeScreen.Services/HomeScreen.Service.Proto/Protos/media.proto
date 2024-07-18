@@ -8,6 +8,8 @@ service Media {
   rpc RandomMedia(MediaRequest) returns (stream MediaEntry);
 
   rpc ToggleMedia(ToggleMediaRequest) returns (MediaEntry);
+
+  rpc TransformMedia(TransformMediaRequest) returns (TransformMediaResponse);
 }
 
 message MediaRequest {
@@ -31,4 +33,27 @@ message MediaEntry {
   double latitude = 5;
   string notes = 6;
   bool enabled = 7;
+}
+
+message TransformMediaRequest {
+  string id = 1;
+  int32 width = 2;
+  int32 height = 3;
+  bool blur = 4;
+  TransformMediaFormat media_format = 5;
+}
+
+message TransformMediaResponse {
+  TransformMediaState state = 1;
+}
+
+enum TransformMediaState {
+  NotFound = 0;
+  Transformed = 1;
+}
+
+enum TransformMediaFormat {
+  Jpeg = 0;
+  WebP = 1;
+  Avif = 2;
 }
