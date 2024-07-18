@@ -16,7 +16,8 @@
     "format:fix": "prettier . --write",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "clean": "rimraf dist/"
+    "clean": "rimraf dist/",
+    "bundle-analyze": "vite-bundle-visualizer -c vite.config.ts"
   },
   "dependencies": {
     "rimraf": "^6.0.1",
@@ -30,11 +31,9 @@
     "@vueuse/core": "^10.11.0",
     "@vueuse/motion": "^2.2.3",
     "@vueuse/metadata": "^10.11.0",
-    "@vueuse/head": "^2.0.0",
     "animate.css": "^4.1.1",
     "@homescreen/web-components-client": "workspace:*",
     "seedrandom": "^3.0.5",
-    "ol": "^9.2.4",
     "@vueuse/integrations": "^10.11.0",
     "async-validator": "^4.2.5",
     "change-case": "^4.1.2",
@@ -49,6 +48,7 @@
     "nprogress": "^0.2.0"
   },
   "devDependencies": {
+    "vite-bundle-visualizer": "^1.2.1",
     "@chromatic-com/storybook": "1.6.0",
     "@rushstack/eslint-patch": "^1.10.3",
     "@storybook/addon-essentials": "^8.1.11",

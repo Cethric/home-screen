@@ -20,9 +20,9 @@
       tag="div"
     >
       <div
-        v-for="image in activeItems"
-        v-show="image.id === images[index].id"
-        :key="image.id"
+        v-for="(imageId, idx) in activeItems"
+        v-show="idx === 0"
+        :key="imageId"
         class="absolute left-1/2 top-1/2 flex h-dvh w-dvw -translate-x-1/2 -translate-y-1/2 items-center justify-center p-2"
       >
         <Suspense>
@@ -35,7 +35,7 @@
             </div>
           </template>
           <FullscreenModal
-            :image="image"
+            :image="images[imageId]"
             :load-image="loadImage"
             @pause="() => pause()"
             @resume="() => resume()"
@@ -80,7 +80,7 @@ import LoadingSpinner from '@components/LoadingSpinner.vue';
 
 const props = withDefaults(
   defineProps<{
-    images: Image[];
+    images: Record<Image['id'], Image>;
     intervalSeconds?: number;
     weatherForecast: IWeatherForecast;
     direction?: Direction;
@@ -99,26 +99,29 @@ const props = withDefaults(
     intervalSeconds: 24,
   },
 );
-const hasImages = computed(() => props.images.length > 4);
+const length = computed(() => Object.keys(props.images).length);
+const hasImages = computed(() => length.value > 4);
 
 const now = useNow();
 const timeFormat = useDateFormat(now, 'HH:mm');
 const dayFormat = useDateFormat(now, 'MMMM Do YYYY');
 
 const index = ref<number>(0);
+const currentId = ref<Image['id']>();
+const nextId = ref<Image['id']>();
 
 const { pause, resume } = useIntervalFn(() => {
   if (hasImages.value) {
-    index.value = (index.value + 1) % (props.images.length ?? 1);
+    index.value = (index.value + 1) % (length.value ?? 1);
+    currentId.value = Object.keys(props.images)[index.value];
+    nextId.value = Object.keys(props.images)[(index.value + 1) % length.value];
   }
+  console.log('Next image', index.value, currentId.value, nextId.value);
 }, props.intervalSeconds * 1000);
 
 const activeItems = computed(() =>
-  hasImages.value
-    ? [
-        props.images[index.value],
-        props.images[(index.value + 1) % props.images.length],
-      ]
+  currentId.value && nextId.value && hasImages.value
+    ? [currentId.value, nextId.value]
     : [],
 );
 </script>

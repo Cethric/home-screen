@@ -44,7 +44,7 @@ const count = {
 defineProps<{
   activeSlideshow: Slideshow;
   forecast: WeatherForecast;
-  images: Image[];
+  images: Record<Image['id'], Image>;
   total: number;
 }>();
 </script>

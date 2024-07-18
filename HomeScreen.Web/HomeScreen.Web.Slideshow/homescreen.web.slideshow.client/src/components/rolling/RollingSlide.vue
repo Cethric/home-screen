@@ -16,25 +16,15 @@
         },
       ]"
     >
-      <Suspense>
-        <template #fallback>
-          <div class="relative size-full">
-            <LoadingSpinner
-              :variant="Variants.primary"
-              class="absolute size-full"
-            />
-          </div>
-        </template>
-        <RollingSlideModal
-          v-for="image in images"
-          :key="image.id"
-          :direction="direction"
-          :image="image"
-          :load-image="loadImage"
-          @pause="() => emits('pause')"
-          @resume="() => emits('resume')"
-        />
-      </Suspense>
+      <RollingSlideModal
+        v-for="image in images"
+        :key="image.id"
+        :direction="direction"
+        :image="image"
+        :load-image="loadImage"
+        @pause="() => emits('pause')"
+        @resume="() => emits('resume')"
+      />
     </div>
   </div>
 </template>
@@ -44,11 +34,9 @@ import {
   type Direction,
   Directions,
   type Image,
-  Variants,
 } from '@/helpers/component_properties';
 import { MediaTransformOptionsFormat } from '@/domain/api/homescreen-slideshow-api';
 import RollingSlideModal from '@/components/rolling/RollingSlideModal.vue';
-import LoadingSpinner from '@components/LoadingSpinner.vue';
 
 defineProps<{
   images: Image[];

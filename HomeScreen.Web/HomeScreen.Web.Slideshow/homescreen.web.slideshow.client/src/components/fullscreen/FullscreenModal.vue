@@ -1,15 +1,14 @@
 <template>
   <ModalDialog @hide="() => emits('resume')" @show="() => emits('pause')">
     <template #activator="props">
-      <picture v-bind="props">
-        <source :srcset="fullAvif" />
-        <source :srcset="fullWebP" />
-        <img
-          :src="loading"
-          alt="Example media"
-          class="size-auto max-h-full max-w-full rounded-md object-contain drop-shadow-md hover:shadow-inner active:drop-shadow-lg"
-        />
-      </picture>
+      <ResponsiveImageSuspenseAsync
+        :image="image"
+        :image-size="fullSize"
+        :load-image="loadImage"
+        :loading-size="loadingSize"
+        class="size-auto max-h-full max-w-full rounded-md object-contain drop-shadow-md hover:shadow-inner active:drop-shadow-lg"
+        v-bind="props"
+      />
     </template>
 
     <template #default>
@@ -45,6 +44,8 @@ import { MediaTransformOptionsFormat } from '@/domain/api/homescreen-slideshow-a
 import { useAsyncState, useWindowSize } from '@vueuse/core';
 import { toggleMedia } from '@/domain/media';
 import { LeafletMapAsync } from '@/components/LeafletMapAsync';
+import { computed } from 'vue';
+import { ResponsiveImageSuspenseAsync } from '@/components/ResponsiveImageSuspenseAsync';
 
 const props = defineProps<{
   image: Image;
@@ -71,25 +72,12 @@ const { execute, isLoading } = useAsyncState(
 
 const { width, height } = useWindowSize();
 
-const loading = await props.loadImage(
-  props.image.id,
-  Math.trunc(width.value / 3),
-  Math.trunc(height.value / 3),
-  true,
-  MediaTransformOptionsFormat.Jpeg,
-);
-const fullAvif = await props.loadImage(
-  props.image.id,
-  Math.trunc(width.value - 50),
-  Math.trunc(height.value - 50),
-  false,
-  MediaTransformOptionsFormat.Avif,
-);
-const fullWebP = await props.loadImage(
-  props.image.id,
-  Math.trunc(width.value - 50),
-  Math.trunc(height.value - 50),
-  false,
-  MediaTransformOptionsFormat.WebP,
-);
+const loadingSize = computed(() => ({
+  width: Math.floor(width.value / 4),
+  height: Math.floor(height.value / 4),
+}));
+const fullSize = computed(() => ({
+  width: Math.floor(width.value - 100),
+  height: Math.floor(height.value - 100),
+}));
 </script>

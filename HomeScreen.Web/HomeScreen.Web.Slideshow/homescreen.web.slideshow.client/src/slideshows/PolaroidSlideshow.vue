@@ -22,9 +22,9 @@
         tag="div"
       >
         <PolaroidModal
-          v-for="item in slice"
-          :key="item.image.id"
-          :item="item"
+          v-for="imageId in slice"
+          :key="imageId"
+          :item="makeItem(images[imageId])"
           :load-image="loadImage"
           @pause="() => pause()"
           @resume="() => resume()"
@@ -57,7 +57,7 @@ import LoadingSpinner from '@components/LoadingSpinner.vue';
 
 const props = withDefaults(
   defineProps<{
-    images: Image[];
+    images: Record<Image['id'], Image>;
     intervalSeconds?: number;
     weatherForecast: IWeatherForecast;
     direction?: Direction;
@@ -76,41 +76,48 @@ const props = withDefaults(
     count: 40,
   },
 );
-const hasImages = computed(() => props.images.length > props.total - 20);
-
-const items = computed(() =>
-  props.images.map((image) => {
-    const rng = seedrandom(image.id);
-    return {
-      image,
-      top: rangeRNG(-12.5, 87.5, rng),
-      left: rangeRNG(-6.25, 100, rng),
-      rotation: rangeRNG(-15, 15, rng),
-    };
-  }),
+const length = computed(() => Object.keys(props.images).length);
+const hasImages = computed(
+  () => length.value > Math.min(props.count + 10, props.total - 20),
 );
+
+const makeItem = (image: Image) => {
+  const rng = seedrandom(image.id);
+  return {
+    image,
+    top: rangeRNG(-12.5, 87.5, rng),
+    left: rangeRNG(-6.25, 100, rng),
+    rotation: rangeRNG(-15, 15, rng),
+  };
+};
 
 const head = ref<number>(0);
 const tail = ref<number>(0);
-const slice = computed(() =>
-  head.value < tail.value
-    ? [...items.value.slice(tail.value), ...items.value.slice(0, head.value)]
-    : items.value.slice(tail.value, head.value),
-);
+const slice = ref<Image['id'][]>([]);
+
+const makeSlice = () => {
+  const keys = Object.keys(props.images);
+  slice.value =
+    head.value < tail.value
+      ? [...keys.slice(tail.value), ...keys.slice(0, head.value)]
+      : keys.slice(tail.value, head.value);
+};
 
 watch(hasImages, (val, last) => {
   if (val && val !== last) {
     console.log('Update start images');
-    const start = range(0, items.value.length);
-    head.value = (start + props.count) % items.value.length;
+    const start = range(0, length.value);
+    head.value = (start + props.count) % length.value;
     tail.value = start;
+    makeSlice();
   }
 });
 
 const { pause, resume } = useIntervalFn(() => {
   if (hasImages.value) {
-    tail.value = (tail.value + 1) % items.value.length;
-    head.value = (tail.value + props.count) % items.value.length;
+    tail.value = (tail.value + 1) % length.value;
+    head.value = (tail.value + props.count) % length.value;
+    makeSlice();
   }
 }, props.intervalSeconds * 1000);
 </script>

@@ -11,21 +11,18 @@
         ]"
         v-bind="props"
       >
-        <picture>
-          <source :srcset="fullAvif" />
-          <source :srcset="fullWebP" />
-          <img
-            :class="[
-              'rounded-md object-contain drop-shadow-md hover:shadow-inner active:drop-shadow-lg',
-              {
-                'h-full w-auto max-w-fit': direction === Directions.horizontal,
-              },
-            ]"
-            :src="loading"
-            alt="Example media"
-            loading="lazy"
-          />
-        </picture>
+        <ResponsiveImageSuspenseAsync
+          :class="[
+            'rounded-md object-contain drop-shadow-md hover:shadow-inner active:drop-shadow-lg',
+            {
+              'h-full w-auto max-w-fit': direction === Directions.horizontal,
+            },
+          ]"
+          :image="image"
+          :image-size="fullSize"
+          :load-image="loadImage"
+          :loading-size="loadingSize"
+        />
       </div>
     </template>
 
@@ -61,8 +58,10 @@ import ModalDialog from '@components/ModalDialog.vue';
 import { MediaTransformOptionsFormat } from '@/domain/api/homescreen-slideshow-api';
 import { useWindowSize } from '@vueuse/core';
 import { LeafletMapAsync } from '@/components/LeafletMapAsync';
+import { computed } from 'vue';
+import { ResponsiveImageSuspenseAsync } from '@/components/ResponsiveImageSuspenseAsync';
 
-const props = defineProps<{
+defineProps<{
   image: Image;
   direction: Direction;
   loadImage: (
@@ -78,25 +77,12 @@ const emits = defineEmits<{ pause: []; resume: [] }>();
 
 const { width, height } = useWindowSize();
 
-const loading = await props.loadImage(
-  props.image.id,
-  Math.trunc(width.value / 3),
-  Math.trunc(height.value / 3),
-  true,
-  MediaTransformOptionsFormat.Jpeg,
-);
-const fullAvif = await props.loadImage(
-  props.image.id,
-  Math.trunc(width.value - 50),
-  Math.trunc(height.value - 50),
-  false,
-  MediaTransformOptionsFormat.Avif,
-);
-const fullWebP = await props.loadImage(
-  props.image.id,
-  Math.trunc(width.value - 50),
-  Math.trunc(height.value - 50),
-  false,
-  MediaTransformOptionsFormat.WebP,
-);
+const loadingSize = computed(() => ({
+  width: Math.max(Math.floor(width.value / 6), 200),
+  height: Math.max(Math.floor(height.value / 6), 200),
+}));
+const fullSize = computed(() => ({
+  width: Math.floor(width.value / 4),
+  height: Math.floor(height.value / 4),
+}));
 </script>

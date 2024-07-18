@@ -45,7 +45,7 @@ import { DateTimeWeatherComboAsync } from '@/components/DateTimeWeatherComboAsyn
 
 const props = withDefaults(
   defineProps<{
-    images: Image[];
+    images: Record<Image['id'], Image>;
     weatherForecast: IWeatherForecast;
     direction?: Direction;
     count?: number;
@@ -66,19 +66,24 @@ const props = withDefaults(
   },
 );
 
-const hasImages = computed(() => props.images.length > props.total - 20);
+const length = computed(() => Object.keys(props.images).length);
+const hasImages = computed(() => length.value > props.total - 20);
 
 const images = computed(() =>
-  hasImages.value ? props.images.slice(range(0, props.images.length), 75) : [],
+  hasImages.value
+    ? Object.values(props.images).slice(range(0, length.value - 100), 100)
+    : [],
 );
 
 const imageGroups = computed(() =>
   hasImages.value
     ? Array.from({ length: props.count }).map((_, idx) => ({
         images: images.value.slice(
-          (images.value.length / props.count) * idx,
-          (images.value.length / props.count) * idx +
-            images.value.length / props.count,
+          Math.trunc((images.value.length / props.count) * idx),
+          Math.trunc(
+            (images.value.length / props.count) * idx +
+              images.value.length / props.count,
+          ),
         ),
         id: uuid(),
         direction:

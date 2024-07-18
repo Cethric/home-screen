@@ -28,6 +28,7 @@ export const loadImage = async (
   height: number,
   blur: boolean,
   format: MediaTransformOptionsFormat,
+  signal?: AbortSignal,
 ): Promise<string> => {
   const response = await mediaApi.getTransformMediaItemUrl(
     imageId,
@@ -35,6 +36,7 @@ export const loadImage = async (
     height,
     blur,
     format,
+    signal,
   );
   return response.headers['location'];
 };

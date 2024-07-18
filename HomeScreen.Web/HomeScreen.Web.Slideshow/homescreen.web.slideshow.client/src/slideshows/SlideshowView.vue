@@ -3,7 +3,7 @@
     <SlideshowContainer
       :active-slideshow="activeSlideshow"
       :forecast="forecast"
-      :images="images"
+      :images="imageIds"
       :total="total"
     />
 
@@ -25,7 +25,7 @@
 <script async lang="ts" setup>
 import SlideshowContainer from '@/slideshows/SlideshowContainer.vue';
 import { useAsyncState, useBrowserLocation, useIntervalFn } from '@vueuse/core';
-import { nextTick, onBeforeUnmount, onMounted, ref } from 'vue';
+import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue';
 import { type Slideshow, Slideshows } from '@/slideshows/properties';
 import { choice } from '@/helpers/random';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
@@ -48,6 +48,12 @@ const activeSlideshow = ref<Slideshow>(choice(Object.values(Slideshows)));
 const forecast = await props.loadWeather();
 
 const images = ref<Image[]>([]);
+const imageIds = computed<Record<Image['id'], Image>>(() =>
+  images.value.reduce(
+    (p: Record<Image['id'], Image>, c: Image) => ({ ...p, [c['id']]: c }),
+    {},
+  ),
+);
 
 const abort = ref<AbortController>(new AbortController());
 const { isLoading, progress } = useNProgress(0, {

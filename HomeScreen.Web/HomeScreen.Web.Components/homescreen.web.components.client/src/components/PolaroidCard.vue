@@ -13,16 +13,14 @@
     :data-direction="direction"
   >
     <div class="grow">
-      <picture @click="onClick">
-        <source :srcset="fullAvif" />
-        <source :srcset="fullWebP" />
-        <img
-          :src="loading"
-          alt="Example media"
-          class="size-auto rounded-md object-contain drop-shadow-md"
-          loading="lazy"
-        />
-      </picture>
+      <ResponsiveImageSuspenseAsync
+        :image="image"
+        :image-size="fullSize"
+        :load-image="loadImage"
+        :loading-size="loadingSize"
+        class="size-auto rounded-md object-contain drop-shadow-md"
+        @click="onClick"
+      />
     </div>
     <div
       :class="[
@@ -45,21 +43,17 @@
 
 <script async lang="ts" setup>
 import { type Direction, Directions, type Image } from './properties';
-import { computedAsync, useElementSize } from '@vueuse/core';
-import { ref } from 'vue';
+import { useElementSize } from '@vueuse/core';
+import { computed, ref } from 'vue';
+import { type LoadImageCallback } from '../helpers/computedMedia';
+import { ResponsiveImageSuspenseAsync } from './ResponsiveImageSuspenseAsync';
 
-const props = withDefaults(
+withDefaults(
   defineProps<{
     direction?: Direction;
     image: Image;
     flat?: boolean;
-    loadImage: (
-      imageId: string,
-      width: number,
-      height: number,
-      blur: boolean,
-      format: 'Jpeg' | 'WebP' | 'Avif',
-    ) => Promise<string>;
+    loadImage: LoadImageCallback;
     onClick?: () => void;
   }>(),
   {
@@ -71,36 +65,14 @@ const props = withDefaults(
 const polaroid = ref<HTMLDivElement>();
 const { width, height } = useElementSize(polaroid);
 
-const loading = computedAsync(
-  async () =>
-    await props.loadImage(
-      props.image.id,
-      Math.trunc(width.value / 3),
-      Math.trunc(height.value / 3),
-      true,
-      'Jpeg',
-    ),
-);
-const fullAvif = computedAsync(
-  async () =>
-    await props.loadImage(
-      props.image.id,
-      Math.trunc(width.value),
-      Math.trunc(height.value),
-      false,
-      'Avif',
-    ),
-);
-const fullWebP = computedAsync(
-  async () =>
-    await props.loadImage(
-      props.image.id,
-      Math.trunc(width.value),
-      Math.trunc(height.value),
-      false,
-      'WebP',
-    ),
-);
+const loadingSize = computed(() => ({
+  width: Math.trunc(width.value / 3),
+  height: Math.trunc(height.value / 3),
+}));
+const fullSize = computed(() => ({
+  width: Math.trunc(width.value),
+  height: Math.trunc(height.value),
+}));
 </script>
 
 <style lang="scss" scoped>

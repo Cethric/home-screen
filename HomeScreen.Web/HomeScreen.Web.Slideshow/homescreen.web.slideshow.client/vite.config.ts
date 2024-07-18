@@ -59,6 +59,12 @@ export default defineConfig(({ command, mode }) => {
             import.meta.url,
           ),
         ),
+        '@components-src': fileURLToPath(
+          new URL(
+            './node_modules/@homescreen/web-components-client/src',
+            import.meta.url,
+          ),
+        ),
       },
     },
     server:
