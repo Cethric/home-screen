@@ -1,7 +1,8 @@
 <template>
   <ModalDialog @hide="() => emits('resume')" @show="() => emits('pause')">
     <template #activator="props">
-      <ResponsiveImageSuspenseAsync
+      <component
+        :is="ResponsiveImageSuspenseAsync"
         :image="image"
         :image-size="fullSize"
         :load-image="loadImage"

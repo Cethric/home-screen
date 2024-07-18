@@ -11,7 +11,8 @@
         ]"
         v-bind="props"
       >
-        <ResponsiveImageSuspenseAsync
+        <component
+          :is="ResponsiveImageSuspenseAsync"
           :class="[
             'rounded-md object-contain drop-shadow-md hover:shadow-inner active:drop-shadow-lg',
             {

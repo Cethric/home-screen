@@ -5,43 +5,29 @@
     :weather-forecast="weatherForecast"
   />
   <main v-if="hasImages" class="h-dvh w-dvw overflow-hidden">
-    <Suspense>
-      <template #fallback>
-        <div class="relative size-full">
-          <LoadingSpinner
-            :variant="Variants.primary"
-            class="absolute size-full"
-          />
-        </div>
-      </template>
-      <transition-group
-        :duration="{ enter: 2 * 1000, leave: 3 * 1000 }"
-        class="relative"
-        enter-active-class="animate__animated animate__stampIn"
-        leave-active-class="animate__animated animate__shrinkOut"
-        tag="div"
-      >
-        <PolaroidModal
-          v-for="imageId in slice"
-          :key="imageId"
-          :item="makeItem(images[imageId])"
-          :load-image="loadImage"
-          @pause="() => pause()"
-          @resume="() => resume()"
-        />
-      </transition-group>
-    </Suspense>
+    <transition-group
+      :duration="{ enter: 2 * 1000, leave: 3 * 1000 }"
+      class="relative"
+      enter-active-class="animate__animated animate__stampIn"
+      leave-active-class="animate__animated animate__shrinkOut"
+      tag="div"
+    >
+      <PolaroidModal
+        v-for="imageId in slice"
+        :key="imageId"
+        :item="makeItem(images[imageId])"
+        :load-image="loadImage"
+        @pause="() => pause()"
+        @resume="() => resume()"
+      />
+    </transition-group>
   </main>
   <FullscreenMainLoader v-else />
 </template>
 
 <script lang="ts" setup>
 import { computed, ref, watch } from 'vue';
-import {
-  type Direction,
-  type Image,
-  Variants,
-} from '@/helpers/component_properties';
+import { type Direction, type Image } from '@/helpers/component_properties';
 import { useIntervalFn } from '@vueuse/core';
 import {
   type IWeatherForecast,
@@ -53,7 +39,6 @@ import seedrandom from 'seedrandom';
 import PolaroidModal from '@/components/PolaroidModal.vue';
 import FullscreenMainLoader from '@/components/FullscreenMainLoader.vue';
 import { DateTimeWeatherComboAsync } from '@/components/DateTimeWeatherComboAsync';
-import LoadingSpinner from '@components/LoadingSpinner.vue';
 
 const props = withDefaults(
   defineProps<{

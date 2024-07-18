@@ -1,5 +1,5 @@
 import { fileURLToPath, URL } from 'node:url';
-import { defineConfig } from 'vite';
+import { defineConfig, UserConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import fs from 'node:fs';
 import { env } from 'node:process';
@@ -50,6 +50,33 @@ export default defineConfig(({ command, mode }) => {
 
   return {
     plugins: [vue()],
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            fontawesome: [
+              '@fortawesome/free-brands-svg-icons',
+              '@fortawesome/free-regular-svg-icons',
+              '@fortawesome/free-solid-svg-icons',
+              '@fortawesome/vue-fontawesome',
+            ],
+            // 'async-validator': ['async-validator'],
+            // 'change-case': ['change-case'],
+            'universal-cookie': ['universal-cookie'],
+            // drauu: ['drauu'],
+            // 'focus-trap': ['focus-trap'],
+            // 'fuse.js': ['fuse.js'],
+            // 'idb-keyval': ['idb-keyval'],
+            'jwt-decode': ['jwt-decode'],
+            qrcode: ['qrcode'],
+            sortablejs: ['sortablejs'],
+            nprogress: ['nprogress'],
+            vue: ['vue'],
+            luxon: ['luxon'],
+          },
+        },
+      },
+    },
     resolve: {
       alias: {
         '@': fileURLToPath(new URL('./src', import.meta.url)),
@@ -85,5 +112,5 @@ export default defineConfig(({ command, mode }) => {
             },
           }
         : {},
-  };
+  } satisfies UserConfig;
 });

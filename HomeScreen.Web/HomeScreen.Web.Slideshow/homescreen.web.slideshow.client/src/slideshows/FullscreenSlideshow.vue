@@ -25,22 +25,12 @@
         :key="imageId"
         class="absolute left-1/2 top-1/2 flex h-dvh w-dvw -translate-x-1/2 -translate-y-1/2 items-center justify-center p-2"
       >
-        <Suspense>
-          <template #fallback>
-            <div class="relative size-full">
-              <LoadingSpinner
-                :variant="Variants.primary"
-                class="absolute size-full"
-              />
-            </div>
-          </template>
-          <FullscreenModal
-            :image="images[imageId]"
-            :load-image="loadImage"
-            @pause="() => pause()"
-            @resume="() => resume()"
-          />
-        </Suspense>
+        <FullscreenModal
+          :image="images[imageId]"
+          :load-image="loadImage"
+          @pause="() => pause()"
+          @resume="() => resume()"
+        />
       </div>
     </transition-group>
   </main>
@@ -73,7 +63,7 @@ import {
   type IWeatherForecast,
   MediaTransformOptionsFormat,
 } from '@/domain/api/homescreen-slideshow-api';
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useDateFormat, useIntervalFn, useNow } from '@vueuse/core';
 import FullscreenModal from '@/components/fullscreen/FullscreenModal.vue';
 import LoadingSpinner from '@components/LoadingSpinner.vue';
@@ -109,6 +99,14 @@ const dayFormat = useDateFormat(now, 'MMMM Do YYYY');
 const index = ref<number>(0);
 const currentId = ref<Image['id']>();
 const nextId = ref<Image['id']>();
+
+watch(hasImages, (val, last) => {
+  if (val && val !== last) {
+    console.log('Update start images');
+    currentId.value = Object.keys(props.images)[index.value];
+    nextId.value = Object.keys(props.images)[(index.value + 1) % length.value];
+  }
+});
 
 const { pause, resume } = useIntervalFn(() => {
   if (hasImages.value) {

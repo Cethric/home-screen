@@ -37,17 +37,7 @@
             </PolaroidCard>
           </template>
           <template #default>
-            <Suspense>
-              <template #fallback>
-                <div class="relative size-full min-h-96 min-w-96">
-                  <LoadingSpinner
-                    :variant="Variants.primary"
-                    class="absolute size-full"
-                  />
-                </div>
-              </template>
-              <LargeImage :image="item.image" :load-image="loadImage" />
-            </Suspense>
+            <LargeImage :image="item.image" :load-image="loadImage" />
           </template>
         </ModalDialog>
       </template>
@@ -56,7 +46,7 @@
 </template>
 
 <script lang="ts" setup>
-import { Directions, Variants } from '@/helpers/component_properties';
+import { Directions } from '@/helpers/component_properties';
 import LargeImage from '@/components/LargeImage.vue';
 import PolaroidCard from '@components/PolaroidCard.vue';
 import ModalDialog from '@components/ModalDialog.vue';
@@ -64,7 +54,6 @@ import {
   MediaItem,
   MediaTransformOptionsFormat,
 } from '@/domain/api/homescreen-slideshow-api';
-import LoadingSpinner from '@components/LoadingSpinner.vue';
 import { LeafletMapAsync } from '@/components/LeafletMapAsync';
 
 defineProps<{
