@@ -34,6 +34,7 @@ var media = builder.AddProject<HomeScreen_Service_Media>("homescreen-service-med
     .WithReference(mediaDb)
     .WithEnvironment("MediaSourceDir", mediaSource)
     .WithEnvironment("MediaCacheDir", mediaCache)
+    .WithEnvironment("MappingService", "Nominatim")
     .WithEnvironment("AZURE_MAPS_SUBSCRIPTION_KEY", mapsKey)
     .WithEnvironment("AZURE_CLIENT_ID", clientId)
     .WithAnnotation(new ContainerMountAnnotation("cache", "/cache", ContainerMountType.Volume, false))

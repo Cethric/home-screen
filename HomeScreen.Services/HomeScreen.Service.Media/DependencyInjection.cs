@@ -8,30 +8,64 @@ namespace HomeScreen.Service.Media;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddInfrastructure(this IServiceCollection services) =>
-        services.AddMediaServices().AddLocationServices();
+    public static IHostApplicationBuilder AddInfrastructure(this IHostApplicationBuilder builder) =>
+        builder.AddMediaServices().AddLocationServices();
 
-    private static IServiceCollection AddMediaServices(this IServiceCollection services)
+    private static IHostApplicationBuilder AddMediaServices(this IHostApplicationBuilder builder)
     {
-        services.AddScoped<IMediaApi, MediaApi>();
-        services.AddScoped<IMediaHasher, MediaHasher>();
-        services.AddScoped<IMediaPaths, MediaPaths>();
-        services.AddScoped<IMediaProcessor, MediaProcessor>();
-        services.AddScoped<IMediaTransformer, MediaTransformer>();
+        builder.Services.AddScoped<IMediaApi, MediaApi>();
+        builder.Services.AddScoped<IMediaHasher, MediaHasher>();
+        builder.Services.AddScoped<IMediaPaths, MediaPaths>();
+        builder.Services.AddScoped<IMediaProcessor, MediaProcessor>();
+        builder.Services.AddScoped<IMediaTransformer, MediaTransformer>();
 
-        return services;
+        return builder;
     }
 
-    private static IServiceCollection AddLocationServices(this IServiceCollection services)
+    private static IHostApplicationBuilder AddLocationServices(this IHostApplicationBuilder builder) =>
+        builder.AddLocationService(builder.Configuration.GetValue<MappingService>("MappingService"));
+
+    private static IHostApplicationBuilder AddLocationService(
+        this IHostApplicationBuilder builder,
+        MappingService service
+    ) =>
+        service switch
+        {
+            MappingService.AzureMaps => builder.AddAzureLocationService(),
+            MappingService.Blank => builder.AddBlankLocationService(),
+            MappingService.Nominatim => builder.AddNominatimLocationService(),
+            _ => throw new ArgumentOutOfRangeException(nameof(service), service, "Invalid service name provided")
+        };
+
+    private static IHostApplicationBuilder AddAzureLocationService(this IHostApplicationBuilder builder)
     {
-        services.AddSingleton<AzureKeyCredential>(
+        builder.Services.AddSingleton(
+            new AzureConfig
+            {
+                MapSecretKey = builder.Configuration.GetValue<string>("AZURE_MAPS_SUBSCRIPTION_KEY") ?? string.Empty
+            }
+        );
+        builder.Services.AddSingleton<AzureKeyCredential>(
             (sp) => new AzureKeyCredential(sp.GetRequiredService<AzureConfig>().MapSecretKey)
         );
-        services.AddSingleton<MapsSearchClient>(
+        builder.Services.AddSingleton<MapsSearchClient>(
             (sp) => new MapsSearchClient(sp.GetRequiredService<AzureKeyCredential>())
         );
-        services.AddScoped<ILocationService, LocationService>();
+        builder.Services.AddScoped<ILocationService, AzureLocationService>();
 
-        return services;
+        return builder;
+    }
+
+    private static IHostApplicationBuilder AddBlankLocationService(this IHostApplicationBuilder builder)
+    {
+        builder.Services.AddScoped<ILocationService, BlankLocationService>();
+        return builder;
+    }
+
+    private static IHostApplicationBuilder AddNominatimLocationService(this IHostApplicationBuilder builder)
+    {
+        builder.Services.AddHttpClient("Nominatim");
+        builder.Services.AddScoped<ILocationService, NominatimLocationService>();
+        return builder;
     }
 }

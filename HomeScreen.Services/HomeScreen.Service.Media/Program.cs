@@ -11,7 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults(GitVersionInformation.InformationalVersion);
 builder.AddMediaDb();
-
+builder.AddInfrastructure();
 
 builder.Services.AddSingleton(
     new MediaDirectories
@@ -23,15 +23,8 @@ builder.Services.AddSingleton(
                         Path.Combine(Path.GetTempPath(), "DashHome", "Cache")
     }
 );
-builder.Services.AddSingleton(
-    new AzureConfig
-    {
-        MapSecretKey = builder.Configuration.GetValue<string>("AZURE_MAPS_SUBSCRIPTION_KEY") ?? string.Empty
-    }
-);
 
 // Add services to the container.
-builder.Services.AddInfrastructure();
 builder.Services.AddGrpc(options => { options.EnableDetailedErrors = true; });
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddControllers()

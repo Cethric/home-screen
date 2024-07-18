@@ -5,8 +5,8 @@ using Microsoft.Extensions.Caching.Distributed;
 
 namespace HomeScreen.Service.Media.Infrastructure.Location;
 
-public class LocationService(
-    ILogger<LocationService> logger,
+public class AzureLocationService(
+    ILogger<AzureLocationService> logger,
     IDistributedCache distributedCache,
     MapsSearchClient mapsSearchClient
 ) : ILocationService
