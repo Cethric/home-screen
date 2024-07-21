@@ -17,8 +17,8 @@ public class MediaProcessor(ILogger<MediaProcessor> logger, IMediaPaths mediaPat
         try
         {
             logger.LogInformation("Attempting to process media entry {FileName} - {Hash}", file.Name, hash);
-            using var image = new MagickImage();
-            await image.ReadAsync(file, cancellationToken);
+            var stream = await File.ReadAllBytesAsync(file.FullName, cancellationToken);
+            using var image = new MagickImage(stream);
             var profile = image.GetExifProfile();
             var entry = new Database.MediaDb.Entities.MediaEntry(file, hash) { Enabled = true };
 

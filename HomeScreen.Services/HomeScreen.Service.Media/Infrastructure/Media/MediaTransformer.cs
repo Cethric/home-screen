@@ -27,20 +27,65 @@ public class MediaTransformer(ILogger<MediaTransformer> logger, IMediaPaths medi
             mediaEntry.OriginalFile,
             transformedInfo.FullName
         );
-        var info = new FileInfo(mediaEntry.OriginalFile);
-        using var image = new MagickImage();
-        await image.ReadAsync(info, cancellationToken);
+        var stream = await File.ReadAllBytesAsync(mediaEntry.OriginalFile, cancellationToken);
+        using var image = new MagickImage(stream);
         image.AutoOrient();
 
         if (options.Blur)
         {
-            image.FilterType = FilterType.Gaussian;
+            logger.LogInformation(
+                "Blurring Image {TransformPath} to max size {Width}x{Height}",
+                transformedInfo.FullName,
+                options.Width,
+                options.Height
+            );
+            image.FilterType = options is { Width: < 250 } or { Height: < 250 }
+                ? FilterType.Point
+                : FilterType.Gaussian;
+            image.Depth = 16;
+            image.Thumbnail(options.Width / 3, options.Height / 3);
+            image.MedianFilter(4);
             image.Blur(0, 5);
+            image.Resize(options.Width, options.Height);
+            logger.LogInformation(
+                "Blurred Image {TransformPath} to size {Width}x{Height} - requested {RequestedWidth}x{RequestedHeight}",
+                transformedInfo.FullName,
+                image.Width,
+                image.Height,
+                options.Width,
+                options.Height
+            );
         }
         else
         {
-            image.InterpolativeResize(options.Width, options.Height, PixelInterpolateMethod.Mesh);
+            image.FilterType = options is { Width: < 250 } or { Height: < 250 }
+                ? FilterType.Point
+                : FilterType.LanczosRadius;
+            image.Depth = 32;
+
+            logger.LogInformation(
+                "Resizing Image {TransformPath} to max size {Width}x{Height}",
+                transformedInfo.FullName,
+                options.Width,
+                options.Height
+            );
+            image.InterpolativeResize(
+                options.Width,
+                options.Height,
+                options is { Width: < 250 } or { Height: < 250 }
+                    ? PixelInterpolateMethod.Nearest
+                    : PixelInterpolateMethod.Mesh
+            );
+            logger.LogInformation(
+                "Resized Image {TransformPath} to size {Width}x{Height} - requested {RequestedWidth}x{RequestedHeight}",
+                transformedInfo.FullName,
+                image.Width,
+                image.Height,
+                options.Width,
+                options.Height
+            );
         }
+
 
         image.Format = options.Format.TransformFormatToMagickFormat();
 
@@ -53,20 +98,16 @@ public class MediaTransformer(ILogger<MediaTransformer> logger, IMediaPaths medi
         return TransformState.Transformed;
     }
 
-    public FileInfo? GetTransformedMedia(
-        Database.MediaDb.Entities.MediaEntry mediaEntry,
-        MediaTransformOptions options
-    )
+    public FileInfo? GetTransformedMedia(Database.MediaDb.Entities.MediaEntry mediaEntry, MediaTransformOptions options)
     {
         var transformedInfo = mediaPaths.GetCachePath(options, mediaEntry.OriginalHash);
         if (!transformedInfo.Exists) return null;
-        
+
         logger.LogInformation(
             "{OriginalPath} has already been transformed at {TransformedPath}",
             mediaEntry.OriginalFile,
             transformedInfo.FullName
         );
         return transformedInfo;
-
     }
 }
