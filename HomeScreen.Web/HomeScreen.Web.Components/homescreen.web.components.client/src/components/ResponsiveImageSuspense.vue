@@ -9,7 +9,6 @@
       :image="image"
       :image-size="imageSize"
       :load-image="loadImage"
-      :loading-size="loadingSize"
       v-bind="$attrs"
     />
   </Suspense>
@@ -22,12 +21,11 @@ import ResponsiveImage from './ResponsiveImage.vue';
 import type {
   ComputedMediaSize,
   LoadImageCallback,
-} from '@/helpers/computedMedia';
+} from '../helpers/computedMedia';
 
 defineProps<{
   image: Image;
   loadImage: LoadImageCallback;
-  loadingSize: ComputedMediaSize;
   imageSize: ComputedMediaSize;
 }>();
 </script>

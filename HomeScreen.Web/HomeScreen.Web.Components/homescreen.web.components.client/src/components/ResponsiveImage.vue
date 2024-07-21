@@ -24,14 +24,13 @@ import { computedAsync } from '@vueuse/core';
 const props = defineProps<{
   image: Image;
   loadImage: LoadImageCallback;
-  loadingSize: ComputedMediaSize;
   imageSize: ComputedMediaSize;
 }>();
 
 const loading = await props.loadImage(
   props.image.id,
-  Math.max(props.loadingSize.width, 200),
-  Math.max(props.loadingSize.height, 200),
+  Math.max(props.imageSize.width, 200),
+  Math.max(props.imageSize.height, 200),
   true,
   'Jpeg',
 );

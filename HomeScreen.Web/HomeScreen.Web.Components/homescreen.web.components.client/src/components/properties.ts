@@ -20,7 +20,7 @@ export interface Image {
   enabled: boolean;
   location?: {
     name: string;
-    latitude: string;
-    longitude: string;
+    latitude: number;
+    longitude: number;
   };
 }

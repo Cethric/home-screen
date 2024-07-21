@@ -12,31 +12,35 @@
     ]"
     :data-direction="direction"
   >
-    <div class="grow">
-      <ResponsiveImageSuspenseAsync
+    <div class="max-h-100 max-w-100 grow">
+      <component
+        :is="ResponsiveImageSuspenseAsync"
         :image="image"
-        :image-size="fullSize"
+        :image-size="imageSize"
         :load-image="loadImage"
-        :loading-size="loadingSize"
-        class="size-auto rounded-md object-contain drop-shadow-md"
+        class="size-full max-h-100 max-w-100 rounded-md object-contain drop-shadow-md"
         @click="onClick"
       />
     </div>
     <div
       :class="[
-        'w-0 text-balance px-2 py-3',
+        'flex w-0 items-center justify-center overflow-y-auto text-balance px-2 py-3',
         {
           'min-w-full text-left': direction === Directions.vertical,
-          'min-w-64 text-center': direction === Directions.horizontal,
+          'h-full min-w-96 text-center': direction === Directions.horizontal,
         },
       ]"
     >
-      <p v-if="image.location?.name">Location: {{ image.location?.name }}</p>
-      <p>
-        Time: {{ image.dateTime.toFormat('DDDD') }}
-        {{ image.dateTime.toFormat('TTT') }}
-      </p>
-      <slot :image="image" name="details" />
+      <div class="flex grow flex-col items-center justify-center gap-2">
+        <p v-if="image.location?.name">Location: {{ image.location?.name }}</p>
+        <p>
+          Time: {{ image.dateTime.toFormat('DDDD') }}
+          {{ image.dateTime.toFormat('TTT') }}
+        </p>
+        <div class="flex grow flex-col items-center justify-center gap-2">
+          <slot :image="image" name="details" />
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -63,13 +67,13 @@ withDefaults(
 );
 
 const polaroid = ref<HTMLDivElement>();
-const { width, height } = useElementSize(polaroid);
+const { width, height } = useElementSize(
+  polaroid,
+  { width: 500, height: 500 },
+  {},
+);
 
-const loadingSize = computed(() => ({
-  width: Math.trunc(width.value / 3),
-  height: Math.trunc(height.value / 3),
-}));
-const fullSize = computed(() => ({
+const imageSize = computed(() => ({
   width: Math.trunc(width.value),
   height: Math.trunc(height.value),
 }));
@@ -79,41 +83,15 @@ const fullSize = computed(() => ({
 .polaroid {
   &[data-direction='horizontal'] {
     @media (orientation: landscape) {
-      max-width: 50dvw;
+      max-width: 60dvw;
     }
     @media (orientation: portrait) {
-      max-width: 80dvw;
-    }
-
-    picture {
-      img {
-        @media (orientation: landscape) {
-          max-height: 50dvh;
-          max-width: 50dvw;
-        }
-        @media (orientation: portrait) {
-          max-height: 65dvh;
-          max-width: 80dvw;
-        }
-      }
+      max-width: 90dvw;
     }
   }
 
   &[data-direction='vertical'] {
     max-width: 27rem;
-
-    picture {
-      img {
-        max-height: 24rem;
-        max-width: 24rem;
-      }
-    }
-  }
-
-  picture {
-    img {
-      min-width: 20rem;
-    }
   }
 }
 </style>

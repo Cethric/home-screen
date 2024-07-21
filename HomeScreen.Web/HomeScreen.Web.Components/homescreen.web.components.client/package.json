@@ -74,5 +74,12 @@
   "engines": {
     "node": ">=20",
     "pnpm": ">=9"
-  }
+  },
+  "main": "dist/web-components-client.cjs.js",
+  "unpkg": "dist/web-components-client.umd.js",
+  "module": "web-components-client.es.js",
+  "files": [
+    "dist/"
+  ],
+  "types": "./dist/src/lib.d.ts"
 }

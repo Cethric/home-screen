@@ -3,7 +3,7 @@
     <dialog
       v-if="isOpen"
       ref="dialog"
-      class="fixed z-50 m-0 h-dvh w-dvw border-none p-0 outline-none open:grid"
+      class="fixed inset-0 z-50 m-0 h-dvh w-dvw border-none p-0 outline-none open:grid"
       @close="() => emits('hide')"
     >
       <div
@@ -27,7 +27,9 @@
             </button>
           </div>
         </header>
-        <main class="flex flex-col items-center justify-center pt-2">
+        <main
+          class="flex max-w-modal flex-col items-center justify-center overflow-auto pt-2"
+        >
           <slot name="default" @click="closeDialog" />
         </main>
         <footer class="flex flex-row pt-2">
