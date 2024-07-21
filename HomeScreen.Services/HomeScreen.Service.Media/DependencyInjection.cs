@@ -2,6 +2,10 @@
 using Azure.Maps.Search;
 using HomeScreen.Service.Media.Configuration;
 using HomeScreen.Service.Media.Infrastructure.Location;
+using HomeScreen.Service.Media.Infrastructure.Location.Azure;
+using HomeScreen.Service.Media.Infrastructure.Location.NominatimLocationService;
+using HomeScreen.Service.Media.Infrastructure.Location.NominatimLocationService.Generated.Clients;
+using HomeScreen.Service.Media.Infrastructure.Location.NominatimLocationService.Generated.Entities;
 using HomeScreen.Service.Media.Infrastructure.Media;
 
 namespace HomeScreen.Service.Media;
@@ -51,6 +55,7 @@ public static class DependencyInjection
         builder.Services.AddSingleton<MapsSearchClient>(
             (sp) => new MapsSearchClient(sp.GetRequiredService<AzureKeyCredential>())
         );
+        builder.Services.AddScoped<IAzureMapsSearchService, AzureMapsSearchService>();
         builder.Services.AddScoped<ILocationService, AzureLocationService>();
 
         return builder;
@@ -65,6 +70,12 @@ public static class DependencyInjection
     private static IHostApplicationBuilder AddNominatimLocationService(this IHostApplicationBuilder builder)
     {
         builder.Services.AddHttpClient("Nominatim");
+        builder.Services.AddScoped<INominatimClient, NominatimClient>(
+            sp => new NominatimClient(sp.GetRequiredService<IHttpClientFactory>().CreateClient("Nominatim"))
+            {
+                BaseUrl = "https://nominatim.geocoding.ai"
+            }
+        );
         builder.Services.AddScoped<ILocationService, NominatimLocationService>();
         return builder;
     }

@@ -29,13 +29,13 @@
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="Azure.Maps.Search" Version="1.0.0-beta.5" />
-        <PackageReference Include="Grpc.AspNetCore" Version="2.63.0" />
-        <PackageReference Include="Magick.NET.Core" Version="13.9.1" />
-        <PackageReference Include="Magick.NET-Q16-HDRI-AnyCPU" Version="13.9.1" />
+        <PackageReference Include="Grpc.AspNetCore" Version="2.64.0" />
+        <PackageReference Include="Magick.NET.Core" Version="13.10.0" />
+        <PackageReference Include="Magick.NET-Q16-HDRI-AnyCPU" Version="13.10.0" />
         <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="8.0.0" />
         <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.0" />
-        <PackageReference Include="NSwag.AspNetCore" Version="14.0.8" />
-        <PackageReference Include="NSwag.MSBuild" Version="14.0.8">
+        <PackageReference Include="NSwag.AspNetCore" Version="14.1.0" />
+        <PackageReference Include="NSwag.MSBuild" Version="14.1.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
@@ -54,5 +54,11 @@
 
     <Target Name="NSwag" AfterTargets="PostBuildEvent" Condition=" '$(Configuration)' == 'Debug' ">
         <Exec WorkingDirectory="$(ProjectDir)" EnvironmentVariables="ASPNETCORE_ENVIRONMENT=Development" Command="$(NSwagExe_Net80) run media.nswag /variables:Configuration=SwaggerBuild"/>
+    </Target>
+
+    <Target Name="NSwag" BeforeTargets="PreBuildEvent">
+        <Exec WorkingDirectory="$(ProjectDir)"
+              EnvironmentVariables="ASPNETCORE_ENVIRONMENT=Development"
+              Command="$(NSwagExe_Net80) run Infrastructure/Location/NominatimLocationService/nominatim.nswag /variables:Configuration=$(Configuration)"/>
     </Target>
 </Project>

@@ -3,19 +3,19 @@ using Azure.Maps;
 using Azure.Maps.Search;
 using Microsoft.Extensions.Caching.Distributed;
 
-namespace HomeScreen.Service.Media.Infrastructure.Location;
+namespace HomeScreen.Service.Media.Infrastructure.Location.Azure;
 
 public class AzureLocationService(
     ILogger<AzureLocationService> logger,
     IDistributedCache distributedCache,
-    MapsSearchClient mapsSearchClient
+    IAzureMapsSearchService searchService
 ) : ILocationService
 {
     public async Task<string> SearchForLocation(
         double longitude,
         double latitude,
         double altitude,
-        CancellationToken cancellationToken
+        CancellationToken cancellationToken = default
     )
     {
         logger.LogInformation(
@@ -39,7 +39,7 @@ public class AzureLocationService(
             return label;
         }
 
-        var response = await mapsSearchClient.ReverseSearchAddressAsync(
+        var response = await searchService.ReverseSearchAddressAsync(
             new ReverseSearchOptions
             {
                 Coordinates = new GeoPosition(longitude, latitude, altitude),
@@ -50,24 +50,23 @@ public class AzureLocationService(
             cancellationToken
         );
 
-        if (!response.HasValue || response.Value.Addresses.Count == 0) return "Unknown location";
-        var address = response.Value.Addresses[0];
+        if (response is null || response.Addresses.Count == 0) return ILocationService.UnknownLocation;
+        var address = response.Addresses.FirstOrDefault();
+        if (address is null) return ILocationService.UnknownLocation;
 
         var formatted = string.Join(
                 " ",
                 new HashSet<string>
                 {
-                    address.Address.StreetName ?? string.Empty,
-                    address.Address.MunicipalitySubdivision ?? string.Empty,
-                    address.Address.Municipality ?? string.Empty,
-                    address.Address.CountryTertiarySubdivision ?? string.Empty,
-                    address.Address.CountrySecondarySubdivision ?? string.Empty,
-                    (address.Address.CountrySecondarySubdivision ?? string.Empty).Contains(
-                        address.Address.CountrySubdivision ?? string.Empty
-                    )
+                    address.StreetName,
+                    address.MunicipalitySubdivision,
+                    address.Municipality,
+                    address.CountryTertiarySubdivision,
+                    address.CountrySecondarySubdivision,
+                    (address.CountrySecondarySubdivision).Contains(address.CountrySubdivision)
                         ? string.Empty
-                        : address.Address.CountrySubdivision ?? string.Empty,
-                    address.Address.Country ?? string.Empty
+                        : address.CountrySubdivision,
+                    address.Country
                 }.Where(x => !string.IsNullOrEmpty(x))
             )
             .Trim();
