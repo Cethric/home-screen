@@ -3,6 +3,7 @@ import {
   type MediaItem,
   MediaTransformOptionsFormat,
 } from '@/domain/api/homescreen-slideshow-api';
+import type { LoadImageCallback } from '@homescreen/web-components-client/src/index';
 
 const mediaApi = new StreamingMediaApi();
 
@@ -40,6 +41,8 @@ export const loadImage = async (
   );
   return response.headers['location'];
 };
+export const loadImageCallback: LoadImageCallback =
+  loadImage as LoadImageCallback;
 
 export const toggleMedia = async (
   imageId: string,

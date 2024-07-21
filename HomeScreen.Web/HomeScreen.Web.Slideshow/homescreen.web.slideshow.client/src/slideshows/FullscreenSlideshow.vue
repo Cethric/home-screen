@@ -34,9 +34,7 @@
       </div>
     </transition-group>
   </main>
-  <main v-else class="h-dvh w-dvw">
-    <LoadingSpinner :variant="Variants.primary" class="absolute size-full" />
-  </main>
+  <FullscreenMainLoader v-else />
   <footer
     class="fixed inset-x-0 bottom-0 z-50 flex justify-center align-middle"
   >
@@ -57,16 +55,13 @@
 import {
   type Direction,
   type Image,
-  Variants,
-} from '@/helpers/component_properties';
-import {
-  type IWeatherForecast,
-  MediaTransformOptionsFormat,
-} from '@/domain/api/homescreen-slideshow-api';
+  type LoadImageCallback,
+} from '@homescreen/web-components-client/src/index';
+import { type IWeatherForecast } from '@/domain/api/homescreen-slideshow-api';
 import { computed, ref, watch } from 'vue';
 import { useDateFormat, useIntervalFn, useNow } from '@vueuse/core';
 import FullscreenModal from '@/components/fullscreen/FullscreenModal.vue';
-import LoadingSpinner from '@components/LoadingSpinner.vue';
+import FullscreenMainLoader from '@/components/FullscreenMainLoader.vue';
 
 const props = withDefaults(
   defineProps<{
@@ -75,13 +70,7 @@ const props = withDefaults(
     weatherForecast: IWeatherForecast;
     direction?: Direction;
     count?: number;
-    loadImage: (
-      imageId: string,
-      width: number,
-      height: number,
-      blur: boolean,
-      format: MediaTransformOptionsFormat,
-    ) => Promise<string>;
+    loadImage: LoadImageCallback;
     total: number;
   }>(),
   {

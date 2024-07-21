@@ -27,11 +27,9 @@ import {
   type Direction,
   Directions,
   type Image,
-} from '@/helpers/component_properties';
-import {
-  type IWeatherForecast,
-  MediaTransformOptionsFormat,
-} from '@/domain/api/homescreen-slideshow-api';
+  type LoadImageCallback,
+} from '@homescreen/web-components-client/src/index';
+import { type IWeatherForecast } from '@/domain/api/homescreen-slideshow-api';
 import { computed } from 'vue';
 import RollingSlider from '@/components/rolling/RollingSlider.vue';
 import {
@@ -50,13 +48,7 @@ const props = withDefaults(
     direction?: Direction;
     count?: number;
     durationSeconds?: number;
-    loadImage: (
-      imageId: string,
-      width: number,
-      height: number,
-      blur: boolean,
-      format: MediaTransformOptionsFormat,
-    ) => Promise<string>;
+    loadImage: LoadImageCallback;
     total: number;
   }>(),
   {

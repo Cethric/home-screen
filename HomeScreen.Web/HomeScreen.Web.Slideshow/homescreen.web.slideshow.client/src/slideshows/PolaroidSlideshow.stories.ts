@@ -6,7 +6,7 @@ const meta: Meta<typeof PolaroidSlideshow> = {
   component: PolaroidSlideshow,
   tags: ['autodocs'],
   args: {
-    images: picsumImages(),
+    images: picsumImages().reduce((p, c) => ({ ...p, [c['id']]: c }), {}),
     loadImage: loadPicsumImage,
     weatherForecast: { feelsLikeTemperature: 0, weatherCode: 'Sunny' },
     count: 40,

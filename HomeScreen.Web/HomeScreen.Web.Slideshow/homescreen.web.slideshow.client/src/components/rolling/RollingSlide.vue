@@ -34,20 +34,14 @@ import {
   type Direction,
   Directions,
   type Image,
-} from '@/helpers/component_properties';
-import { MediaTransformOptionsFormat } from '@/domain/api/homescreen-slideshow-api';
+  type LoadImageCallback,
+} from '@homescreen/web-components-client/src/index';
 import RollingSlideModal from '@/components/rolling/RollingSlideModal.vue';
 
 defineProps<{
   images: Image[];
   direction: Direction;
-  loadImage: (
-    imageId: string,
-    width: number,
-    height: number,
-    blur: boolean,
-    format: MediaTransformOptionsFormat,
-  ) => Promise<string>;
+  loadImage: LoadImageCallback;
 }>();
 
 const emits = defineEmits<{ pause: []; resume: [] }>();

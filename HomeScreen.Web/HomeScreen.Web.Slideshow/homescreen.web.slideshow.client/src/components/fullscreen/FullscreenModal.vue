@@ -4,9 +4,8 @@
       <component
         :is="ResponsiveImageSuspenseAsync"
         :image="image"
-        :image-size="fullSize"
+        :image-size="imageSize"
         :load-image="loadImage"
-        :loading-size="loadingSize"
         class="size-auto max-h-full max-w-full rounded-md object-contain drop-shadow-md hover:shadow-inner active:drop-shadow-lg"
         v-bind="props"
       />
@@ -37,26 +36,23 @@
 </template>
 
 <script lang="ts" setup>
-import { Directions, type Image } from '@/helpers/component_properties';
-import PolaroidCard from '@components/PolaroidCard.vue';
-import ModalDialog from '@components/ModalDialog.vue';
-import ActionButton from '@components/ActionButton.vue';
-import { MediaTransformOptionsFormat } from '@/domain/api/homescreen-slideshow-api';
+import {
+  ActionButton,
+  Directions,
+  type Image,
+  LeafletMapAsync,
+  type LoadImageCallback,
+  ModalDialog,
+  PolaroidCard,
+  ResponsiveImageSuspenseAsync,
+} from '@homescreen/web-components-client/src/index';
 import { useAsyncState, useWindowSize } from '@vueuse/core';
 import { toggleMedia } from '@/domain/media';
-import { LeafletMapAsync } from '@/components/LeafletMapAsync';
 import { computed } from 'vue';
-import { ResponsiveImageSuspenseAsync } from '@/components/ResponsiveImageSuspenseAsync';
 
 const props = defineProps<{
   image: Image;
-  loadImage: (
-    imageId: string,
-    width: number,
-    height: number,
-    blur: boolean,
-    format: MediaTransformOptionsFormat,
-  ) => Promise<string>;
+  loadImage: LoadImageCallback;
 }>();
 
 const emits = defineEmits<{ pause: []; resume: [] }>();
@@ -73,11 +69,7 @@ const { execute, isLoading } = useAsyncState(
 
 const { width, height } = useWindowSize();
 
-const loadingSize = computed(() => ({
-  width: Math.floor(width.value / 4),
-  height: Math.floor(height.value / 4),
-}));
-const fullSize = computed(() => ({
+const imageSize = computed(() => ({
   width: Math.floor(width.value - 100),
   height: Math.floor(height.value - 100),
 }));

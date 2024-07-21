@@ -16,12 +16,6 @@
     "paths": {
       "@/*": [
         "./src/*"
-      ],
-      "@components": [
-        "./node_modules/@homescreen/web-components-client/src/components"
-      ],
-      "@components-src": [
-        "./node_modules/@homescreen/web-components-client/src"
       ]
     }
   }

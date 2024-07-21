@@ -5,6 +5,8 @@
 </template>
 
 <script lang="ts" setup>
-import { Variants } from '@/helpers/component_properties';
-import LoadingSpinner from '@components/LoadingSpinner.vue';
+import {
+  LoadingSpinner,
+  Variants,
+} from '@homescreen/web-components-client/src/index';
 </script>

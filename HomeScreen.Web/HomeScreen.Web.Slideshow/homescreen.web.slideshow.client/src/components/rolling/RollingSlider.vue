@@ -41,7 +41,8 @@ import {
   type Direction,
   Directions,
   type Image,
-} from '@/helpers/component_properties';
+  type LoadImageCallback,
+} from '@homescreen/web-components-client/src/index';
 import {
   type RollingDirection,
   RollingDirections,
@@ -51,7 +52,6 @@ import { useElementSize, useRafFn } from '@vueuse/core';
 import { reactiveTransform } from '@vueuse/motion';
 import { range } from '@/helpers/random';
 import RollingSlide from '@/components/rolling/RollingSlide.vue';
-import { MediaTransformOptionsFormat } from '@/domain/api/homescreen-slideshow-api';
 
 const props = withDefaults(
   defineProps<{
@@ -59,13 +59,7 @@ const props = withDefaults(
     durationSeconds?: number;
     direction?: Direction;
     rolling: RollingDirection;
-    loadImage: (
-      imageId: string,
-      width: number,
-      height: number,
-      blur: boolean,
-      format: MediaTransformOptionsFormat,
-    ) => Promise<string>;
+    loadImage: LoadImageCallback;
   }>(),
   {
     direction: Directions.horizontal,

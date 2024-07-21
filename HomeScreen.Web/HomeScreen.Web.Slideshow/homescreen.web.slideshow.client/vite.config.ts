@@ -60,13 +60,7 @@ export default defineConfig(({ command, mode }) => {
               '@fortawesome/free-solid-svg-icons',
               '@fortawesome/vue-fontawesome',
             ],
-            // 'async-validator': ['async-validator'],
-            // 'change-case': ['change-case'],
             'universal-cookie': ['universal-cookie'],
-            // drauu: ['drauu'],
-            // 'focus-trap': ['focus-trap'],
-            // 'fuse.js': ['fuse.js'],
-            // 'idb-keyval': ['idb-keyval'],
             'jwt-decode': ['jwt-decode'],
             qrcode: ['qrcode'],
             sortablejs: ['sortablejs'],
@@ -80,18 +74,6 @@ export default defineConfig(({ command, mode }) => {
     resolve: {
       alias: {
         '@': fileURLToPath(new URL('./src', import.meta.url)),
-        '@components': fileURLToPath(
-          new URL(
-            './node_modules/@homescreen/web-components-client/src/components',
-            import.meta.url,
-          ),
-        ),
-        '@components-src': fileURLToPath(
-          new URL(
-            './node_modules/@homescreen/web-components-client/src',
-            import.meta.url,
-          ),
-        ),
       },
     },
     server:

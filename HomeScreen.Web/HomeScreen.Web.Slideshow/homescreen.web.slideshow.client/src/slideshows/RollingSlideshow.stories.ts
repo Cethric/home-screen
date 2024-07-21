@@ -1,13 +1,13 @@
 import type { Meta, StoryObj } from '@storybook/vue3';
 import RollingSlideshow from '@/slideshows/RollingSlideshow.vue';
-import { Directions } from '@homescreen/web-components-client/src/components/properties';
+import { Directions } from '@homescreen/web-components-client/src/index';
 import { loadPicsumImage, picsumImages } from '@/stories/helpers';
 
 const meta: Meta<typeof RollingSlideshow> = {
   component: RollingSlideshow,
   tags: ['autodocs'],
   args: {
-    images: picsumImages(),
+    images: picsumImages().reduce((p, c) => ({ ...p, [c['id']]: c }), {}),
     loadImage: loadPicsumImage,
     weatherForecast: { feelsLikeTemperature: 0, weatherCode: 'Sunny' },
   },

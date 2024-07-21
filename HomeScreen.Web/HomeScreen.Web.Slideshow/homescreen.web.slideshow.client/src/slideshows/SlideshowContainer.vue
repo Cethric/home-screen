@@ -4,7 +4,7 @@
     :count="count[activeSlideshow]"
     :direction="Directions.vertical"
     :images="images"
-    :load-image="loadImage"
+    :load-image="loadImageCallback"
     :total="total"
     :weather-forecast="forecast"
   />
@@ -12,8 +12,11 @@
 
 <script async lang="ts" setup>
 import { type Slideshow, Slideshows } from './properties';
-import { Directions, type Image } from '@/helpers/component_properties';
-import { loadImage } from '@/domain/media';
+import {
+  Directions,
+  type Image,
+} from '@homescreen/web-components-client/src/index';
+import { loadImageCallback } from '@/domain/media';
 import type { WeatherForecast } from '@/domain/api/homescreen-slideshow-api';
 import { defineAsyncComponent } from 'vue';
 import FullscreenMainLoader from '@/components/FullscreenMainLoader.vue';

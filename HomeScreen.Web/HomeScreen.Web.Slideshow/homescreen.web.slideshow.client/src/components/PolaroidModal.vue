@@ -46,25 +46,19 @@
 </template>
 
 <script lang="ts" setup>
-import { Directions } from '@/helpers/component_properties';
 import LargeImage from '@/components/LargeImage.vue';
-import PolaroidCard from '@components/PolaroidCard.vue';
-import ModalDialog from '@components/ModalDialog.vue';
 import {
-  MediaItem,
-  MediaTransformOptionsFormat,
-} from '@/domain/api/homescreen-slideshow-api';
-import { LeafletMapAsync } from '@/components/LeafletMapAsync';
+  Directions,
+  LeafletMapAsync,
+  type LoadImageCallback,
+  ModalDialog,
+  PolaroidCard,
+} from '@homescreen/web-components-client/src/index';
+import type { PolaroidImage } from '@/components/properties';
 
 defineProps<{
-  item: { image: MediaItem; top: number; left: number; rotation: number };
-  loadImage: (
-    imageId: string,
-    width: number,
-    height: number,
-    blur: boolean,
-    format: MediaTransformOptionsFormat,
-  ) => Promise<string>;
+  item: PolaroidImage;
+  loadImage: LoadImageCallback;
 }>();
 const emits = defineEmits<{ resume: []; pause: [] }>();
 </script>

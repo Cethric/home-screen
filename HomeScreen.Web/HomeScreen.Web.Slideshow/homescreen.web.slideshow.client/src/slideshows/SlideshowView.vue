@@ -30,7 +30,7 @@ import { type Slideshow, Slideshows } from '@/slideshows/properties';
 import { choice } from '@/helpers/random';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { faHome } from '@fortawesome/free-solid-svg-icons';
-import { type Image } from '@/helpers/component_properties';
+import { type Image } from '@homescreen/web-components-client/src/index';
 import { useNProgress } from '@vueuse/integrations';
 import { loadWeather as loadWeatherBase } from '@/domain/weather';
 import { loadMedia as loadMediaBase } from '@/domain/media';
@@ -70,7 +70,12 @@ const { execute } = useAsyncState(
     let loaded = 0;
     for await (const item of props.loadMedia(props.total, signal)) {
       signal?.throwIfAborted();
-      if (item) {
+      if (
+        item &&
+        item.id !== undefined &&
+        item.created !== undefined &&
+        item.enabled !== undefined
+      ) {
         await nextTick(() => {
           if (images.value.length >= props.total) {
             images.value.splice(0, 1);
@@ -84,9 +89,9 @@ const { execute } = useAsyncState(
             return;
           }
           images.value.push({
-            id: item.id,
-            dateTime: item.created,
-            enabled: item.enabled,
+            id: item.id!,
+            dateTime: item.created!,
+            enabled: item.enabled!,
             location:
               item.location?.name &&
               item.location?.latitude &&

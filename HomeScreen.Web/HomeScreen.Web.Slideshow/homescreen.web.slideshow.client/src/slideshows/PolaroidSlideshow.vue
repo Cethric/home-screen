@@ -27,14 +27,18 @@
 
 <script lang="ts" setup>
 import { computed, ref, watch } from 'vue';
-import { type Direction, type Image } from '@/helpers/component_properties';
-import { useIntervalFn } from '@vueuse/core';
 import {
-  type IWeatherForecast,
-  MediaTransformOptionsFormat,
-} from '@/domain/api/homescreen-slideshow-api';
+  type Direction,
+  type Image,
+  type LoadImageCallback,
+} from '@homescreen/web-components-client/src/index';
+import { useIntervalFn } from '@vueuse/core';
+import { type IWeatherForecast } from '@/domain/api/homescreen-slideshow-api';
 import { range, rangeRNG } from '@/helpers/random';
-import { DateTimeWeatherComboKinds } from '@/components/properties';
+import {
+  DateTimeWeatherComboKinds,
+  type PolaroidImage,
+} from '@/components/properties';
 import seedrandom from 'seedrandom';
 import PolaroidModal from '@/components/PolaroidModal.vue';
 import FullscreenMainLoader from '@/components/FullscreenMainLoader.vue';
@@ -47,13 +51,7 @@ const props = withDefaults(
     weatherForecast: IWeatherForecast;
     direction?: Direction;
     count?: number;
-    loadImage: (
-      imageId: string,
-      width: number,
-      height: number,
-      blur: boolean,
-      format: MediaTransformOptionsFormat,
-    ) => Promise<string>;
+    loadImage: LoadImageCallback;
     total: number;
   }>(),
   {
@@ -73,7 +71,7 @@ const makeItem = (image: Image) => {
     top: rangeRNG(-12.5, 87.5, rng),
     left: rangeRNG(-6.25, 100, rng),
     rotation: rangeRNG(-15, 15, rng),
-  };
+  } satisfies PolaroidImage;
 };
 
 const head = ref<number>(0);

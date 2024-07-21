@@ -6,7 +6,21 @@ export default {
     './node_modules/@homescreen/web-components-client/src/**/*.{vue,js,ts,jsx,tsx}',
   ],
   theme: {
-    extend: {},
+    extend: {
+      maxWidth: {
+        100: '42rem',
+        modal: '90dvw',
+      },
+      width: {
+        100: '42rem',
+      },
+      maxHeight: {
+        100: '42rem',
+      },
+      height: {
+        100: '42rem',
+      },
+    },
   },
   plugins: [],
 };
