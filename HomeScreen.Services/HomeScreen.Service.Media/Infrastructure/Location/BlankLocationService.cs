@@ -6,7 +6,7 @@ public class BlankLocationService(ILogger<BlankLocationService> logger) : ILocat
         double longitude,
         double latitude,
         double altitude,
-        CancellationToken cancellationToken
+        CancellationToken cancellationToken = default
     )
     {
         logger.LogInformation(

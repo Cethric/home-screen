@@ -9,6 +9,10 @@ namespace HomeScreen.Web.Slideshow.Server.Services;
 public class JsonStreamingResultExecutor
 {
     protected static readonly ReadOnlyMemory<byte> Line = new([(byte)'\n']);
+
+    protected JsonStreamingResultExecutor()
+    {
+    }
 }
 
 public class JsonStreamingResultExecutor<T>(ILogger<JsonStreamingResult<T>> logger)

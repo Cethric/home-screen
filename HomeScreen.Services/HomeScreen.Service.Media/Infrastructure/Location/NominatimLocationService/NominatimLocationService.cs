@@ -13,7 +13,7 @@ public class NominatimLocationService(
         double longitude,
         double latitude,
         double altitude,
-        CancellationToken cancellationToken
+        CancellationToken cancellationToken = default
     )
     {
         logger.LogInformation(
