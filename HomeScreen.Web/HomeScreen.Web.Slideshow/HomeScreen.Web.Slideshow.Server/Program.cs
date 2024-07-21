@@ -27,17 +27,38 @@ builder.Services.AddTransient(typeof(IJsonStreamingResultExecutor<>), typeof(Jso
 
 builder.Services.AddGrpcClient<MediaGrpcClient>(
     "homescreen-service-media",
-    c => c.Address = new Uri("http://homescreen-service-media:5014")
+    c => c.Address = new Uri(
+        builder.Configuration.GetSection("services")
+            .GetSection("homescreen-service-media")
+            .GetSection("http")
+            .GetChildren()
+            .FirstOrDefault()!
+            .Value!
+    )
 );
 builder.Services.AddGrpcClient<WeatherGrpcClient>(
     "homescreen-service-weather",
-    c => c.Address = new Uri("http://homescreen-service-weather:5016")
+    c => c.Address = new Uri(
+        builder.Configuration.GetSection("services")
+            .GetSection("homescreen-service-weather")
+            .GetSection("http")
+            .GetChildren()
+            .FirstOrDefault()!
+            .Value!
+    )
 );
 builder.Services.AddHttpClient(
     "MediaDownloader",
     client =>
     {
-        client.BaseAddress = new Uri("http://homescreen-service-media:5014");
+        client.BaseAddress = new Uri(
+            builder.Configuration.GetSection("services")
+                .GetSection("homescreen-service-media")
+                .GetSection("http")
+                .GetChildren()
+                .FirstOrDefault()!
+                .Value!
+        );
         client.DefaultRequestVersion = new Version(2, 0);
         client.DefaultVersionPolicy = HttpVersionPolicy.RequestVersionOrHigher;
     }
