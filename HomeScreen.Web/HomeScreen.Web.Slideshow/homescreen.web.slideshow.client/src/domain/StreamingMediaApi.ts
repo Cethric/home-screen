@@ -5,6 +5,7 @@ import {
   MediaItem,
   SwaggerResponse,
 } from '@/domain/api/homescreen-slideshow-api';
+import { isAsyncIterable } from '@/helpers/isAsyncIterable';
 
 function throwException(
   message: string,
@@ -16,14 +17,6 @@ function throwException(
   result?: any,
 ): any {
   throw new ApiException(message, status, response, headers, result);
-}
-
-function isAsyncIterable<T>(input: T): boolean {
-  if (input === null) {
-    return false;
-  }
-
-  return typeof input[Symbol.asyncIterator] === 'function';
 }
 
 export class StreamingMediaApi extends MediaClient {
