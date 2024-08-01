@@ -1,5 +1,6 @@
 import {
   ApiException,
+  type IMediaItem,
   MediaClient,
   MediaItem,
   SwaggerResponse,
@@ -17,6 +18,14 @@ function throwException(
   throw new ApiException(message, status, response, headers, result);
 }
 
+function isAsyncIterable<T>(input: T): boolean {
+  if (input === null) {
+    return false;
+  }
+
+  return typeof input[Symbol.asyncIterator] === 'function';
+}
+
 export class StreamingMediaApi extends MediaClient {
   public constructor() {
     super();
@@ -25,7 +34,7 @@ export class StreamingMediaApi extends MediaClient {
   async *getRandomMediaItemsStream(
     count?: number | undefined,
     signal?: AbortSignal,
-  ): AsyncGenerator<SwaggerResponse<MediaItem>> {
+  ): AsyncGenerator<SwaggerResponse<IMediaItem>> {
     // @ts-ignore
     let url_ = this.baseUrl + '/api/Media/GetRandomMediaItems?';
     if (count === null)
@@ -42,6 +51,7 @@ export class StreamingMediaApi extends MediaClient {
       },
     };
 
+    console.log('getRandomMediaItemsStream');
     // @ts-ignore
     const _response = await this.http.fetch(url_, options_);
     yield* this.processGetRandomMediaItemsStream(_response, signal);
@@ -50,59 +60,107 @@ export class StreamingMediaApi extends MediaClient {
   protected async *processGetRandomMediaItemsStream(
     response: Response,
     signal?: AbortSignal,
-  ): AsyncGenerator<SwaggerResponse<MediaItem>> {
-    console.debug('processGetRandomMediaItemsStream start');
+  ): AsyncGenerator<SwaggerResponse<IMediaItem>> {
     const status = response.status;
-    const _headers: any = {};
-    response.headers?.forEach((v, k) => (_headers[k] = v));
+    const headers: Record<string, any> = {};
+    response.headers?.forEach((v, k) => (headers[k] = v));
     if (status === 200) {
-      const decoder = new TextDecoder('UTF-8', {});
-      if (response.body === null) {
-        console.debug('processGetRandomMediaItemsStream invalid media');
-        yield new SwaggerResponse(status, _headers, null as any);
-      }
-      // @ts-ignore
-      for await (const chunk of response.body) {
-        signal?.throwIfAborted();
-        const decoded = decoder.decode(chunk);
-        console.debug(
-          'processGetRandomMediaItemsStream tick media',
-          chunk,
-          decoded,
-        );
-        for (const line of decoded
-          .split('\n')
-          .filter((line) => line.trim().length > 0)) {
-          try {
-            const parsed = JSON.parse(line, this.jsonParseReviver);
-            const item = MediaItem.fromJS(parsed);
-            yield new SwaggerResponse(status, _headers, item);
-          } catch (error) {
-            console.error(
-              'processGetRandomMediaItemsStream invalid data',
-              chunk,
-              decoded,
-              line,
-              error,
+      yield* this.processGetRandomMediaItemsStreamBody(
+        response.body,
+        status,
+        headers,
+        signal,
+      );
+    } else if (status !== 200 && status !== 204) {
+      const _responseText = await response.text();
+      throwException(
+        'An unexpected server error occurred.',
+        status,
+        _responseText,
+        headers,
+      );
+    }
+    yield Promise.resolve<SwaggerResponse<IMediaItem>>(
+      new SwaggerResponse(status, headers, null as any),
+    );
+  }
+
+  protected async *processGetRandomMediaItemsStreamBody(
+    body: ReadableStream<Uint8Array> | null,
+    status: number,
+    headers: Record<string, unknown>,
+    signal?: AbortSignal,
+  ): AsyncGenerator<SwaggerResponse<IMediaItem>> {
+    if (body === null) {
+      yield new SwaggerResponse(status, headers, null as any);
+    } else {
+      const stream = body.pipeThrough(
+        new TextDecoderStream('UTF-8', { fatal: false, ignoreBOM: true }),
+        {
+          preventAbort: false,
+          signal,
+        },
+      );
+      if (!isAsyncIterable(stream)) {
+        console.log('processGetRandomMediaItemsStreamBody while');
+        const reader = stream.getReader();
+        try {
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) {
+              break;
+            }
+            yield* this.processGetRandomMediaItemsChunk(
+              value,
+              status,
+              headers,
+              signal,
             );
-            yield new SwaggerResponse(status, _headers, null as any);
           }
+        } finally {
+          reader.releaseLock();
+        }
+      } else {
+        console.log('processGetRandomMediaItemsStreamBody iterate');
+        for await (const chunk of stream.values({})) {
+          console.log('processGetRandomMediaItemsStreamBody chunk', chunk);
+          signal?.throwIfAborted();
+          yield* this.processGetRandomMediaItemsChunk(
+            chunk,
+            status,
+            headers,
+            signal,
+          );
         }
       }
-    } else if (status !== 200 && status !== 204) {
-      console.debug('processGetRandomMediaItemsStream invalid media');
-      yield response.text().then((_responseText) => {
-        return throwException(
-          'An unexpected server error occurred.',
-          status,
-          _responseText,
-          _headers,
-        );
-      });
     }
-    console.debug('processGetRandomMediaItemsStream end');
-    yield Promise.resolve<SwaggerResponse<MediaItem>>(
-      new SwaggerResponse(status, _headers, null as any),
-    );
+  }
+
+  protected *processGetRandomMediaItemsChunk(
+    chunk: string,
+    status: number,
+    headers: Record<string, unknown>,
+    signal?: AbortSignal,
+  ) {
+    const lines: string[] = chunk
+      .split('\n')
+      .filter((line: string) => line.trim().length > 0);
+    for (const line of lines) {
+      signal?.throwIfAborted();
+      console.log('processGetRandomMediaItemsStreamBody line', line);
+      try {
+        const json = JSON.parse(line, this.jsonParseReviver);
+        const media = MediaItem.fromJS(json);
+        yield new SwaggerResponse(status, headers, media);
+      } catch (error: unknown) {
+        console.error(
+          'processGetRandomMediaItemsStream invalid data',
+          chunk,
+          line,
+          error,
+        );
+        yield new SwaggerResponse(status, headers, null as any);
+      }
+    }
   }
 }

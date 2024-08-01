@@ -1,3 +1,5 @@
+import 'web-streams-polyfill/polyfill';
+
 import { createApp } from 'vue';
 import App from './App.vue';
 
