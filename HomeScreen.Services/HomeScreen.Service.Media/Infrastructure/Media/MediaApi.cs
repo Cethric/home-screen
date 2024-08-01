@@ -24,6 +24,12 @@ public class MediaApi(
         var files = mediaPaths.GetRawFiles()
             .Where(f => !disabled.Exists(d => d.OriginalFile.Contains(f.FullName)))
             .ToArray();
+        if (files.Length == 0)
+        {
+            logger.LogInformation("GetRandomMedia End {Count}", count);
+            yield break;
+        }
+        
         foreach (var file in Random.Shared.GetItems(files, (int)count))
         {
             cancellationToken.ThrowIfCancellationRequested();
