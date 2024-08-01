@@ -18,10 +18,8 @@ export async function* loadMedia(
   total: number,
   signal?: AbortSignal,
 ): AsyncGenerator<IMediaItem> {
-  for await (const response of mediaApi.getRandomMediaItemsStream(
-    total,
-    signal,
-  )) {
+  const request = mediaApi.getRandomMediaItemsStream(total, signal);
+  for await (const response of request) {
     signal?.throwIfAborted();
     yield response.result;
   }

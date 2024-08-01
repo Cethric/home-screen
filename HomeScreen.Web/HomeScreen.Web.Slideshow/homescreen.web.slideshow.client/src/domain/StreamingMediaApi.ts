@@ -44,7 +44,7 @@ export class StreamingMediaApi extends MediaClient {
       },
     };
 
-    console.log('getRandomMediaItemsStream');
+    console.debug('getRandomMediaItemsStream');
     // @ts-ignore
     const _response = await this.http.fetch(url_, options_);
     yield* this.processGetRandomMediaItemsStream(_response, signal);
@@ -94,11 +94,23 @@ export class StreamingMediaApi extends MediaClient {
           signal,
         },
       );
-      if (!isAsyncIterable(stream)) {
-        console.log('processGetRandomMediaItemsStreamBody while');
+      if (isAsyncIterable(stream)) {
+        console.debug('processGetRandomMediaItemsStreamBody iterate');
+        for await (const chunk of stream.values({})) {
+          signal?.throwIfAborted();
+          yield* this.processGetRandomMediaItemsChunk(
+            chunk,
+            status,
+            headers,
+            signal,
+          );
+        }
+      } else {
+        console.debug('processGetRandomMediaItemsStreamBody while');
         const reader = stream.getReader();
         try {
           while (true) {
+            signal?.throwIfAborted();
             const { done, value } = await reader.read();
             if (done) {
               break;
@@ -113,18 +125,6 @@ export class StreamingMediaApi extends MediaClient {
         } finally {
           reader.releaseLock();
         }
-      } else {
-        console.log('processGetRandomMediaItemsStreamBody iterate');
-        for await (const chunk of stream.values({})) {
-          console.log('processGetRandomMediaItemsStreamBody chunk', chunk);
-          signal?.throwIfAborted();
-          yield* this.processGetRandomMediaItemsChunk(
-            chunk,
-            status,
-            headers,
-            signal,
-          );
-        }
       }
     }
   }
@@ -135,12 +135,17 @@ export class StreamingMediaApi extends MediaClient {
     headers: Record<string, unknown>,
     signal?: AbortSignal,
   ) {
+    console.debug('processGetRandomMediaItemsStreamBody chunk', chunk);
     const lines: string[] = chunk
+      .trim()
       .split('\n')
-      .filter((line: string) => line.trim().length > 0);
+      .filter(
+        (line: string) =>
+          line.trim().length > 0 && line.startsWith('{') && line.endsWith('}'),
+      );
     for (const line of lines) {
       signal?.throwIfAborted();
-      console.log('processGetRandomMediaItemsStreamBody line', line);
+      console.debug('processGetRandomMediaItemsStreamBody line', line);
       try {
         const json = JSON.parse(line, this.jsonParseReviver);
         const media = MediaItem.fromJS(json);
@@ -152,7 +157,6 @@ export class StreamingMediaApi extends MediaClient {
           line,
           error,
         );
-        yield new SwaggerResponse(status, headers, null as any);
       }
     }
   }
