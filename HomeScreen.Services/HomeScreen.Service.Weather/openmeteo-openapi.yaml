@@ -221,7 +221,7 @@ paths:
           schema:
             type: string
             format: password
-      
+
       responses:
         200:
           description: "Successfully retrieve the current forecast"
@@ -236,139 +236,238 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
 
-webhooks: { }
+webhooks: {}
 components:
   schemas:
     ElevationParameter:
       type: number
       format: float
-    
+
     HourlyParameter:
       type: string
-      enum: [
-        "temperature_2m", "relative_humidity_2m", "dew_point_2m", "apparent_temperature", "pressure_msl", "surface_pressure", "cloud_cover",
-        "cloud_cover_low", "cloud_cover_mid", "cloud_cover_high", "wind_speed_10m", "wind_speed_80m", "wind_speed_120m", "wind_speed_180m",
-        "wind_direction_10m", "wind_direction_80m", "wind_direction_120m", "wind_direction_180m", "wind_gusts_10m", "shortwave_radiation",
-        "direct_radiation", "direct_normal_irradiance", "diffuse_radiation", "global_tilted_irradiance", "vapour_pressure_deficit", "cape",
-        "evapotranspiration", "et0_fao_evapotranspiration", "precipitation", "snowfall", "precipitation_probability", "rain", "showers",
-        "weather_code", "snow_depth", "freezing_level_height", "visibility", "soil_temperature_0cm", "soil_temperature_6cm",
-        "soil_temperature_18cm", "soil_temperature_54cm", "soil_moisture_0_to_1cm", "soil_moisture_1_to_3cm", "soil_moisture_3_to_9cm",
-        "soil_moisture_9_to_27cm", "soil_moisture_27_to_81cm", "is_day"
-      ]
-    
+      enum:
+        [
+          "temperature_2m",
+          "relative_humidity_2m",
+          "dew_point_2m",
+          "apparent_temperature",
+          "pressure_msl",
+          "surface_pressure",
+          "cloud_cover",
+          "cloud_cover_low",
+          "cloud_cover_mid",
+          "cloud_cover_high",
+          "wind_speed_10m",
+          "wind_speed_80m",
+          "wind_speed_120m",
+          "wind_speed_180m",
+          "wind_direction_10m",
+          "wind_direction_80m",
+          "wind_direction_120m",
+          "wind_direction_180m",
+          "wind_gusts_10m",
+          "shortwave_radiation",
+          "direct_radiation",
+          "direct_normal_irradiance",
+          "diffuse_radiation",
+          "global_tilted_irradiance",
+          "vapour_pressure_deficit",
+          "cape",
+          "evapotranspiration",
+          "et0_fao_evapotranspiration",
+          "precipitation",
+          "snowfall",
+          "precipitation_probability",
+          "rain",
+          "showers",
+          "weather_code",
+          "snow_depth",
+          "freezing_level_height",
+          "visibility",
+          "soil_temperature_0cm",
+          "soil_temperature_6cm",
+          "soil_temperature_18cm",
+          "soil_temperature_54cm",
+          "soil_moisture_0_to_1cm",
+          "soil_moisture_1_to_3cm",
+          "soil_moisture_3_to_9cm",
+          "soil_moisture_9_to_27cm",
+          "soil_moisture_27_to_81cm",
+          "is_day",
+        ]
+
     DailyParameter:
       type: string
-      enum: [
-        "temperature_2m_max", "temperature_2m_min", "apparent_temperature_max", "apparent_temperature_min", "precipitation_sum",
-        "rain_sum", "showers_sum", "snowfall_sum", "precipitation_hours", "precipitation_probability_max",
-        "precipitation_probability_min", "precipitation_probability_mean", "weather_code", "sunrise", "sunset", "sunshine_duration",
-        "daylight_duration", "wind_speed_10m_max", "wind_gusts_10m_max", "wind_direction_10m_dominant", "shortwave_radiation_sum",
-        "et0_fao_evapotranspiration", "uv_index_max", "uv_index_clear_sky_max"
-      ]
-    
+      enum:
+        [
+          "temperature_2m_max",
+          "temperature_2m_min",
+          "apparent_temperature_max",
+          "apparent_temperature_min",
+          "precipitation_sum",
+          "rain_sum",
+          "showers_sum",
+          "snowfall_sum",
+          "precipitation_hours",
+          "precipitation_probability_max",
+          "precipitation_probability_min",
+          "precipitation_probability_mean",
+          "weather_code",
+          "sunrise",
+          "sunset",
+          "sunshine_duration",
+          "daylight_duration",
+          "wind_speed_10m_max",
+          "wind_gusts_10m_max",
+          "wind_direction_10m_dominant",
+          "shortwave_radiation_sum",
+          "et0_fao_evapotranspiration",
+          "uv_index_max",
+          "uv_index_clear_sky_max",
+        ]
+
     CurrentParameter:
       type: string
-      enum: [
-        "temperature_2m", "relative_humidity_2m", "dew_point_2m", "apparent_temperature", "shortwave_radiation", "direct_radiation",
-        "direct_normal_irradiance", "global_tilted_irradiance", "global_tilted_irradiance_instant", "diffuse_radiation", "sunshine_duration",
-        "lightning_potential", "precipitation", "snowfall", "rain", "showers", "snowfall_height", "freezing_level_height", "cape",
-        "wind_speed_10m", "wind_speed_80m", "wind_direction_10m", "wind_direction_80m", "wind_gusts_10m", "visibility", "weather_code"
-      ]
-    
+      enum:
+        [
+          "temperature_2m",
+          "relative_humidity_2m",
+          "dew_point_2m",
+          "apparent_temperature",
+          "shortwave_radiation",
+          "direct_radiation",
+          "direct_normal_irradiance",
+          "global_tilted_irradiance",
+          "global_tilted_irradiance_instant",
+          "diffuse_radiation",
+          "sunshine_duration",
+          "lightning_potential",
+          "precipitation",
+          "snowfall",
+          "rain",
+          "showers",
+          "snowfall_height",
+          "freezing_level_height",
+          "cape",
+          "wind_speed_10m",
+          "wind_speed_80m",
+          "wind_direction_10m",
+          "wind_direction_80m",
+          "wind_gusts_10m",
+          "visibility",
+          "weather_code",
+        ]
+
     TemperatureUnit:
       type: string
-      enum: [
-        "celsius", "fahrenheit"
-      ]
-    
+      enum: ["celsius", "fahrenheit"]
+
     TemperatureUnitResponse:
       type: string
     #      enum: [
     #        "°C", "°F"
     #      ]
-    
+
     PressureUnit:
       type: string
-      enum: [
-        "hPa", "kPa"
-      ]
-    
+      enum: ["hPa", "kPa"]
+
     EnergyUnit:
       type: string
     #      enum: [
     #        "J/kg", "MJ/m²"
     #      ]
-    
+
     RadiationUnit:
       type: string
     #      enum: [
     #        "W/m²"
     #      ]
-    
+
     SpeedUnit:
       type: string
     #      enum: [
     #        "km/h", "m/s", "mp/h", "kn"
     #      ]
-    
+
     DistanceUnit:
       type: string
-      enum: [
-        "mm", "cm", "m", "meters", "inch"
-      ]
-    
+      enum: ["mm", "cm", "m", "meters", "inch"]
+
     MoistureUnit:
       type: string
     #      enum: [
     #        "m³/m³"
     #      ]
-    
+
     ProbabilityUnit:
       type: string
     #      enum: [
     #        "%"
     #      ]
-    
+
     DirectionUnit:
       type: string
     #      enum: [
     #        "°"
     #      ]
-    
+
     WeatherCodeUnit:
       type: string
     #      enum: [
     #        "wmo code"
     #      ]
-    
+
     TimeUnit:
       type: string
-      enum: [
-        "hours", "seconds", "h", "s", "m"
-      ]
-    
+      enum: ["hours", "seconds", "h", "s", "m"]
+
     TimeFormat:
       type: string
-      enum: [
-        "iso8601", "unixtime"
-      ]
-    
+      enum: ["iso8601", "unixtime"]
+
     WeatherModels:
       type: string
-      enum: [
-        "auto", "best_match", "ecmwf_ifs04", "ecmwf_ifs025", "ecmwf_aifs025", "cma_grapes_global", "bom_access_global", "metno_nordic",
-        "gfs_seamless", "gfs_global", "gfs_hrrr", "gfs_graphcast025", "jma_seamless", "jma_msm", "jma_gsm", "icon_seamless", "icon_global",
-        "icon_eu", "icon_d2", "gem_seamless", "gem_global", "gem_regional", "gem_hrdps_continental", "meteofrance_seamless",
-        "meteofrance_arpege_world", "meteofrance_arpege_europe", "meteofrance_arome_france", "meteofrance_arome_france_hd",
-        "arpae_cosmo_seamless", "arpae_cosmo_2i", "arpae_cosmo_2i_ruc", "arpae_cosmo_5m"
-      ]
-    
+      enum:
+        [
+          "auto",
+          "best_match",
+          "ecmwf_ifs04",
+          "ecmwf_ifs025",
+          "ecmwf_aifs025",
+          "cma_grapes_global",
+          "bom_access_global",
+          "metno_nordic",
+          "gfs_seamless",
+          "gfs_global",
+          "gfs_hrrr",
+          "gfs_graphcast025",
+          "jma_seamless",
+          "jma_msm",
+          "jma_gsm",
+          "icon_seamless",
+          "icon_global",
+          "icon_eu",
+          "icon_d2",
+          "gem_seamless",
+          "gem_global",
+          "gem_regional",
+          "gem_hrdps_continental",
+          "meteofrance_seamless",
+          "meteofrance_arpege_world",
+          "meteofrance_arpege_europe",
+          "meteofrance_arome_france",
+          "meteofrance_arome_france_hd",
+          "arpae_cosmo_seamless",
+          "arpae_cosmo_2i",
+          "arpae_cosmo_2i_ruc",
+          "arpae_cosmo_5m",
+        ]
+
     CellSelection:
       type: string
-      enum: [
-        "land", "sea", "nearest"
-      ]
-    
+      enum: ["land", "sea", "nearest"]
+
     WeatherForecastResponse:
       type: object
       properties:
@@ -419,7 +518,7 @@ components:
         - utc_offset_seconds
         - timezone
         - timezone_abbreviation
-    
+
     HourlyResponse:
       description: "For each selected weather variable, data will be returned as a floating point array. Additionally a time array will be returned with ISO8601 timestamps."
       type: object
@@ -666,7 +765,7 @@ components:
             format: int32
       required:
         - time
-    
+
     HourlyUnitsResponse:
       description: "For each selected weather variable, the unit will be listed here."
       type: object
@@ -769,7 +868,7 @@ components:
           type: string
       required:
         - time
-    
+
     DailyResponse:
       description: "For each selected daily weather variable, data will be returned as a floating point array. Additionally a time array will be returned with ISO8601 timestamps."
       type: object
@@ -900,7 +999,7 @@ components:
             format: float
       required:
         - time
-    
+
     DailyUnitsResponse:
       description: "For each selected daily weather variable, the unit will be listed here."
       type: object
@@ -957,7 +1056,7 @@ components:
           $ref: "#/components/schemas/WmoIndex"
       required:
         - time
-    
+
     CurrentResponse:
       description: "For each selected daily weather variable, data will be returned as a floating point array. Additionally a time array will be returned with ISO8601 timestamps."
       type: object
@@ -1044,7 +1143,7 @@ components:
           $ref: "#/components/schemas/WmoWeatherCode"
       required:
         - time
-    
+
     CurrentUnitsResponse:
       description: "For each selected current weather variable, the unit will be listed here."
       type: object
@@ -1105,7 +1204,7 @@ components:
           $ref: "#/components/schemas/WeatherCodeUnit"
       required:
         - time
-    
+
     ErrorResponse:
       type: object
       properties:
@@ -1116,16 +1215,46 @@ components:
       required:
         - error
         - reason
-    
+
     WmoWeatherCode:
       type: integer
       format: int64
-      enum: [ 0,1,2,3,45,48,51,53,55,56,57,61,63,65,66,67,71,73,75,77,80,81,82,85,86,95,96,99 ]
-    
+      enum:
+        [
+          0,
+          1,
+          2,
+          3,
+          45,
+          48,
+          51,
+          53,
+          55,
+          56,
+          57,
+          61,
+          63,
+          65,
+          66,
+          67,
+          71,
+          73,
+          75,
+          77,
+          80,
+          81,
+          82,
+          85,
+          86,
+          95,
+          96,
+          99,
+        ]
+
     WmoIndex:
       type: string
 
-security: [ ]
-tags: [ ]
+security: []
+tags: []
 externalDocs:
   url: ""

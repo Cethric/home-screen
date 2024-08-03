@@ -7,12 +7,12 @@ public class JsonStreamingResult<T>(IAsyncEnumerable<T> data, JsonSerializerOpti
     : IActionResult
 {
     public IAsyncEnumerable<T> Data { get; } = data;
-    public JsonSerializerOptions? JsonSerializerOptions { get; } = jsonSerializerOptions;
+public JsonSerializerOptions? JsonSerializerOptions { get; } = jsonSerializerOptions;
 
-    public async Task ExecuteResultAsync(ActionContext context)
-    {
-        var executor = context.HttpContext.RequestServices.GetRequiredService<IJsonStreamingResultExecutor<T>>();
+public async Task ExecuteResultAsync(ActionContext context)
+{
+    var executor = context.HttpContext.RequestServices.GetRequiredService<IJsonStreamingResultExecutor<T>>();
 
-        await executor.ExecuteAsync(context, this);
-    }
+    await executor.ExecuteAsync(context, this);
+}
 }
