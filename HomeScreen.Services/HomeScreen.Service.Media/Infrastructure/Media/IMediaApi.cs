@@ -8,7 +8,7 @@ public interface IMediaApi
     IAsyncEnumerable<MediaEntry> GetRandomMedia(uint count, CancellationToken cancellationToken = default);
 
     Task<MediaEntry> ToggleMedia(Guid mediaId, bool state, CancellationToken cancellationToken);
-    
+
     Task<TransformState> TransformMedia(Guid mediaId, MediaTransformOptions options, CancellationToken cancellationToken);
 
     Task<(FileInfo, DateTimeOffset)?> GetTransformedMedia(
