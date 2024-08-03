@@ -9,7 +9,7 @@ export default {
     extend: {
       maxWidth: {
         100: '42rem',
-        98: '28rem',
+        110: '45rem',
         modal: '90dvw',
       },
       width: {
