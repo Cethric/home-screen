@@ -7,7 +7,7 @@
       @close="() => emits('hide')"
     >
       <div
-        class="z-50 m-auto flex size-fit flex-col justify-center rounded-2xl bg-neutral-200/25 px-2 drop-shadow-lg backdrop-blur"
+        class="z-50 m-auto flex size-fit flex-col justify-center rounded-2xl bg-neutral-200/45 px-2 drop-shadow-lg backdrop-blur"
       >
         <header class="flex flex-row items-center justify-between">
           <div class="flex grow flex-row items-center justify-start">
@@ -71,7 +71,7 @@ dialog {
   background: none;
 
   &::backdrop {
-    @apply bg-stone-900/60 backdrop-blur-sm;
+    @apply bg-stone-900/75 backdrop-blur-sm;
   }
 }
 </style>

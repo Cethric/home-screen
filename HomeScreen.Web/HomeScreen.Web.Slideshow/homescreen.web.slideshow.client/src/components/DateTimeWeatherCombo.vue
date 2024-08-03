@@ -2,7 +2,7 @@
   <component
     :is="kind"
     :class="[
-      'fixed z-50 w-96 max-w-96 text-ellipsis bg-stone-400/10 p-4 drop-shadow-md backdrop-blur',
+      'w-98 fixed z-50 max-w-100 text-ellipsis bg-stone-400/25 p-4 drop-shadow-md backdrop-blur',
       {
         'left-0 top-0 rounded-br-2xl':
           kind === DateTimeWeatherComboKinds.header,

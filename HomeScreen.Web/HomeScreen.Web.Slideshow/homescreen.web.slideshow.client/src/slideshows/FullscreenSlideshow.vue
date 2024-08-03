@@ -1,12 +1,12 @@
 <template>
   <header class="fixed inset-x-0 top-0 z-50 flex justify-center align-middle">
     <div
-      class="w-96 max-w-96 text-ellipsis rounded-b-2xl bg-stone-400/10 pb-4 pl-8 pr-4 pt-8 text-center drop-shadow-md backdrop-blur"
+      class="w-98 max-w-100 text-ellipsis rounded-b-2xl bg-stone-400/10 pb-4 pl-8 pr-4 pt-8 text-center drop-shadow-md backdrop-blur"
     >
       <h1 class="text-5xl font-extrabold tabular-nums text-neutral-50">
         {{ dayFormat }}
       </h1>
-      <h1 class="text-4xl font-extrabold tabular-nums text-neutral-50">
+      <h1 class="mt-4 text-5xl font-extrabold tabular-nums text-neutral-50">
         {{ timeFormat }}
       </h1>
     </div>
@@ -39,12 +39,12 @@
     class="fixed inset-x-0 bottom-0 z-50 flex justify-center align-middle"
   >
     <div
-      class="w-96 max-w-96 text-ellipsis rounded-t-2xl bg-stone-400/10 pb-4 pl-8 pr-4 pt-8 text-center drop-shadow-md backdrop-blur"
+      class="w-98 max-w-98 text-ellipsis rounded-t-2xl bg-stone-400/10 pb-4 pl-8 pr-4 pt-8 text-center drop-shadow-md backdrop-blur"
     >
       <p class="text-4xl font-bold text-neutral-50">
         {{ weatherForecast.feelsLikeTemperature }}&deg;C
       </p>
-      <p class="text-4xl font-bold text-neutral-50">
+      <p class="mt-3 text-4xl font-bold text-neutral-50">
         {{ weatherForecast.weatherCode }}
       </p>
     </div>
