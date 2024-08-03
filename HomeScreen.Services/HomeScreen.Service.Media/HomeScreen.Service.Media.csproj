@@ -52,11 +52,11 @@
         <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
     </PropertyGroup>
 
-    <Target Name="NSwag" AfterTargets="PostBuildEvent" Condition=" '$(Configuration)' == 'Debug' ">
+    <Target Name="NSwag-Post" AfterTargets="PostBuildEvent" Condition=" '$(Configuration)' == 'Debug' ">
         <Exec WorkingDirectory="$(ProjectDir)" EnvironmentVariables="ASPNETCORE_ENVIRONMENT=Development" Command="$(NSwagExe_Net80) run media.nswag /variables:Configuration=SwaggerBuild"/>
     </Target>
 
-    <Target Name="NSwag" BeforeTargets="PreBuildEvent">
+    <Target Name="NSwag-Pre" BeforeTargets="PreBuildEvent">
         <Exec WorkingDirectory="$(ProjectDir)"
               EnvironmentVariables="ASPNETCORE_ENVIRONMENT=Development"
               Command="$(NSwagExe_Net80) run Infrastructure/Location/NominatimLocationService/nominatim.nswag /variables:Configuration=$(Configuration)"/>

@@ -523,6 +523,8 @@ export interface IMediaItemLocation {
 
 export enum MediaTransformOptionsFormat {
     Jpeg = "Jpeg",
+    JpegXL = "JpegXL",
+    Png = "Png",
     WebP = "WebP",
     Avif = "Avif",
 }

@@ -32,8 +32,7 @@ builder.Services.AddGrpcClient<MediaGrpcClient>(
             .GetSection("homescreen-service-media")
             .GetSection("http")
             .GetChildren()
-            .FirstOrDefault()!
-            .Value!
+            .FirstOrDefault()!.Value!
     )
 );
 builder.Services.AddGrpcClient<WeatherGrpcClient>(
@@ -43,8 +42,7 @@ builder.Services.AddGrpcClient<WeatherGrpcClient>(
             .GetSection("homescreen-service-weather")
             .GetSection("http")
             .GetChildren()
-            .FirstOrDefault()!
-            .Value!
+            .FirstOrDefault()!.Value!
     )
 );
 builder.Services.AddHttpClient(
@@ -56,8 +54,7 @@ builder.Services.AddHttpClient(
                 .GetSection("homescreen-service-media")
                 .GetSection("http")
                 .GetChildren()
-                .FirstOrDefault()!
-                .Value!
+                .FirstOrDefault()!.Value!
         );
         client.DefaultRequestVersion = new Version(2, 0);
         client.DefaultVersionPolicy = HttpVersionPolicy.RequestVersionOrHigher;

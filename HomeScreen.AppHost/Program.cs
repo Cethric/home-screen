@@ -13,18 +13,27 @@ var mapsKey = builder.AddParameter("AzureMapsSecret", true);
 var clientId = builder.AddParameter("AzureClientID", true);
 
 
-var seq = builder.AddSeq("homescreen-seq", 9090).WithOtlpExporter().WithDataVolume();
-var redis = builder.AddRedis("homescreen-redis").WithOtlpExporter().WithDataVolume().WithPersistence();
+var seq = builder.AddSeq("homescreen-seq", 9090).WithImageTag("latest").WithOtlpExporter().WithDataVolume();
+var redis = builder.AddRedis("homescreen-redis")
+    .WithRedisCommander()
+    .WithImageTag("latest")
+    .WithOtlpExporter()
+    .WithDataVolume()
+    .WithPersistence();
 
-var sqlServer = builder.AddSqlServer("homescreen-sqlserver", postgresPassword).WithOtlpExporter().WithDataVolume();
+var sqlServer = builder.AddSqlServer("homescreen-sqlserver", postgresPassword)
+    .WithImageTag("latest")
+    .WithOtlpExporter()
+    .WithDataVolume();
+
 var mediaDb = sqlServer.AddDatabase("homescreen-media");
+var dashboardDb = sqlServer.AddDatabase("homescreen-dashboard");
 
 builder.AddProject<HomeScreen_Database_MediaDb_Migrations>("homescreen-media-migrations")
     .WithOtlpExporter()
     .WithReference(seq)
     .WithReference(mediaDb);
 
-var dashboardDb = sqlServer.AddDatabase("homescreen-dashboard");
 
 var media = builder.AddProject<HomeScreen_Service_Media>("homescreen-service-media")
     .AsHttp2Service()

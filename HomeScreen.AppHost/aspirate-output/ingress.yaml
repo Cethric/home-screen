@@ -1,0 +1,80 @@
+﻿apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: homescreen-ingress
+  namespace: homescreen
+  annotations:
+    "cert-manager.io/cluster-issuer": "hermes-step"
+    "cert-manager.io/subject-organizations": "HomeScreen,HomeAutomationCloud"
+    "cert-manager.io/subject-countries": "Australia"
+    "kubernetes.io/tls-acme": "true"
+#    "acme.cert-manager.io/http01-ingress-class": "traefic"
+    "acme.cert-manager.io/http01-edit-in-place": "true"
+spec:
+  tls:
+    - secretName: aspire-homescreen-tls
+      hosts:
+        - aspire.homescreen.home-automation.cloud
+    - secretName: otlp-homescreen-tls
+      hosts:
+        - otlp.homescreen.home-automation.cloud
+    - secretName: seq-homescreen-tls
+      hosts:
+        - seq.homescreen.home-automation.cloud
+    - secretName: slideshow-homescreen-tls
+      hosts:
+        - slideshow.homescreen.home-automation.cloud
+    - secretName: dashboard-homescreen-tls
+      hosts:
+        - dashboard.homescreen.home-automation.cloud
+  rules:
+    - host: aspire.homescreen.home-automation.cloud
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: aspire-dashboard
+                port:
+                  number: 18888
+    - host: otlp.homescreen.home-automation.cloud
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: aspire-dashboard
+                port:
+                  number: 18889
+    - host: seq.homescreen.home-automation.cloud
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: homescreen-seq
+                port:
+                  number: 9090
+    - host: slideshow.homescreen.home-automation.cloud
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: homescreen-web-slideshow-server
+                port:
+                  number: 8080
+    - host: dashboard.homescreen.home-automation.cloud
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: homescreen-web-dashboard-server
+                port:
+                  number: 8080

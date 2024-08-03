@@ -5,14 +5,8 @@ import {
   MediaTransformOptionsFormat,
 } from '@/domain/api/homescreen-slideshow-api';
 import type { LoadImageCallback } from '@homescreen/web-components-client/src/index';
-import Bowser from 'bowser';
 
 const mediaApi = new StreamingMediaApi();
-
-const checkForWebkit = (): boolean => {
-  const parser = Bowser.getParser(navigator.userAgent);
-  return /WebKit/.test(parser.getEngineName());
-};
 
 export async function* loadMedia(
   total: number,
@@ -33,20 +27,6 @@ export const loadImage = async (
   format: MediaTransformOptionsFormat,
   signal?: AbortSignal,
 ): Promise<string> => {
-  const isWebkit = checkForWebkit();
-  if (isWebkit) {
-    switch (format) {
-      case MediaTransformOptionsFormat.Jpeg:
-        format = MediaTransformOptionsFormat.Jpeg;
-        break;
-      case MediaTransformOptionsFormat.WebP:
-        format = MediaTransformOptionsFormat.Jpeg;
-        break;
-      case MediaTransformOptionsFormat.Avif:
-        format = MediaTransformOptionsFormat.WebP;
-        break;
-    }
-  }
   const response = await mediaApi.getTransformMediaItemUrl(
     imageId,
     width,

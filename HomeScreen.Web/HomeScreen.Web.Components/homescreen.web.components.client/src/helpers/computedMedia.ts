@@ -8,6 +8,6 @@ export type LoadImageCallback = (
   width: number,
   height: number,
   blur: boolean,
-  format: 'Jpeg' | 'WebP' | 'Avif',
+  format: 'Jpeg' | 'WebP' | 'Avif' | 'JpegXL' | 'Png',
   signal?: AbortSignal,
 ) => Promise<string>;

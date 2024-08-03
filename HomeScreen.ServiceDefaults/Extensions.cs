@@ -1,10 +1,8 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
-using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Http.Resilience;
 using Microsoft.Extensions.Logging;
 using OpenTelemetry;
 using OpenTelemetry.Metrics;
@@ -104,8 +102,8 @@ public static class Extensions
                         c.AddAttributes(
                             new List<KeyValuePair<string, object>>
                             {
-                                new("service-defaults-version", GitVersionInformation.InformationalVersion),
-                                new("version", version)
+                                new("service.default.version", GitVersionInformation.InformationalVersion),
+                                new("service.version", version)
                             }
                         );
                     }
@@ -124,8 +122,8 @@ public static class Extensions
                 () => HealthCheckResult.Healthy(
                     data: new Dictionary<string, object>
                     {
-                        { "service-defaults-version", GitVersionInformation.InformationalVersion },
-                        { "version", version }
+                        { "service.defaults.version", GitVersionInformation.InformationalVersion },
+                        { "service.version", version }
                     }
                 ),
                 ["live"]
@@ -141,7 +139,7 @@ public static class Extensions
         if (app.Environment.IsDevelopment())
         {
             // All health checks must pass for app to be considered ready to accept traffic after starting
-            app.MapHealthChecks("/health");
+            app.MapHealthChecks("/health", new HealthCheckOptions { });
 
             // Only health checks tagged with the "live" tag must pass for app to be considered alive
             app.MapHealthChecks("/alive", new HealthCheckOptions { Predicate = r => r.Tags.Contains("live") });

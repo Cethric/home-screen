@@ -76,18 +76,22 @@ const { execute } = useAsyncState(
         item.created !== undefined &&
         item.enabled !== undefined
       ) {
-        await nextTick(() => {
-          if (images.value.length >= props.total) {
+        if (images.value.length >= props.total) {
+          await nextTick(() => {
             images.value.splice(0, 1);
-          }
-          if (
-            images.value.filter((img: Image) => img.id === item.id).length > 0
-          ) {
-            console.warn('Duplicate key found, skipping', item);
+          });
+        }
+        if (
+          images.value.filter((img: Image) => img.id === item.id).length > 0
+        ) {
+          console.warn('Duplicate key found, skipping', item);
+          await nextTick(() => {
             ++loaded;
             progress.value = loaded / props.total;
-            return;
-          }
+          });
+          continue;
+        }
+        await nextTick(() => {
           images.value.push({
             id: item.id!,
             dateTime: item.created!,

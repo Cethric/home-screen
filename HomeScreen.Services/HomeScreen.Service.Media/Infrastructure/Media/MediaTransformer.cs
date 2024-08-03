@@ -61,7 +61,10 @@ public class MediaTransformer(ILogger<MediaTransformer> logger, IMediaPaths medi
             image.FilterType = options is { Width: < 250 } or { Height: < 250 }
                 ? FilterType.Point
                 : FilterType.LanczosRadius;
-            image.Depth = 32;
+            // image.Depth = 32;
+            image.Format = options.Format.TransformFormatToMagickFormat();
+            image.SetBitDepth(12, Channels.RGB);
+            image.SetProfile(ColorProfile.SRGB, ColorTransformMode.HighRes);
 
             logger.LogInformation(
                 "Resizing Image {TransformPath} to max size {Width}x{Height}",
@@ -84,10 +87,8 @@ public class MediaTransformer(ILogger<MediaTransformer> logger, IMediaPaths medi
                 options.Width,
                 options.Height
             );
+            
         }
-
-
-        image.Format = options.Format.TransformFormatToMagickFormat();
 
         logger.LogInformation(
             "Image has been transformed {OriginalPath} {TransformedPath}",
