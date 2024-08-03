@@ -29,7 +29,7 @@ public class MediaApi(
             logger.LogInformation("GetRandomMedia End {Count}", count);
             yield break;
         }
-        
+
         foreach (var file in Random.Shared.GetItems(files, (int)count))
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -79,10 +79,10 @@ public class MediaApi(
         }
 
         logger.LogInformation("Attempting to get transformed media for {MediaId}", mediaId);
-        return await mediaTransformer.TransformedMedia(mediaEntry, options, cancellationToken);
+        return TransformState.Transformed;
     }
 
-    public async Task<FileInfo?> GetTransformedMedia(
+    public async Task<(FileInfo, DateTimeOffset)?> GetTransformedMedia(
         Guid mediaId,
         MediaTransformOptions options,
         CancellationToken cancellationToken
@@ -98,7 +98,8 @@ public class MediaApi(
         }
 
         logger.LogInformation("Attempting to get transformed media for {MediaId}", mediaId);
-        return mediaTransformer.GetTransformedMedia(mediaEntry, options);
+        return (await mediaTransformer.GetTransformedMedia(mediaEntry, options, cancellationToken),
+            mediaEntry.CapturedUtc.ToOffset(mediaEntry.CapturedOffset));
     }
 
     private static MediaEntry TransformMediaEntry(Database.MediaDb.Entities.MediaEntry entry) =>

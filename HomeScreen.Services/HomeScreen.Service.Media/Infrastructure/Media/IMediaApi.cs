@@ -11,7 +11,7 @@ public interface IMediaApi
     
     Task<TransformState> TransformMedia(Guid mediaId, MediaTransformOptions options, CancellationToken cancellationToken);
 
-    Task<FileInfo?> GetTransformedMedia(
+    Task<(FileInfo, DateTimeOffset)?> GetTransformedMedia(
         Guid mediaId,
         MediaTransformOptions options,
         CancellationToken cancellationToken

@@ -7,6 +7,7 @@ using HomeScreen.Service.Proto.Services;
 using HomeScreen.Web.Slideshow.Server.Entities;
 using HomeScreen.Web.Slideshow.Server.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Net.Http.Headers;
 
 namespace HomeScreen.Web.Slideshow.Server.Controllers;
 
@@ -107,7 +108,14 @@ public class MediaController(
 
         if (result.StatusCode == StatusCodes.Status200OK)
         {
-            return File(result.Stream, format.TransformFormatToMime());
+            return File(
+                result.Stream,
+                format.TransformFormatToMime(),
+                $"{id:D}.{format}",
+                DateTimeOffset.Now,
+                new EntityTagHeaderValue($"\"{id:D}\"", true),
+                true
+            );
         }
 
         logger.LogWarning("Failed to download media item {StatusCode}", result.StatusCode);

@@ -5,7 +5,7 @@ namespace HomeScreen.Service.Media.Infrastructure.Media;
 
 public class MediaTransformer(ILogger<MediaTransformer> logger, IMediaPaths mediaPaths) : IMediaTransformer
 {
-    public async Task<TransformState> TransformedMedia(
+    public async Task<FileInfo> GetTransformedMedia(
         Database.MediaDb.Entities.MediaEntry mediaEntry,
         MediaTransformOptions options,
         CancellationToken cancellationToken
@@ -19,7 +19,7 @@ public class MediaTransformer(ILogger<MediaTransformer> logger, IMediaPaths medi
                 mediaEntry.OriginalFile,
                 transformedInfo.FullName
             );
-            return TransformState.Transformed;
+            return transformedInfo;
         }
 
         logger.LogInformation(
@@ -42,7 +42,7 @@ public class MediaTransformer(ILogger<MediaTransformer> logger, IMediaPaths medi
             image.FilterType = options is { Width: < 250 } or { Height: < 250 }
                 ? FilterType.Point
                 : FilterType.Gaussian;
-            image.Depth = 16;
+            image.Depth = 4;
             image.Thumbnail(options.Width / 3, options.Height / 3);
             image.MedianFilter(4);
             image.Blur(0, 5);
@@ -61,7 +61,6 @@ public class MediaTransformer(ILogger<MediaTransformer> logger, IMediaPaths medi
             image.FilterType = options is { Width: < 250 } or { Height: < 250 }
                 ? FilterType.Point
                 : FilterType.LanczosRadius;
-            // image.Depth = 32;
             image.Format = options.Format.TransformFormatToMagickFormat();
             image.SetBitDepth(12, Channels.RGB);
             image.SetProfile(ColorProfile.SRGB, ColorTransformMode.HighRes);
@@ -87,7 +86,6 @@ public class MediaTransformer(ILogger<MediaTransformer> logger, IMediaPaths medi
                 options.Width,
                 options.Height
             );
-            
         }
 
         logger.LogInformation(
@@ -96,19 +94,6 @@ public class MediaTransformer(ILogger<MediaTransformer> logger, IMediaPaths medi
             transformedInfo.FullName
         );
         await image.WriteAsync(transformedInfo, cancellationToken);
-        return TransformState.Transformed;
-    }
-
-    public FileInfo? GetTransformedMedia(Database.MediaDb.Entities.MediaEntry mediaEntry, MediaTransformOptions options)
-    {
-        var transformedInfo = mediaPaths.GetCachePath(options, mediaEntry.OriginalHash);
-        if (!transformedInfo.Exists) return null;
-
-        logger.LogInformation(
-            "{OriginalPath} has already been transformed at {TransformedPath}",
-            mediaEntry.OriginalFile,
-            transformedInfo.FullName
-        );
         return transformedInfo;
     }
 }

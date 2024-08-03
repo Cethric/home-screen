@@ -4,14 +4,9 @@ namespace HomeScreen.Service.Media.Infrastructure.Media;
 
 public interface IMediaTransformer
 {
-    Task<TransformState> TransformedMedia(
+    Task<FileInfo> GetTransformedMedia(
         Database.MediaDb.Entities.MediaEntry mediaEntry,
         MediaTransformOptions options,
         CancellationToken cancellationToken
-    );
-
-    FileInfo? GetTransformedMedia(
-        Database.MediaDb.Entities.MediaEntry mediaEntry,
-        MediaTransformOptions options
     );
 }

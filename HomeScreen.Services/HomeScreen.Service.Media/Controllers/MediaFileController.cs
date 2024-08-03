@@ -1,6 +1,7 @@
 ﻿using HomeScreen.Service.Media.Entities;
 using HomeScreen.Service.Media.Infrastructure.Media;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Net.Http.Headers;
 
 namespace HomeScreen.Service.Media.Controllers;
 
@@ -27,8 +28,14 @@ public class MediaFileController(ILogger<MediaFileController> logger, IMediaApi 
             cancellationToken
         );
         logger.LogInformation("Downloaded media file for {MediaId:D}, {MediaFound:G}", mediaId, result is not null);
-        return result is null
-            ? NotFound()
-            : File(result.Open(FileMode.Open, FileAccess.Read), format.TransformFormatToMime());
+        if (result is not { } info) return NotFound();
+        return File(
+            info.Item1.Open(FileMode.Open, FileAccess.Read),
+            format.TransformFormatToMime(),
+            $"{mediaId:D}.{format}",
+            info.Item2,
+            new EntityTagHeaderValue($"\"{mediaId:D}\"", true),
+            true
+        );
     }
 }
