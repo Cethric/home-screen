@@ -138,6 +138,8 @@ public class MediaController(
                 MediaFormat = format switch
                 {
                     MediaTransformOptionsFormat.Jpeg => TransformMediaFormat.Jpeg,
+                    MediaTransformOptionsFormat.JpegXL => TransformMediaFormat.JpegXl,
+                    MediaTransformOptionsFormat.Png => TransformMediaFormat.Png,
                     MediaTransformOptionsFormat.WebP => TransformMediaFormat.WebP,
                     MediaTransformOptionsFormat.Avif => TransformMediaFormat.Avif,
                     _ => throw new ArgumentOutOfRangeException(nameof(format), format, "Invalid media format requested")

@@ -54,6 +54,8 @@ enum TransformMediaState {
 
 enum TransformMediaFormat {
   Jpeg = 0;
-  WebP = 1;
-  Avif = 2;
+  JpegXL = 1;
+  Png = 2;
+  WebP = 3;
+  Avif = 4;
 }

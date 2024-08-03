@@ -61,9 +61,11 @@ public class MediaService(ILogger<MediaService> logger, IMediaApi mediaApi) : Me
     ) =>
         format switch
         {
-            TransformMediaFormat.Avif => MediaTransformOptionsFormat.Avif,
-            TransformMediaFormat.WebP => MediaTransformOptionsFormat.WebP,
             TransformMediaFormat.Jpeg => MediaTransformOptionsFormat.Jpeg,
+            TransformMediaFormat.JpegXl => MediaTransformOptionsFormat.JpegXL,
+            TransformMediaFormat.Png => MediaTransformOptionsFormat.Png,
+            TransformMediaFormat.WebP => MediaTransformOptionsFormat.WebP,
+            TransformMediaFormat.Avif => MediaTransformOptionsFormat.Avif,
             _ => throw new ArgumentOutOfRangeException(nameof(format), format, "Invalid media format requested")
         };
 

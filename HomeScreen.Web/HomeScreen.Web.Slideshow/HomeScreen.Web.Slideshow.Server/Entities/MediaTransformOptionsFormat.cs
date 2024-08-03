@@ -9,6 +9,8 @@ public static class MediaTransformOptionsFormatExtensions
         return format switch
         {
             MediaTransformOptionsFormat.Jpeg => "image/jpeg",
+            MediaTransformOptionsFormat.JpegXL => "image/jxl",
+            MediaTransformOptionsFormat.Png => "image/png",
             MediaTransformOptionsFormat.WebP => "image/webp",
             MediaTransformOptionsFormat.Avif => "image/avif",
             _ => throw new ArgumentOutOfRangeException(nameof(format), format, "Invalid transform format provided")

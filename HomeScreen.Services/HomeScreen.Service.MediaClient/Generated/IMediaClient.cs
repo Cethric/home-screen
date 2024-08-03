@@ -56,11 +56,17 @@ namespace HomeScreen.Service.MediaClient.Generated
         [System.Runtime.Serialization.EnumMember(Value = @"Jpeg")]
         Jpeg = 0,
 
+        [System.Runtime.Serialization.EnumMember(Value = @"JpegXL")]
+        JpegXL = 1,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"Png")]
+        Png = 2,
+
         [System.Runtime.Serialization.EnumMember(Value = @"WebP")]
-        WebP = 1,
+        WebP = 3,
 
         [System.Runtime.Serialization.EnumMember(Value = @"Avif")]
-        Avif = 2,
+        Avif = 4,
 
     }
 
