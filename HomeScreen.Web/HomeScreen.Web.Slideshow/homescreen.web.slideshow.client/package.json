@@ -33,7 +33,7 @@
     "change-case": "^4.1.2",
     "drauu": "^0.3.7",
     "focus-trap": "^7.5.4",
-    "fuse.js": "^6.6.2",
+    "fuse.js": "^7.0.0",
     "idb-keyval": "^6.2.1",
     "jwt-decode": "^3.1.2",
     "luxon": "^3.4.4",
