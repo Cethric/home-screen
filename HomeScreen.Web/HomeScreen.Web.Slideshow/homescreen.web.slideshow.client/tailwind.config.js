@@ -15,12 +15,14 @@ export default {
       width: {
         100: '42rem',
         98: '28rem',
+        '50dvw': '45dvw',
       },
       maxHeight: {
         100: '42rem',
       },
       height: {
         100: '42rem',
+        '50dvh': '45dvh',
       },
     },
   },

@@ -62,7 +62,6 @@ public class MediaTransformer(ILogger<MediaTransformer> logger, IMediaPaths medi
             image.FilterType = options is { Width: < 250 } or { Height: < 250 }
                 ? FilterType.Point
                 : FilterType.LanczosRadius;
-            // image.SetProfile(ColorProfile.SRGB, ColorTransformMode.HighRes);
 
             logger.LogInformation(
                 "Resizing Image {TransformPath} to max size {Width}x{Height}",
@@ -78,12 +77,13 @@ public class MediaTransformer(ILogger<MediaTransformer> logger, IMediaPaths medi
                     : PixelInterpolateMethod.Mesh
             );
             image.Format = options.Format.TransformFormatToMagickFormat();
-            image.Depth = 16;
+            image.Depth = 24;
             image.ColorSpace = ColorSpace.Rec709YCbCr;
             image.ColorType = ColorType.TrueColor;
             image.Quality = 80;
             image.Enhance();
             image.SetAttribute("hdr:write-gain-map", true);
+            image.SetProfile(ColorProfile.ColorMatchRGB, ColorTransformMode.HighRes);
             logger.LogInformation(
                 "Resized Image {TransformPath} to size {Width}x{Height} - requested {RequestedWidth}x{RequestedHeight}",
                 transformedInfo.FullName,

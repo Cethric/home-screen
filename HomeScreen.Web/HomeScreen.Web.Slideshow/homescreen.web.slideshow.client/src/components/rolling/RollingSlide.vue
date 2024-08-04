@@ -22,6 +22,7 @@
         :direction="direction"
         :image="image"
         :load-image="loadImage"
+        :image-size="imageSize"
         @pause="() => emits('pause')"
         @resume="() => emits('resume')"
       />
@@ -31,6 +32,7 @@
 
 <script lang="ts" setup>
 import {
+  type ComputedMediaSize,
   type Direction,
   Directions,
   type Image,
@@ -42,6 +44,7 @@ defineProps<{
   images: Image[];
   direction: Direction;
   loadImage: LoadImageCallback;
+  imageSize: ComputedMediaSize;
 }>();
 
 const emits = defineEmits<{ pause: []; resume: [] }>();

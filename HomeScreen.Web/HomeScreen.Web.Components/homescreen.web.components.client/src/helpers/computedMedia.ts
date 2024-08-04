@@ -1,4 +1,4 @@
-import {computedAsync, useMemoize} from "@vueuse/core";
+import { computedAsync, useMemoize } from '@vueuse/core';
 
 export interface ComputedMediaSize {
   width: number;
@@ -17,24 +17,24 @@ export type LoadImageCallback = (
 ) => Promise<string>;
 
 export const responsiveImageLoader = (
-    loading: string,
-    format: ImageFormat,
-    imageId: string,
-    width: number,
-    height: number,
-    loadImage: LoadImageCallback,
+  loading: string,
+  format: ImageFormat,
+  imageId: string,
+  width: number,
+  height: number,
+  loadImage: LoadImageCallback,
 ) => {
-  const imageSrc = useMemoize(async () => {
+  const imageSrc = useMemoize(async (width: number, height: number) => {
     return await loadImage(
-        imageId,
-        Math.max(width, 200),
-        Math.max(height, 200),
-        false,
-        format,
+      imageId,
+      Math.max(width, 200),
+      Math.max(height, 200),
+      false,
+      format,
     );
   });
 
   return computedAsync(async () => {
-    return await imageSrc();
+    return await imageSrc(width, height);
   }, loading);
 };

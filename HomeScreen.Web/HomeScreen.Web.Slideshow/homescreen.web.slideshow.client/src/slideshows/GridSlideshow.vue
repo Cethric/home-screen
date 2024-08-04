@@ -1,0 +1,77 @@
+<template>
+  <header class="fixed inset-x-0 top-0 z-50 flex justify-center align-middle">
+    <div
+      class="w-98 max-w-110 text-ellipsis rounded-b-2xl bg-stone-400/40 pb-4 pl-8 pr-4 pt-8 text-center drop-shadow-md backdrop-blur"
+    >
+      <h1 class="text-5xl font-extrabold tabular-nums text-neutral-50">
+        {{ dayFormat }}
+      </h1>
+      <h1 class="mt-4 text-5xl font-extrabold tabular-nums text-neutral-50">
+        {{ timeFormat }}
+      </h1>
+    </div>
+  </header>
+  <main
+    v-if="hasImages"
+    class="flex h-dvh w-dvw justify-evenly gap-8 overflow-hidden portrait:flex-col landscape:flex-row"
+  >
+    <GridItem
+      v-for="offset in 2"
+      :key="offset"
+      :images="images"
+      :length="Math.floor(length / 2)"
+      :load-image="loadImage"
+      :offset="offset"
+    />
+  </main>
+  <FullscreenMainLoader v-else />
+  <footer
+    class="fixed inset-x-0 bottom-0 z-50 flex justify-center align-middle"
+  >
+    <div
+      class="w-98 max-w-110 text-ellipsis rounded-t-2xl bg-stone-400/40 pb-4 pl-8 pr-4 pt-8 text-center drop-shadow-md backdrop-blur"
+    >
+      <p class="text-4xl font-bold text-neutral-50">
+        {{ weatherForecast.feelsLikeTemperature }}&deg;C
+      </p>
+      <p class="mt-3 text-4xl font-bold text-neutral-50">
+        {{ weatherForecast.weatherCode }}
+      </p>
+    </div>
+  </footer>
+</template>
+
+<script lang="ts" setup>
+import {
+  type Direction,
+  type Image,
+  type LoadImageCallback,
+} from '@homescreen/web-components-client/src/index';
+import { type IWeatherForecast } from '@/domain/api/homescreen-slideshow-api';
+import { computed } from 'vue';
+import { useDateFormat, useNow } from '@vueuse/core';
+import FullscreenMainLoader from '@/components/FullscreenMainLoader.vue';
+import GridItem from '@/components/grid/GridItem.vue';
+
+const props = withDefaults(
+  defineProps<{
+    images: Record<Image['id'], Image>;
+    intervalSeconds?: number;
+    weatherForecast: IWeatherForecast;
+    direction?: Direction;
+    count?: number;
+    loadImage: LoadImageCallback;
+    total: number;
+  }>(),
+  {
+    count: 1,
+    intervalSeconds: 24,
+  },
+);
+const length = computed(() => Object.keys(props.images).length);
+const hasImages = computed(() => length.value > 4);
+
+const now = useNow();
+const timeFormat = useDateFormat(now, 'HH:mm');
+const dayFormat = useDateFormat(now, 'MMMM Do YYYY');
+</script>

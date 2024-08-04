@@ -2,7 +2,7 @@
   <component
     :is="slideshows[activeSlideshow]"
     :count="count[activeSlideshow]"
-    :direction="Directions.vertical"
+    :direction="Directions.random"
     :images="images"
     :load-image="loadImageCallback"
     :total="total"
@@ -37,11 +37,17 @@ const slideshows = {
     timeout: 10,
     loadingComponent: FullscreenMainLoader,
   }),
+  [Slideshows.grid_slideshow]: defineAsyncComponent({
+    loader: () => import('@/slideshows/GridSlideshow.vue'),
+    timeout: 10,
+    loadingComponent: FullscreenMainLoader,
+  }),
 };
 const count = {
   [Slideshows.rolling_slideshow]: 3,
   [Slideshows.polaroid_slideshow]: 40,
   [Slideshows.fullscreen_slideshow]: 1,
+  [Slideshows.grid_slideshow]: 4,
 };
 
 defineProps<{

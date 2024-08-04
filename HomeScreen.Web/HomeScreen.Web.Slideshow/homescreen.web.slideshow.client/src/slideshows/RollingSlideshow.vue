@@ -1,13 +1,13 @@
 <template>
   <main
     v-if="hasImages"
-    :class="['grid h-dvh w-dvw overflow-hidden', `grid-${direction}`]"
+    :class="['grid h-dvh w-dvw overflow-hidden', `grid-${actualDirection}`]"
   >
     <RollingSlider
       v-for="group in imageGroups"
       :key="group.id"
       :count="count"
-      :direction="direction"
+      :direction="actualDirection"
       :duration-seconds="durationSeconds"
       :images="group.images"
       :load-image="loadImage"
@@ -37,7 +37,7 @@ import {
   RollingDirections,
 } from '@/components/properties';
 import { v4 as uuid } from 'uuid';
-import { range } from '@/helpers/random';
+import { choice, range } from '@/helpers/random';
 import FullscreenMainLoader from '@/components/FullscreenMainLoader.vue';
 import { DateTimeWeatherComboAsync } from '@/components/DateTimeWeatherComboAsync';
 
@@ -52,10 +52,16 @@ const props = withDefaults(
     total: number;
   }>(),
   {
-    direction: Directions.horizontal,
+    direction: Directions.random,
     count: 2,
     durationSeconds: 24,
   },
+);
+
+const actualDirection = computed(() =>
+  props.direction === Directions.random
+    ? choice([Directions.vertical, Directions.horizontal])
+    : props.direction,
 );
 
 const length = computed(() => Object.keys(props.images).length);

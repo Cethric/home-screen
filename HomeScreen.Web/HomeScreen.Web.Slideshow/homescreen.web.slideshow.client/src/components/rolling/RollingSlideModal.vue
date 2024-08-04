@@ -69,6 +69,7 @@
 
 <script async lang="ts" setup>
 import {
+  type ComputedMediaSize,
   type Direction,
   Directions,
   type Image,
@@ -78,24 +79,18 @@ import {
   PolaroidCard,
   ResponsiveImageSuspenseAsync,
 } from '@homescreen/web-components-client/src/index';
-import { useElementVisibility, useWindowSize } from '@vueuse/core';
-import { computed, ref } from 'vue';
+import { useElementVisibility } from '@vueuse/core';
+import { ref } from 'vue';
 import LargeImage from '@/components/LargeImage.vue';
 
 defineProps<{
   image: Image;
   direction: Direction;
   loadImage: LoadImageCallback;
+  imageSize: ComputedMediaSize;
 }>();
 
 const emits = defineEmits<{ pause: []; resume: [] }>();
-
-const { width, height } = useWindowSize();
-
-const imageSize = computed(() => ({
-  width: Math.floor(width.value / 4),
-  height: Math.floor(height.value / 4),
-}));
 
 const sliderModal = ref<HTMLElement>();
 const isVisible = useElementVisibility(sliderModal, { threshold: [0.1, 0.1] });

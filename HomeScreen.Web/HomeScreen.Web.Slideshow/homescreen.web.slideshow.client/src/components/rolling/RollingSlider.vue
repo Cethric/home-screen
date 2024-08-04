@@ -16,6 +16,7 @@
       :direction="direction"
       :images="images"
       :load-image="loadImage"
+      :image-size="imageSize"
       @pause="() => pause()"
       @resume="() => resume()"
     />
@@ -24,6 +25,7 @@
       :direction="direction"
       :images="images"
       :load-image="loadImage"
+      :image-size="imageSize"
       @pause="() => pause()"
       @resume="() => resume()"
     />
@@ -32,6 +34,7 @@
       :direction="direction"
       :images="images"
       :load-image="loadImage"
+      :image-size="imageSize"
       @pause="() => pause()"
       @resume="() => resume()"
     />
@@ -49,7 +52,7 @@ import {
   type RollingDirection,
   RollingDirections,
 } from '@/components/properties';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import { useElementSize, useRafFn } from '@vueuse/core';
 import { reactiveTransform } from '@vueuse/motion';
 import { range } from '@/helpers/random';
@@ -106,16 +109,14 @@ const { pause, resume } = useRafFn(
   { fpsLimit: 24, immediate: true },
 );
 
-// const slideA = ref<HTMLElement>();
-// const slideB = ref<HTMLElement>();
-// const slideC = ref<HTMLElement>();
-// const isVisibleA = useElementVisibility(slideA, {
-//   // threshold: [1, 0.5, 1],
-// });
-// const isVisibleB = useElementVisibility(slideB, {
-//   // threshold: [1, 0.5, 1],
-// });
-// const isVisibleC = useElementVisibility(slideC, {
-//   // threshold: [1, 0.5, 1],
-// });
+const imageSize = computed(() => ({
+  width: Math.floor(
+    props.direction === Directions.vertical ? width.value / 4 : width.value / 2,
+  ),
+  height: Math.floor(
+    props.direction === Directions.vertical
+      ? height.value / 4
+      : height.value / 2,
+  ),
+}));
 </script>
