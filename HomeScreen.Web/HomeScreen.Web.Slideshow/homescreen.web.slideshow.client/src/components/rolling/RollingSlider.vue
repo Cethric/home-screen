@@ -19,6 +19,7 @@
       @pause="() => pause()"
       @resume="() => resume()"
     />
+
     <RollingSlide
       :direction="direction"
       :images="images"
@@ -26,6 +27,7 @@
       @pause="() => pause()"
       @resume="() => resume()"
     />
+
     <RollingSlide
       :direction="direction"
       :images="images"
@@ -103,4 +105,17 @@ const { pause, resume } = useRafFn(
   },
   { fpsLimit: 24, immediate: true },
 );
+
+// const slideA = ref<HTMLElement>();
+// const slideB = ref<HTMLElement>();
+// const slideC = ref<HTMLElement>();
+// const isVisibleA = useElementVisibility(slideA, {
+//   // threshold: [1, 0.5, 1],
+// });
+// const isVisibleB = useElementVisibility(slideB, {
+//   // threshold: [1, 0.5, 1],
+// });
+// const isVisibleC = useElementVisibility(slideC, {
+//   // threshold: [1, 0.5, 1],
+// });
 </script>

@@ -57,9 +57,6 @@ importers:
       axios:
         specifier: ^1.7.3
         version: 1.7.3
-      bowser:
-        specifier: ^2.11.0
-        version: 2.11.0
       geojson:
         specifier: ^0.5.0
         version: 0.5.0
@@ -257,6 +254,9 @@ importers:
       '@homescreen/web-components-client':
         specifier: workspace:*
         version: link:../../HomeScreen.Web.Components/homescreen.web.components.client
+      '@vueuse/components':
+        specifier: ^10.11.0
+        version: 10.11.0(vue@3.4.35(typescript@5.5.4))
       '@vueuse/core':
         specifier: ^10.11.0
         version: 10.11.0(vue@3.4.35(typescript@5.5.4))
@@ -2748,6 +2748,9 @@ packages:
   '@vue/tsconfig@0.5.1':
     resolution: {integrity: sha512-VcZK7MvpjuTPx2w6blwnwZAu5/LgBUtejFOi3pPGQFXQN5Ela03FUtd2Qtg4yWGGissVL0dr6Ro1LfOFh+PCuQ==}
 
+  '@vueuse/components@10.11.0':
+    resolution: {integrity: sha512-ZvLZI23d5ZAtva5fGyYh/jQtZO8l+zJ5tAXyYNqHJZkq1o5yWyqZhENvSv5mfDmN5IuAOp4tq02mRmX/ipFGcg==}
+
   '@vueuse/core@10.11.0':
     resolution: {integrity: sha512-x3sD4Mkm7PJ+pcq3HX8PLPBadXCAlSDR/waK87dz0gQE+qJnaaFhc/dZVfJz+IUYzTMVGum2QlR7ImiJQN4s6g==}
 
@@ -2986,9 +2989,6 @@ packages:
 
   boolbase@1.0.0:
     resolution: {integrity: sha512-JZOSA7Mo9sNGB8+UjSgzdLtokWAky1zbztM3WRLCbZ70/3cTANmQmOdR7y2g+J0e2WXywy1yS468tY+IruqEww==}
-
-  bowser@2.11.0:
-    resolution: {integrity: sha512-AlcaJBi/pqqJBIQ8U9Mcpc9i8Aqxn88Skv5d+xBX006BY5u8N3mGLHa5Lgppa7L/HfwgwLgZ6NYs+Ag6uUmJRA==}
 
   brace-expansion@1.1.11:
     resolution: {integrity: sha512-iCuPHDFgrHX7H2vEI/5xpz07zSHB00TpugqhmYtVmMO6518mCuRMoOYFldEBl0g187ufozdaHgWKcYFb61qGiA==}
@@ -5743,17 +5743,6 @@ packages:
 
   vue-demi@0.14.10:
     resolution: {integrity: sha512-nMZBOwuzabUO0nLgIcc6rycZEebF6eeUfaiQx9+WSk8e29IbLvPU9feI6tqW4kTo3hvoYAJkMh8n8D0fuISphg==}
-    engines: {node: '>=12'}
-    hasBin: true
-    peerDependencies:
-      '@vue/composition-api': ^1.0.0-rc.1
-      vue: ^3.0.0-0 || ^2.6.0
-    peerDependenciesMeta:
-      '@vue/composition-api':
-        optional: true
-
-  vue-demi@0.14.8:
-    resolution: {integrity: sha512-Uuqnk9YE9SsWeReYqK2alDI5YzciATE0r2SkA6iMAtuXvNTMNACJLJEXNXaEy94ECuBe4Sk6RzRU80kjdbIo1Q==}
     engines: {node: '>=12'}
     hasBin: true
     peerDependencies:
@@ -9492,6 +9481,15 @@ snapshots:
 
   '@vue/tsconfig@0.5.1': {}
 
+  '@vueuse/components@10.11.0(vue@3.4.35(typescript@5.5.4))':
+    dependencies:
+      '@vueuse/core': 10.11.0(vue@3.4.35(typescript@5.5.4))
+      '@vueuse/shared': 10.11.0(vue@3.4.35(typescript@5.5.4))
+      vue-demi: 0.14.10(vue@3.4.35(typescript@5.5.4))
+    transitivePeerDependencies:
+      - '@vue/composition-api'
+      - vue
+
   '@vueuse/core@10.11.0(vue@3.4.35(typescript@5.5.4))':
     dependencies:
       '@types/web-bluetooth': 0.0.20
@@ -9545,7 +9543,7 @@ snapshots:
 
   '@vueuse/shared@10.11.0(vue@3.4.35(typescript@5.5.4))':
     dependencies:
-      vue-demi: 0.14.8(vue@3.4.35(typescript@5.5.4))
+      vue-demi: 0.14.10(vue@3.4.35(typescript@5.5.4))
     transitivePeerDependencies:
       - '@vue/composition-api'
       - vue
@@ -9746,8 +9744,6 @@ snapshots:
       - supports-color
 
   boolbase@1.0.0: {}
-
-  bowser@2.11.0: {}
 
   brace-expansion@1.1.11:
     dependencies:
@@ -12757,10 +12753,6 @@ snapshots:
   vue-component-type-helpers@2.0.29: {}
 
   vue-demi@0.14.10(vue@3.4.35(typescript@5.5.4)):
-    dependencies:
-      vue: 3.4.35(typescript@5.5.4)
-
-  vue-demi@0.14.8(vue@3.4.35(typescript@5.5.4)):
     dependencies:
       vue: 3.4.35(typescript@5.5.4)
 

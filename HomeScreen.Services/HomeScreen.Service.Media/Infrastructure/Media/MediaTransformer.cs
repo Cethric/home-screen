@@ -43,7 +43,8 @@ public class MediaTransformer(ILogger<MediaTransformer> logger, IMediaPaths medi
                 ? FilterType.Point
                 : FilterType.Gaussian;
             image.Depth = 4;
-            image.Thumbnail(options.Width / 3, options.Height / 3);
+            image.Alpha(AlphaOption.Remove);
+            image.Thumbnail(int.Max(50, options.Width / 3), int.Max(50, options.Height / 3));
             image.MedianFilter(4);
             image.Blur(0, 5);
             image.Resize(options.Width, options.Height);
@@ -61,9 +62,7 @@ public class MediaTransformer(ILogger<MediaTransformer> logger, IMediaPaths medi
             image.FilterType = options is { Width: < 250 } or { Height: < 250 }
                 ? FilterType.Point
                 : FilterType.LanczosRadius;
-            image.Format = options.Format.TransformFormatToMagickFormat();
-            image.SetBitDepth(12, Channels.RGB);
-            image.SetProfile(ColorProfile.SRGB, ColorTransformMode.HighRes);
+            // image.SetProfile(ColorProfile.SRGB, ColorTransformMode.HighRes);
 
             logger.LogInformation(
                 "Resizing Image {TransformPath} to max size {Width}x{Height}",
@@ -72,12 +71,19 @@ public class MediaTransformer(ILogger<MediaTransformer> logger, IMediaPaths medi
                 options.Height
             );
             image.InterpolativeResize(
-                options.Width,
-                options.Height,
+                int.Max(50, options.Width),
+                int.Max(50, options.Height),
                 options is { Width: < 250 } or { Height: < 250 }
                     ? PixelInterpolateMethod.Nearest
                     : PixelInterpolateMethod.Mesh
             );
+            image.Format = options.Format.TransformFormatToMagickFormat();
+            image.Depth = 16;
+            image.ColorSpace = ColorSpace.Rec709YCbCr;
+            image.ColorType = ColorType.TrueColor;
+            image.Quality = 80;
+            image.Enhance();
+            image.SetAttribute("hdr:write-gain-map", true);
             logger.LogInformation(
                 "Resized Image {TransformPath} to size {Width}x{Height} - requested {RequestedWidth}x{RequestedHeight}",
                 transformedInfo.FullName,

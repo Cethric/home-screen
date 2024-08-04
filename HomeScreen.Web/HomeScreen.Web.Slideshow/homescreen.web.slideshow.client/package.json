@@ -26,6 +26,7 @@
     "@fortawesome/vue-fontawesome": "^3.0.8",
     "@homescreen/web-components-client": "workspace:*",
     "@vueuse/core": "^10.11.0",
+    "@vueuse/components": "^10.11.0",
     "@vueuse/integrations": "^10.11.0",
     "@vueuse/motion": "^2.2.3",
     "async-validator": "^4.2.5",
