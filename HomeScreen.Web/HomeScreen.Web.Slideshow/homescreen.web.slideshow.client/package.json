@@ -83,7 +83,7 @@
     "typescript": "~5.5.4",
     "vite": "^5.3.5",
     "vite-bundle-visualizer": "^1.2.1",
-    "vitest": "^1.6.0",
+    "vitest": "^2.0.5",
     "vue-tsc": "^2.0.29"
   },
   "packageManager": "pnpm@9.1.0",
