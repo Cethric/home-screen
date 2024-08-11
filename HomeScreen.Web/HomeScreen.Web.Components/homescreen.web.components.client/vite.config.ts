@@ -11,7 +11,7 @@ export default defineConfig(() => {
       dts({
         tsconfigPath: fileURLToPath(
           new URL('./tsconfig.app.json', import.meta.url),
-        )
+        ),
       }),
     ],
     resolve: {
