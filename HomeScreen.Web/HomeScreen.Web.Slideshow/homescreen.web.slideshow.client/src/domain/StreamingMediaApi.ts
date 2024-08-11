@@ -24,19 +24,33 @@ export class StreamingMediaApi extends MediaClient {
     super();
   }
 
-  async *getRandomMediaItemsStream(
-    count?: number | undefined,
+  protected get url(): string {
+    // @ts-ignore
+    return this.baseUrl;
+  }
+
+  protected get client(): {
+    fetch(url: RequestInfo, init?: RequestInit): Promise<Response>;
+  } {
+    // @ts-ignore
+    return this.http;
+  }
+
+  public async *randomStream(
+    count: number,
     signal?: AbortSignal,
   ): AsyncGenerator<SwaggerResponse<IMediaItem>> {
-    // @ts-ignore
-    let url_ = this.baseUrl + '/api/Media/GetRandomMediaItems?';
-    if (count === null)
-      throw new Error("The parameter 'count' cannot be null.");
-    else if (count !== undefined)
-      url_ += 'count=' + encodeURIComponent('' + count) + '&';
-    url_ = url_.replace(/[?&]$/, '');
+    let url = this.url + '/api/media/random?';
+    if (count === undefined || count === null) {
+      throw new Error(
+        "The parameter 'count' must be defined and cannot be null.",
+      );
+    } else {
+      url += 'count=' + encodeURIComponent('' + count) + '&';
+    }
+    url = url.replace(/[?&]$/, '');
 
-    const options_: RequestInit = {
+    const options: RequestInit = {
       method: 'GET',
       signal,
       headers: {
@@ -44,38 +58,38 @@ export class StreamingMediaApi extends MediaClient {
       },
     };
 
-    console.debug('getRandomMediaItemsStream');
-    // @ts-ignore
-    const _response = await this.http.fetch(url_, options_);
-    yield* this.processGetRandomMediaItemsStream(_response, signal);
+    const response = await this.client.fetch(url, options);
+
+    return yield* this.processRandomStream(response, signal);
   }
 
-  protected async *processGetRandomMediaItemsStream(
+  protected async *processRandomStream(
     response: Response,
     signal?: AbortSignal,
   ): AsyncGenerator<SwaggerResponse<IMediaItem>> {
     const status = response.status;
-    const headers: Record<string, any> = {};
-    response.headers?.forEach((v, k) => (headers[k] = v));
+    const _headers: any = {};
+    response.headers?.forEach((v: any, k: any) => (_headers[k] = v));
     if (status === 200) {
       yield* this.processGetRandomMediaItemsStreamBody(
         response.body,
         status,
-        headers,
+        _headers,
         signal,
       );
+    } else if (status === 404) {
+      const text = await response.text();
+      throwException('A server side error occurred.', status, text, _headers);
     } else if (status !== 200 && status !== 204) {
-      const _responseText = await response.text();
+      const text = await response.text();
       throwException(
         'An unexpected server error occurred.',
         status,
-        _responseText,
-        headers,
+        text,
+        _headers,
       );
     }
-    yield Promise.resolve<SwaggerResponse<IMediaItem>>(
-      new SwaggerResponse(status, headers, null as any),
-    );
+    yield new SwaggerResponse(status, _headers, null as any);
   }
 
   protected async *processGetRandomMediaItemsStreamBody(

@@ -46,7 +46,7 @@ import {
   type Direction,
   type Image,
   type LoadImageCallback,
-} from '@homescreen/web-components-client/src/index';
+} from '@homescreen/web-components-client';
 import { type IWeatherForecast } from '@/domain/api/homescreen-slideshow-api';
 import { computed } from 'vue';
 import { useDateFormat, useNow } from '@vueuse/core';

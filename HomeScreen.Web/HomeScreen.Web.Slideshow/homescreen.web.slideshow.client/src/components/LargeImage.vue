@@ -15,7 +15,7 @@ import {
   type Image,
   type LoadImageCallback,
   ResponsiveImageSuspenseAsync,
-} from '@homescreen/web-components-client/src/index';
+} from '@homescreen/web-components-client';
 
 defineProps<{
   image: Image;

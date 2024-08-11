@@ -12,13 +12,13 @@ import { DateTime, Duration } from "luxon";
 
 export interface IMediaClient {
 
-    getRandomMediaItems(count?: number | undefined): Promise<SwaggerResponse<MediaItem>>;
+    random(count: number): Promise<SwaggerResponse<MediaItem>>;
 
-    toggleMediaItem(id?: string | undefined, enabled?: boolean | undefined): Promise<SwaggerResponse<MediaItem>>;
+    toggle(mediaId: string, enabled: boolean): Promise<SwaggerResponse<MediaItem>>;
 
-    downloadMediaItem(id?: string | undefined, width?: number | undefined, height?: number | undefined, blur?: boolean | undefined, format?: MediaTransformOptionsFormat | undefined): Promise<SwaggerResponse<FileResponse>>;
+    download(mediaId: string, width: number, height: number, blur: boolean, format: MediaTransformOptionsFormat): Promise<SwaggerResponse<void>>;
 
-    getTransformMediaItemUrl(id?: string | undefined, width?: number | undefined, height?: number | undefined, blur?: boolean | undefined, format?: MediaTransformOptionsFormat | undefined): Promise<SwaggerResponse<string>>;
+    transform(mediaId: string, width: number, height: number, blur: boolean, format: MediaTransformOptionsFormat): Promise<SwaggerResponse<AcceptedTransformMeta>>;
 }
 
 export class MediaClient implements IMediaClient {
@@ -31,11 +31,11 @@ export class MediaClient implements IMediaClient {
         this.baseUrl = baseUrl ?? "";
     }
 
-    getRandomMediaItems(count?: number | undefined, signal?: AbortSignal): Promise<SwaggerResponse<MediaItem>> {
-        let url_ = this.baseUrl + "/api/Media/GetRandomMediaItems?";
-        if (count === null)
-            throw new Error("The parameter 'count' cannot be null.");
-        else if (count !== undefined)
+    random(count: number, signal?: AbortSignal): Promise<SwaggerResponse<MediaItem>> {
+        let url_ = this.baseUrl + "/api/media/random?";
+        if (count === undefined || count === null)
+            throw new Error("The parameter 'count' must be defined and cannot be null.");
+        else
             url_ += "count=" + encodeURIComponent("" + count) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -48,11 +48,11 @@ export class MediaClient implements IMediaClient {
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processGetRandomMediaItems(_response);
+            return this.processRandom(_response);
         });
     }
 
-    protected processGetRandomMediaItems(response: Response): Promise<SwaggerResponse<MediaItem>> {
+    protected processRandom(response: Response): Promise<SwaggerResponse<MediaItem>> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -70,15 +70,14 @@ export class MediaClient implements IMediaClient {
         return Promise.resolve<SwaggerResponse<MediaItem>>(new SwaggerResponse(status, _headers, null as any));
     }
 
-    toggleMediaItem(id?: string | undefined, enabled?: boolean | undefined, signal?: AbortSignal): Promise<SwaggerResponse<MediaItem>> {
-        let url_ = this.baseUrl + "/api/Media/ToggleMediaItem?";
-        if (id === null)
-            throw new Error("The parameter 'id' cannot be null.");
-        else if (id !== undefined)
-            url_ += "id=" + encodeURIComponent("" + id) + "&";
-        if (enabled === null)
-            throw new Error("The parameter 'enabled' cannot be null.");
-        else if (enabled !== undefined)
+    toggle(mediaId: string, enabled: boolean, signal?: AbortSignal): Promise<SwaggerResponse<MediaItem>> {
+        let url_ = this.baseUrl + "/api/media/{mediaId}/toggle?";
+        if (mediaId === undefined || mediaId === null)
+            throw new Error("The parameter 'mediaId' must be defined.");
+        url_ = url_.replace("{mediaId}", encodeURIComponent("" + mediaId));
+        if (enabled === undefined || enabled === null)
+            throw new Error("The parameter 'enabled' must be defined and cannot be null.");
+        else
             url_ += "enabled=" + encodeURIComponent("" + enabled) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -91,27 +90,23 @@ export class MediaClient implements IMediaClient {
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processToggleMediaItem(_response);
+            return this.processToggle(_response);
         });
     }
 
-    protected processToggleMediaItem(response: Response): Promise<SwaggerResponse<MediaItem>> {
+    protected processToggle(response: Response): Promise<SwaggerResponse<MediaItem>> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 202) {
+        if (status === 200) {
             return response.text().then((_responseText) => {
-            let result202: any = null;
-            let resultData202 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result202 = MediaItem.fromJS(resultData202);
-            return new SwaggerResponse(status, _headers, result202);
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = MediaItem.fromJS(resultData200);
+            return new SwaggerResponse(status, _headers, result200);
             });
         } else if (status === 404) {
             return response.text().then((_responseText) => {
-            let result404: any = null;
-            let resultData404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                result404 = resultData404 !== undefined ? resultData404 : <any>null;
-    
-            return throwException("A server side error occurred.", status, _responseText, _headers, result404);
+            return throwException("A server side error occurred.", status, _responseText, _headers);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -121,27 +116,24 @@ export class MediaClient implements IMediaClient {
         return Promise.resolve<SwaggerResponse<MediaItem>>(new SwaggerResponse(status, _headers, null as any));
     }
 
-    downloadMediaItem(id?: string | undefined, width?: number | undefined, height?: number | undefined, blur?: boolean | undefined, format?: MediaTransformOptionsFormat | undefined, signal?: AbortSignal): Promise<SwaggerResponse<FileResponse>> {
-        let url_ = this.baseUrl + "/api/Media/DownloadMediaItem?";
-        if (id === null)
-            throw new Error("The parameter 'id' cannot be null.");
-        else if (id !== undefined)
-            url_ += "id=" + encodeURIComponent("" + id) + "&";
-        if (width === null)
-            throw new Error("The parameter 'width' cannot be null.");
-        else if (width !== undefined)
-            url_ += "width=" + encodeURIComponent("" + width) + "&";
-        if (height === null)
-            throw new Error("The parameter 'height' cannot be null.");
-        else if (height !== undefined)
-            url_ += "height=" + encodeURIComponent("" + height) + "&";
-        if (blur === null)
-            throw new Error("The parameter 'blur' cannot be null.");
-        else if (blur !== undefined)
+    download(mediaId: string, width: number, height: number, blur: boolean, format: MediaTransformOptionsFormat, signal?: AbortSignal): Promise<SwaggerResponse<void>> {
+        let url_ = this.baseUrl + "/api/media/{mediaId}/download/{width}/{height}?";
+        if (mediaId === undefined || mediaId === null)
+            throw new Error("The parameter 'mediaId' must be defined.");
+        url_ = url_.replace("{mediaId}", encodeURIComponent("" + mediaId));
+        if (width === undefined || width === null)
+            throw new Error("The parameter 'width' must be defined.");
+        url_ = url_.replace("{width}", encodeURIComponent("" + width));
+        if (height === undefined || height === null)
+            throw new Error("The parameter 'height' must be defined.");
+        url_ = url_.replace("{height}", encodeURIComponent("" + height));
+        if (blur === undefined || blur === null)
+            throw new Error("The parameter 'blur' must be defined and cannot be null.");
+        else
             url_ += "blur=" + encodeURIComponent("" + blur) + "&";
-        if (format === null)
-            throw new Error("The parameter 'format' cannot be null.");
-        else if (format !== undefined)
+        if (format === undefined || format === null)
+            throw new Error("The parameter 'format' must be defined and cannot be null.");
+        else
             url_ += "format=" + encodeURIComponent("" + format) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -149,74 +141,51 @@ export class MediaClient implements IMediaClient {
             method: "GET",
             signal,
             headers: {
-                "Accept": "application/octet-stream"
             }
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processDownloadMediaItem(_response);
+            return this.processDownload(_response);
         });
     }
 
-    protected processDownloadMediaItem(response: Response): Promise<SwaggerResponse<FileResponse>> {
+    protected processDownload(response: Response): Promise<SwaggerResponse<void>> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200 || status === 206) {
-            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
-            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
-            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
-            if (fileName) {
-                fileName = decodeURIComponent(fileName);
-            } else {
-                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
-                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
-            }
-            return response.blob().then(blob => { return new SwaggerResponse(status, _headers, { fileName: fileName, data: blob, status: status, headers: _headers }); });
-        } else if (status === 404) {
+        if (status === 404) {
             return response.text().then((_responseText) => {
-            let result404: any = null;
-            let resultData404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                result404 = resultData404 !== undefined ? resultData404 : <any>null;
-    
-            return throwException("A server side error occurred.", status, _responseText, _headers, result404);
+            return throwException("A server side error occurred.", status, _responseText, _headers);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
-            let result400: any = null;
-            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                result400 = resultData400 !== undefined ? resultData400 : <any>null;
-    
-            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            return throwException("A server side error occurred.", status, _responseText, _headers);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<SwaggerResponse<FileResponse>>(new SwaggerResponse(status, _headers, null as any));
+        return Promise.resolve<SwaggerResponse<void>>(new SwaggerResponse(status, _headers, null as any));
     }
 
-    getTransformMediaItemUrl(id?: string | undefined, width?: number | undefined, height?: number | undefined, blur?: boolean | undefined, format?: MediaTransformOptionsFormat | undefined, signal?: AbortSignal): Promise<SwaggerResponse<string>> {
-        let url_ = this.baseUrl + "/api/Media/GetTransformMediaItemUrl?";
-        if (id === null)
-            throw new Error("The parameter 'id' cannot be null.");
-        else if (id !== undefined)
-            url_ += "id=" + encodeURIComponent("" + id) + "&";
-        if (width === null)
-            throw new Error("The parameter 'width' cannot be null.");
-        else if (width !== undefined)
-            url_ += "width=" + encodeURIComponent("" + width) + "&";
-        if (height === null)
-            throw new Error("The parameter 'height' cannot be null.");
-        else if (height !== undefined)
-            url_ += "height=" + encodeURIComponent("" + height) + "&";
-        if (blur === null)
-            throw new Error("The parameter 'blur' cannot be null.");
-        else if (blur !== undefined)
+    transform(mediaId: string, width: number, height: number, blur: boolean, format: MediaTransformOptionsFormat, signal?: AbortSignal): Promise<SwaggerResponse<AcceptedTransformMeta>> {
+        let url_ = this.baseUrl + "/api/media/{mediaId}/transform/{width}/{height}?";
+        if (mediaId === undefined || mediaId === null)
+            throw new Error("The parameter 'mediaId' must be defined.");
+        url_ = url_.replace("{mediaId}", encodeURIComponent("" + mediaId));
+        if (width === undefined || width === null)
+            throw new Error("The parameter 'width' must be defined.");
+        url_ = url_.replace("{width}", encodeURIComponent("" + width));
+        if (height === undefined || height === null)
+            throw new Error("The parameter 'height' must be defined.");
+        url_ = url_.replace("{height}", encodeURIComponent("" + height));
+        if (blur === undefined || blur === null)
+            throw new Error("The parameter 'blur' must be defined and cannot be null.");
+        else
             url_ += "blur=" + encodeURIComponent("" + blur) + "&";
-        if (format === null)
-            throw new Error("The parameter 'format' cannot be null.");
-        else if (format !== undefined)
+        if (format === undefined || format === null)
+            throw new Error("The parameter 'format' must be defined and cannot be null.");
+        else
             url_ += "format=" + encodeURIComponent("" + format) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -229,48 +198,43 @@ export class MediaClient implements IMediaClient {
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processGetTransformMediaItemUrl(_response);
+            return this.processTransform(_response);
         });
     }
 
-    protected processGetTransformMediaItemUrl(response: Response): Promise<SwaggerResponse<string>> {
+    protected processTransform(response: Response): Promise<SwaggerResponse<AcceptedTransformMeta>> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 202) {
+        if (status === 404) {
+            return response.text().then((_responseText) => {
+            return throwException("A server side error occurred.", status, _responseText, _headers);
+            });
+        } else if (status === 202) {
             return response.text().then((_responseText) => {
             let result202: any = null;
             let resultData202 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                result202 = resultData202 !== undefined ? resultData202 : <any>null;
-    
+            result202 = AcceptedTransformMeta.fromJS(resultData202);
             return new SwaggerResponse(status, _headers, result202);
-            });
-        } else if (status === 404) {
-            return response.text().then((_responseText) => {
-            let result404: any = null;
-            let resultData404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                result404 = resultData404 !== undefined ? resultData404 : <any>null;
-    
-            return throwException("A server side error occurred.", status, _responseText, _headers, result404);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<SwaggerResponse<string>>(new SwaggerResponse(status, _headers, null as any));
+        return Promise.resolve<SwaggerResponse<AcceptedTransformMeta>>(new SwaggerResponse(status, _headers, null as any));
     }
 }
 
-export interface IWeatherForecastClient {
+export interface IWeatherClient {
 
-    getCurrentForecast(longitude?: number | undefined, latitude?: number | undefined): Promise<SwaggerResponse<WeatherForecast>>;
+    current(longitude: number, latitude: number): Promise<SwaggerResponse<WeatherForecast>>;
 
-    getHourlyForecast(longitude?: number | undefined, latitude?: number | undefined): Promise<SwaggerResponse<HourlyForecast[]>>;
+    hourly(longitude: number, latitude: number): Promise<SwaggerResponse<HourlyForecast[]>>;
 
-    getDailyForecast(longitude?: number | undefined, latitude?: number | undefined): Promise<SwaggerResponse<DailyForecast[]>>;
+    daily(longitude: number, latitude: number): Promise<SwaggerResponse<DailyForecast[]>>;
 }
 
-export class WeatherForecastClient implements IWeatherForecastClient {
+export class WeatherClient implements IWeatherClient {
     private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
     private baseUrl: string;
     protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
@@ -280,16 +244,14 @@ export class WeatherForecastClient implements IWeatherForecastClient {
         this.baseUrl = baseUrl ?? "";
     }
 
-    getCurrentForecast(longitude?: number | undefined, latitude?: number | undefined, signal?: AbortSignal): Promise<SwaggerResponse<WeatherForecast>> {
-        let url_ = this.baseUrl + "/api/WeatherForecast/GetCurrentForecast?";
-        if (longitude === null)
-            throw new Error("The parameter 'longitude' cannot be null.");
-        else if (longitude !== undefined)
-            url_ += "longitude=" + encodeURIComponent("" + longitude) + "&";
-        if (latitude === null)
-            throw new Error("The parameter 'latitude' cannot be null.");
-        else if (latitude !== undefined)
-            url_ += "latitude=" + encodeURIComponent("" + latitude) + "&";
+    current(longitude: number, latitude: number, signal?: AbortSignal): Promise<SwaggerResponse<WeatherForecast>> {
+        let url_ = this.baseUrl + "/api/weather/{longitude}/{latitude}/current";
+        if (longitude === undefined || longitude === null)
+            throw new Error("The parameter 'longitude' must be defined.");
+        url_ = url_.replace("{longitude}", encodeURIComponent("" + longitude));
+        if (latitude === undefined || latitude === null)
+            throw new Error("The parameter 'latitude' must be defined.");
+        url_ = url_.replace("{latitude}", encodeURIComponent("" + latitude));
         url_ = url_.replace(/[?&]$/, "");
 
         let options_: RequestInit = {
@@ -301,11 +263,11 @@ export class WeatherForecastClient implements IWeatherForecastClient {
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processGetCurrentForecast(_response);
+            return this.processCurrent(_response);
         });
     }
 
-    protected processGetCurrentForecast(response: Response): Promise<SwaggerResponse<WeatherForecast>> {
+    protected processCurrent(response: Response): Promise<SwaggerResponse<WeatherForecast>> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -315,6 +277,10 @@ export class WeatherForecastClient implements IWeatherForecastClient {
             result200 = WeatherForecast.fromJS(resultData200);
             return new SwaggerResponse(status, _headers, result200);
             });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            return throwException("A server side error occurred.", status, _responseText, _headers);
+            });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
@@ -323,16 +289,14 @@ export class WeatherForecastClient implements IWeatherForecastClient {
         return Promise.resolve<SwaggerResponse<WeatherForecast>>(new SwaggerResponse(status, _headers, null as any));
     }
 
-    getHourlyForecast(longitude?: number | undefined, latitude?: number | undefined, signal?: AbortSignal): Promise<SwaggerResponse<HourlyForecast[]>> {
-        let url_ = this.baseUrl + "/api/WeatherForecast/GetHourlyForecast?";
-        if (longitude === null)
-            throw new Error("The parameter 'longitude' cannot be null.");
-        else if (longitude !== undefined)
-            url_ += "longitude=" + encodeURIComponent("" + longitude) + "&";
-        if (latitude === null)
-            throw new Error("The parameter 'latitude' cannot be null.");
-        else if (latitude !== undefined)
-            url_ += "latitude=" + encodeURIComponent("" + latitude) + "&";
+    hourly(longitude: number, latitude: number, signal?: AbortSignal): Promise<SwaggerResponse<HourlyForecast[]>> {
+        let url_ = this.baseUrl + "/api/weather/{longitude}/{latitude}/hourly";
+        if (longitude === undefined || longitude === null)
+            throw new Error("The parameter 'longitude' must be defined.");
+        url_ = url_.replace("{longitude}", encodeURIComponent("" + longitude));
+        if (latitude === undefined || latitude === null)
+            throw new Error("The parameter 'latitude' must be defined.");
+        url_ = url_.replace("{latitude}", encodeURIComponent("" + latitude));
         url_ = url_.replace(/[?&]$/, "");
 
         let options_: RequestInit = {
@@ -344,11 +308,11 @@ export class WeatherForecastClient implements IWeatherForecastClient {
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processGetHourlyForecast(_response);
+            return this.processHourly(_response);
         });
     }
 
-    protected processGetHourlyForecast(response: Response): Promise<SwaggerResponse<HourlyForecast[]>> {
+    protected processHourly(response: Response): Promise<SwaggerResponse<HourlyForecast[]>> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -365,6 +329,10 @@ export class WeatherForecastClient implements IWeatherForecastClient {
             }
             return new SwaggerResponse(status, _headers, result200);
             });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            return throwException("A server side error occurred.", status, _responseText, _headers);
+            });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
@@ -373,16 +341,14 @@ export class WeatherForecastClient implements IWeatherForecastClient {
         return Promise.resolve<SwaggerResponse<HourlyForecast[]>>(new SwaggerResponse(status, _headers, null as any));
     }
 
-    getDailyForecast(longitude?: number | undefined, latitude?: number | undefined, signal?: AbortSignal): Promise<SwaggerResponse<DailyForecast[]>> {
-        let url_ = this.baseUrl + "/api/WeatherForecast/GetDailyForecast?";
-        if (longitude === null)
-            throw new Error("The parameter 'longitude' cannot be null.");
-        else if (longitude !== undefined)
-            url_ += "longitude=" + encodeURIComponent("" + longitude) + "&";
-        if (latitude === null)
-            throw new Error("The parameter 'latitude' cannot be null.");
-        else if (latitude !== undefined)
-            url_ += "latitude=" + encodeURIComponent("" + latitude) + "&";
+    daily(longitude: number, latitude: number, signal?: AbortSignal): Promise<SwaggerResponse<DailyForecast[]>> {
+        let url_ = this.baseUrl + "/api/weather/{longitude}/{latitude}/daily";
+        if (longitude === undefined || longitude === null)
+            throw new Error("The parameter 'longitude' must be defined.");
+        url_ = url_.replace("{longitude}", encodeURIComponent("" + longitude));
+        if (latitude === undefined || latitude === null)
+            throw new Error("The parameter 'latitude' must be defined.");
+        url_ = url_.replace("{latitude}", encodeURIComponent("" + latitude));
         url_ = url_.replace(/[?&]$/, "");
 
         let options_: RequestInit = {
@@ -394,11 +360,11 @@ export class WeatherForecastClient implements IWeatherForecastClient {
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processGetDailyForecast(_response);
+            return this.processDaily(_response);
         });
     }
 
-    protected processGetDailyForecast(response: Response): Promise<SwaggerResponse<DailyForecast[]>> {
+    protected processDaily(response: Response): Promise<SwaggerResponse<DailyForecast[]>> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -414,6 +380,10 @@ export class WeatherForecastClient implements IWeatherForecastClient {
                 result200 = <any>null;
             }
             return new SwaggerResponse(status, _headers, result200);
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            return throwException("A server side error occurred.", status, _responseText, _headers);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -527,6 +497,58 @@ export enum MediaTransformOptionsFormat {
     Png = "Png",
     WebP = "WebP",
     Avif = "Avif",
+}
+
+export class AcceptedTransformMeta implements IAcceptedTransformMeta {
+    mediaId?: string;
+    width?: number;
+    height?: number;
+    blur?: boolean;
+    format?: MediaTransformOptionsFormat;
+
+    constructor(data?: IAcceptedTransformMeta) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.mediaId = _data["mediaId"];
+            this.width = _data["width"];
+            this.height = _data["height"];
+            this.blur = _data["blur"];
+            this.format = _data["format"];
+        }
+    }
+
+    static fromJS(data: any): AcceptedTransformMeta {
+        data = typeof data === 'object' ? data : {};
+        let result = new AcceptedTransformMeta();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["mediaId"] = this.mediaId;
+        data["width"] = this.width;
+        data["height"] = this.height;
+        data["blur"] = this.blur;
+        data["format"] = this.format;
+        return data;
+    }
+}
+
+export interface IAcceptedTransformMeta {
+    mediaId?: string;
+    width?: number;
+    height?: number;
+    blur?: boolean;
+    format?: MediaTransformOptionsFormat;
 }
 
 export class WeatherForecast implements IWeatherForecast {
@@ -779,13 +801,6 @@ export class SwaggerResponse<TResult> {
         this.headers = headers;
         this.result = result;
     }
-}
-
-export interface FileResponse {
-    data: Blob;
-    status: number;
-    fileName?: string;
-    headers?: { [name: string]: any };
 }
 
 export class ApiException extends Error {

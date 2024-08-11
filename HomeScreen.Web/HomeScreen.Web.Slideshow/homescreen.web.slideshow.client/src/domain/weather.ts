@@ -1,13 +1,13 @@
 import {
+  WeatherClient,
   WeatherForecast,
-  WeatherForecastClient,
 } from '@/domain/api/homescreen-slideshow-api';
 
-const weatherApi = new WeatherForecastClient();
+const weatherApi = new WeatherClient();
 
 export const loadWeather = async (): Promise<WeatherForecast> => {
   try {
-    const response = await weatherApi.getCurrentForecast(151.20732, -33.86785);
+    const response = await weatherApi.current(151.20732, -33.86785);
     return response.result;
   } catch (e) {
     console.log('Unable to load weather data', e);

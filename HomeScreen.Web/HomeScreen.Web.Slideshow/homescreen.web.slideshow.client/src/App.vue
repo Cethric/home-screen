@@ -1,11 +1,7 @@
 <template>
   <Suspense>
     <template #default>
-      <SlideshowView
-        :loadMedia="mediaLoader"
-        :loadWeather="weatherLoader"
-        :total="200"
-      />
+      <SlideshowView :loadMedia="mediaLoader" :loadWeather="weatherLoader" />
     </template>
     <template #fallback>
       <FullscreenMainLoader />

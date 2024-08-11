@@ -5,8 +5,5 @@
 </template>
 
 <script lang="ts" setup>
-import {
-  LoadingSpinner,
-  Variants,
-} from '@homescreen/web-components-client/src/index';
+import { LoadingSpinner, Variants } from '@homescreen/web-components-client';
 </script>

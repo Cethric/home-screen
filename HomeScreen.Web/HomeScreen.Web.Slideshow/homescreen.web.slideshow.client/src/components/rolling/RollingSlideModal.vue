@@ -78,7 +78,7 @@ import {
   ModalDialog,
   PolaroidCard,
   ResponsiveImageSuspenseAsync,
-} from '@homescreen/web-components-client/src/index';
+} from '@homescreen/web-components-client';
 import { useElementVisibility } from '@vueuse/core';
 import { ref } from 'vue';
 import LargeImage from '@/components/LargeImage.vue';
@@ -93,5 +93,7 @@ defineProps<{
 const emits = defineEmits<{ pause: []; resume: [] }>();
 
 const sliderModal = ref<HTMLElement>();
-const isVisible = useElementVisibility(sliderModal, { threshold: [0.1, 0.1] });
+const isVisible = useElementVisibility(sliderModal, {
+  threshold: [0.1, 0.9],
+});
 </script>

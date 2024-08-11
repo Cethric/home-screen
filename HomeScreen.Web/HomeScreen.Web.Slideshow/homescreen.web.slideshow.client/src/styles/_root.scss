@@ -1,4 +1,3 @@
 @use 'tailwind';
 @use 'nprogress';
-@use '@homescreen/web-components-client/src/styles/animate';
-@use '@homescreen/web-components-client/src/styles/leaflet';
+@use '@homescreen/web-components-client/dist/style.css';

@@ -4,7 +4,7 @@ import {
   type MediaItem,
   MediaTransformOptionsFormat,
 } from '@/domain/api/homescreen-slideshow-api';
-import type { LoadImageCallback } from '@homescreen/web-components-client/src/index';
+import type { LoadImageCallback } from '@homescreen/web-components-client';
 
 const mediaApi = new StreamingMediaApi();
 
@@ -12,7 +12,7 @@ export async function* loadMedia(
   total: number,
   signal?: AbortSignal,
 ): AsyncGenerator<IMediaItem> {
-  const request = mediaApi.getRandomMediaItemsStream(total, signal);
+  const request = mediaApi.randomStream(total, signal);
   for await (const response of request) {
     signal?.throwIfAborted();
     yield response.result;
@@ -27,7 +27,7 @@ export const loadImage = async (
   format: MediaTransformOptionsFormat,
   signal?: AbortSignal,
 ): Promise<string> => {
-  const response = await mediaApi.getTransformMediaItemUrl(
+  const response = await mediaApi.transform(
     imageId,
     width,
     height,
@@ -45,7 +45,7 @@ export const toggleMedia = async (
   state: boolean,
 ): Promise<MediaItem> => {
   console.log('toggleMedia start', imageId, state);
-  const response = await mediaApi.toggleMediaItem(imageId, state);
+  const response = await mediaApi.toggle(imageId, state);
   console.log('toggleMedia end', response.result.id, response.result.enabled);
   return response.result;
 };

@@ -45,7 +45,7 @@ import {
   ModalDialog,
   PolaroidCard,
   ResponsiveImageSuspenseAsync,
-} from '@homescreen/web-components-client/src/index';
+} from '@homescreen/web-components-client';
 import { useAsyncState, useWindowSize } from '@vueuse/core';
 import { toggleMedia } from '@/domain/media';
 import { computed } from 'vue';
