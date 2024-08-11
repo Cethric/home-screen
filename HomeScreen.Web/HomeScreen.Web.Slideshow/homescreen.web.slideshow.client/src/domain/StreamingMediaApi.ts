@@ -25,14 +25,14 @@ export class StreamingMediaApi extends MediaClient {
   }
 
   protected get url(): string {
-    // @ts-ignore
+    // @ts-expect-error
     return this.baseUrl;
   }
 
   protected get client(): {
     fetch(url: RequestInfo, init?: RequestInit): Promise<Response>;
   } {
-    // @ts-ignore
+    // @ts-expect-error
     return this.http;
   }
 
