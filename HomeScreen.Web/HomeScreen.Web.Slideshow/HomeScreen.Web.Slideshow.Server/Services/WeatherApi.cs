@@ -1,25 +1,18 @@
-using Grpc.Core;
+﻿using Grpc.Core;
 using HomeScreen.Service.Proto.Services;
 using HomeScreen.Service.Weather;
 using HomeScreen.Web.Slideshow.Server.Entities;
-using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
 using DailyForecast = HomeScreen.Web.Slideshow.Server.Entities.DailyForecast;
 using HourlyForecast = HomeScreen.Web.Slideshow.Server.Entities.HourlyForecast;
 
-namespace HomeScreen.Web.Slideshow.Server.Controllers;
+namespace HomeScreen.Web.Slideshow.Server.Services;
 
-[ApiController]
-[Route("api/[controller]/[action]")]
-public class WeatherForecastController(ILogger<WeatherForecastController> logger, WeatherGrpcClient client)
-    : ControllerBase
+public class WeatherApi(ILogger<WeatherApi> logger, WeatherGrpcClient client) : IWeatherApi
 {
-    [HttpGet(Name = "GetCurrentForecast")]
-    [ProducesResponseType<WeatherForecast>(StatusCodes.Status200OK)]
-    public async Task<ActionResult<WeatherForecast>> GetCurrentForecast(
-        [FromQuery] float longitude,
-        [FromQuery] float latitude,
-        CancellationToken cancellationToken = default
+    public async Task<WeatherForecast?> GetCurrentForecast(
+        float longitude,
+        float latitude,
+        CancellationToken cancellationToken
     )
     {
         logger.LogInformation("Request current weather forecast");
@@ -28,25 +21,22 @@ public class WeatherForecastController(ILogger<WeatherForecastController> logger
             new CallOptions().WithDeadline(DateTimeOffset.UtcNow.AddMinutes(2).UtcDateTime)
                 .WithCancellationToken(cancellationToken)
         );
-        return Ok(
-            new WeatherForecast
-            {
-                FeelsLikeTemperature = result.FeelsLikeTemperature,
-                MaxTemperature = result.MaxTemperature,
-                MinTemperature = result.MinTemperature,
-                ChanceOfRain = result.ChanceOfRain,
-                AmountOfRain = result.AmountOfRain,
-                WeatherCode = result.WeatherCode,
-            }
-        );
+        if (result is null) return null;
+        return new WeatherForecast
+        {
+            FeelsLikeTemperature = result.FeelsLikeTemperature,
+            MaxTemperature = result.MaxTemperature,
+            MinTemperature = result.MinTemperature,
+            ChanceOfRain = result.ChanceOfRain,
+            AmountOfRain = result.AmountOfRain,
+            WeatherCode = result.WeatherCode,
+        };
     }
 
-    [HttpGet(Name = "GetHourlyForecast")]
-    [ProducesResponseType<IEnumerable<HourlyForecast>>(StatusCodes.Status200OK)]
-    public async Task<IEnumerable<HourlyForecast>> GetHourlyForecast(
-        [FromQuery] float longitude,
-        [FromQuery] float latitude,
-        CancellationToken cancellationToken = default
+    public async Task<IEnumerable<HourlyForecast>?> GetHourlyForecast(
+        float longitude,
+        float latitude,
+        CancellationToken cancellationToken
     )
     {
         logger.LogInformation("Request hourly weather forecast");
@@ -55,7 +45,7 @@ public class WeatherForecastController(ILogger<WeatherForecastController> logger
             new CallOptions().WithDeadline(DateTimeOffset.UtcNow.AddMinutes(2).UtcDateTime)
                 .WithCancellationToken(cancellationToken)
         );
-        return result.Forecast.Select(
+        return result?.Forecast.Select(
             forecast => new HourlyForecast
             {
                 Time = DateTimeOffset.FromUnixTimeMilliseconds(forecast.Time),
@@ -71,12 +61,10 @@ public class WeatherForecastController(ILogger<WeatherForecastController> logger
         );
     }
 
-    [HttpGet(Name = "GetDailyForecast")]
-    [ProducesResponseType<IEnumerable<DailyForecast>>(StatusCodes.Status200OK)]
-    public async Task<IEnumerable<DailyForecast>> GetDailyForecast(
-        [FromQuery] float longitude,
-        [FromQuery] float latitude,
-        CancellationToken cancellationToken = default
+    public async Task<IEnumerable<DailyForecast>?> GetDailyForecast(
+        float longitude,
+        float latitude,
+        CancellationToken cancellationToken
     )
     {
         logger.LogInformation("Request daily weather forecast");
@@ -85,7 +73,7 @@ public class WeatherForecastController(ILogger<WeatherForecastController> logger
             new CallOptions().WithDeadline(DateTimeOffset.UtcNow.AddMinutes(2).UtcDateTime)
                 .WithCancellationToken(cancellationToken)
         );
-        return result.Forecast.Select(
+        return result?.Forecast.Select(
             forecast => new DailyForecast
             {
                 Time = DateOnly.FromDateTime(DateTimeOffset.FromUnixTimeMilliseconds(forecast.Time).Date),

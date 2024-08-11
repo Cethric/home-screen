@@ -4,4 +4,5 @@ namespace HomeScreen.Web.Slideshow.Server.Services;
 
 public interface IJsonStreamingResultExecutor<T> : IActionResultExecutor<JsonStreamingResult<T>>
 {
+    Task ExecuteAsync(HttpContext httpContext, JsonStreamingResult<T> result);
 }

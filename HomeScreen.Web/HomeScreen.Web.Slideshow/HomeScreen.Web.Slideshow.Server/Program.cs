@@ -2,6 +2,7 @@ using System.Text.Json.Serialization;
 using HomeScreen.Service.MediaClient.Generated;
 using HomeScreen.Service.Proto.Services;
 using HomeScreen.ServiceDefaults;
+using HomeScreen.Web.Slideshow.Server.Endpoints;
 using HomeScreen.Web.Slideshow.Server.Services;
 using NJsonSchema.Generation;
 
@@ -64,10 +65,14 @@ builder.Services.AddScoped<IMediaFileClient, MediaFileClient>(
     sp => new MediaFileClient("", sp.GetRequiredService<IHttpClientFactory>().CreateClient("MediaDownloader"))
 );
 builder.Services.AddScoped<IMediaDownloader, MediaDownloader>();
+builder.Services.AddScoped<IMediaApi, MediaApi>();
+builder.Services.AddScoped<IWeatherApi, WeatherApi>();
 
 var app = builder.Build();
 app.MapDefaultEndpoints();
 app.UseDefaultFiles();
+app.RegisterMediaEndpoints();
+app.RegisterWeatherEndpoints();
 app.UseStaticFiles();
 
 // Configure the HTTP request pipeline.
