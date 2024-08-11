@@ -1,5 +1,5 @@
 /* eslint-env node */
-require('@rushstack/eslint-patch/modern-module-resolution');
+require('@rushstack/eslint-patch/modern-module-resolution')
 
 module.exports = {
   root: true,
@@ -10,9 +10,9 @@ module.exports = {
     '@vue/eslint-config-prettier/skip-formatting',
     'prettier',
     'plugin:storybook/recommended',
-    'plugin:tailwindcss/recommended',
+    'plugin:tailwindcss/recommended'
   ],
   parserOptions: {
-    ecmaVersion: 'latest',
-  },
-};
+    ecmaVersion: 'latest'
+  }
+}

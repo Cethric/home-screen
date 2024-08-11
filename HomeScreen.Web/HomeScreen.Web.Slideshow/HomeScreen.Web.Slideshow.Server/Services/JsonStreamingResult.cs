@@ -11,31 +11,31 @@ public class JsonStreamingResult<TValue>(
 ) : IActionResult, IResult, IEndpointMetadataProvider, IStatusCodeHttpResult
 {
     public IAsyncEnumerable<TValue> Data { get; } = data;
-    public JsonSerializerOptions? JsonSerializerOptions { get; } = jsonSerializerOptions;
+public JsonSerializerOptions? JsonSerializerOptions { get; } = jsonSerializerOptions;
 
-    public async Task ExecuteResultAsync(ActionContext context)
-    {
-        var executor = context.HttpContext.RequestServices.GetRequiredService<IJsonStreamingResultExecutor<TValue>>();
+public async Task ExecuteResultAsync(ActionContext context)
+{
+    var executor = context.HttpContext.RequestServices.GetRequiredService<IJsonStreamingResultExecutor<TValue>>();
 
-        await executor.ExecuteAsync(context, this);
-    }
+    await executor.ExecuteAsync(context, this);
+}
 
-    public async Task ExecuteAsync(HttpContext httpContext)
-    {
-        var executor = httpContext.RequestServices.GetRequiredService<IJsonStreamingResultExecutor<TValue>>();
+public async Task ExecuteAsync(HttpContext httpContext)
+{
+    var executor = httpContext.RequestServices.GetRequiredService<IJsonStreamingResultExecutor<TValue>>();
 
-        await executor.ExecuteAsync(httpContext, this);
-    }
+    await executor.ExecuteAsync(httpContext, this);
+}
 
-    public static void PopulateMetadata(MethodInfo method, EndpointBuilder builder)
-    {
-        ArgumentNullException.ThrowIfNull(method);
-        ArgumentNullException.ThrowIfNull(builder);
+public static void PopulateMetadata(MethodInfo method, EndpointBuilder builder)
+{
+    ArgumentNullException.ThrowIfNull(method);
+    ArgumentNullException.ThrowIfNull(builder);
 
-        builder.Metadata.Add(
-            new ProducesResponseTypeMetadata(StatusCodes.Status200OK, typeof(TValue), new[] { "application/json" })
-        );
-    }
+    builder.Metadata.Add(
+        new ProducesResponseTypeMetadata(StatusCodes.Status200OK, typeof(TValue), new[] { "application/json" })
+    );
+}
 
-    public int? StatusCode => StatusCodes.Status200OK;
+public int? StatusCode => StatusCodes.Status200OK;
 }
