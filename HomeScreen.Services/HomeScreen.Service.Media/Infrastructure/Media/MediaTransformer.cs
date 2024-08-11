@@ -39,7 +39,7 @@ public class MediaTransformer(ILogger<MediaTransformer> logger, IMediaPaths medi
                 options.Width,
                 options.Height
             );
-            image.FilterType = options is { Width: < 250 } or { Height: < 250 }
+            image.FilterType = options is { Width: < 150 } or { Height: < 150 }
                 ? FilterType.Point
                 : FilterType.Gaussian;
             image.Depth = 4;
@@ -59,9 +59,9 @@ public class MediaTransformer(ILogger<MediaTransformer> logger, IMediaPaths medi
         }
         else
         {
-            image.FilterType = options is { Width: < 250 } or { Height: < 250 }
+            image.FilterType = options is { Width: < 150 } or { Height: < 150 }
                 ? FilterType.Point
-                : FilterType.LanczosRadius;
+                : FilterType.Lanczos2Sharp;
 
             logger.LogInformation(
                 "Resizing Image {TransformPath} to max size {Width}x{Height}",
@@ -72,15 +72,15 @@ public class MediaTransformer(ILogger<MediaTransformer> logger, IMediaPaths medi
             image.InterpolativeResize(
                 int.Max(50, options.Width),
                 int.Max(50, options.Height),
-                options is { Width: < 250 } or { Height: < 250 }
-                    ? PixelInterpolateMethod.Nearest
-                    : PixelInterpolateMethod.Mesh
+                options is { Width: < 150 } or { Height: < 150 }
+                    ? PixelInterpolateMethod.Integer
+                    : PixelInterpolateMethod.Average
             );
             image.Format = options.Format.TransformFormatToMagickFormat();
             image.Depth = 24;
             image.ColorSpace = ColorSpace.Rec709YCbCr;
             image.ColorType = ColorType.TrueColor;
-            image.Quality = 80;
+            image.Quality = 95;
             image.Enhance();
             image.SetAttribute("hdr:write-gain-map", true);
             image.SetProfile(ColorProfile.ColorMatchRGB, ColorTransformMode.HighRes);
