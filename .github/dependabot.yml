@@ -19,6 +19,17 @@ updates:
       interval: "weekly"
 
   - package-ecosystem: "nuget"
-    directory: "/"
+    directories:
+      - "HomeScreen.AppHost"
+      - "HomeScreen.Database/HomeScreen.Database.MediaDb"
+      - "HomeScreen.Database/HomeScreen.Database.MediaDb.Migrations"
+      - "HomeScreen.ServiceDefaults"
+      - "HomeScreen.Services/HomeScreen.Service.Media"
+      - "HomeScreen.Services/HomeScreen.Service.Media.UnitTests"
+      - "HomeScreen.Services/HomeScreen.Service.MediaClient"
+      - "HomeScreen.Services/HomeScreen.Service.Proto"
+      - "HomeScreen.Services/HomeScreen.Service.Weather"
+      - "HomeScreen.Web/HomeScreen.Web.Dashboard/HomeScreen.Web.Dashboard.Server"
+      - "HomeScreen.Web/HomeScreen.Web.Dashboard/HomeScreen.Web.Slideshow.Server"
     schedule:
       interval: "weekly"
