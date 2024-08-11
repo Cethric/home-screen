@@ -21,7 +21,7 @@ import ResponsiveImage from './ResponsiveImage.vue';
 import type {
   ComputedMediaSize,
   LoadImageCallback,
-} from '../helpers/computedMedia';
+} from '@/helpers/computedMedia';
 
 defineProps<{
   image: Image;

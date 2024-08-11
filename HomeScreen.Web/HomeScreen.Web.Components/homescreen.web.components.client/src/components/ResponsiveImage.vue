@@ -1,10 +1,10 @@
 <template>
-  <picture>
-    <source v-if="fullAvif" :srcset="fullAvif" type="image/avif" />
-    <source v-if="fullJxl" :srcset="fullJxl" type="image/jxl" />
-    <source v-if="fullWebP" :srcset="fullWebP" type="image/webp" />
-    <source v-if="fullPng" :srcset="fullPng" type="image/png" />
-    <source v-if="fullJpeg" :srcset="fullJpeg" type="image/jpeg" />
+  <picture v-if="loading">
+    <source v-if="loading && fullAvif" :srcset="fullAvif" type="image/avif" />
+    <source v-if="loading && fullJxl" :srcset="fullJxl" type="image/jxl" />
+    <source v-if="loading && fullWebP" :srcset="fullWebP" type="image/webp" />
+    <source v-if="loading && fullPng" :srcset="fullPng" type="image/png" />
+    <source v-if="loading && fullJpeg" :srcset="fullJpeg" type="image/jpeg" />
     <img
       :alt="
         image.location?.name ||
@@ -14,16 +14,22 @@
       :src="loading"
     />
   </picture>
+  <LoadingSpinner
+    v-else
+    :style="{ width: imageSize.width, height: imageSize.height }"
+    :variant="Variants.primary"
+  />
 </template>
 
-<script async lang="ts" setup>
-import { type Image } from './properties';
+<script lang="ts" setup>
+import { type Image, Variants } from './properties';
 import {
+  asyncImage,
   type ComputedMediaSize,
   type LoadImageCallback,
   responsiveImageLoader,
-} from '../helpers/computedMedia';
-import { useMemoize } from '@vueuse/core';
+} from '@/helpers/computedMedia';
+import LoadingSpinner from './LoadingSpinner.vue';
 
 const props = defineProps<{
   image: Image;
@@ -31,60 +37,53 @@ const props = defineProps<{
   imageSize: ComputedMediaSize;
 }>();
 
-const loadingImage = useMemoize(
-  async (imageId: string, width: number, height: number) =>
-    await props.loadImage(
-      imageId,
-      Math.max(width, 200),
-      Math.max(height, 200),
-      true,
-      'Jpeg',
-    ),
-);
-
-const loading = await loadingImage(
-  props.image.id,
-  props.imageSize.width,
-  props.imageSize.height,
-);
-const fullAvif = responsiveImageLoader(
-  loading,
-  'Avif',
-  props.image.id,
-  props.imageSize.width,
-  props.imageSize.height,
+const loading = asyncImage(
   props.loadImage,
-);
-const fullJxl = responsiveImageLoader(
-  loading,
-  'JpegXL',
-  props.image.id,
-  props.imageSize.width,
-  props.imageSize.height,
-  props.loadImage,
-);
-const fullWebP = responsiveImageLoader(
-  loading,
-  'WebP',
-  props.image.id,
-  props.imageSize.width,
-  props.imageSize.height,
-  props.loadImage,
-);
-const fullPng = responsiveImageLoader(
-  loading,
-  'Png',
-  props.image.id,
-  props.imageSize.width,
-  props.imageSize.height,
-  props.loadImage,
-);
-const fullJpeg = responsiveImageLoader(
-  loading,
   'Jpeg',
   props.image.id,
   props.imageSize.width,
   props.imageSize.height,
+  true,
+);
+
+const fullAvif = responsiveImageLoader(
   props.loadImage,
+  'Avif',
+  props.image.id,
+  props.imageSize.width,
+  props.imageSize.height,
+  loading,
+);
+const fullJxl = responsiveImageLoader(
+  props.loadImage,
+  'JpegXL',
+  props.image.id,
+  props.imageSize.width,
+  props.imageSize.height,
+  loading,
+);
+const fullWebP = responsiveImageLoader(
+  props.loadImage,
+  'WebP',
+  props.image.id,
+  props.imageSize.width,
+  props.imageSize.height,
+  loading,
+);
+const fullPng = responsiveImageLoader(
+  props.loadImage,
+  'Png',
+  props.image.id,
+  props.imageSize.width,
+  props.imageSize.height,
+  loading,
+);
+const fullJpeg = responsiveImageLoader(
+  props.loadImage,
+  'Jpeg',
+  props.image.id,
+  props.imageSize.width,
+  props.imageSize.height,
+  loading,
 );
 </script>

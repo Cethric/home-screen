@@ -1,3 +1,5 @@
+import './styles/_root.scss';
+
 import PolaroidCard from './components/PolaroidCard.vue';
 import LeafletMap from './components/LeafletMap.vue';
 import { LeafletMapAsync } from './components/LeafletMapAsync';

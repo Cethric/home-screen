@@ -49,7 +49,7 @@
 import { type Direction, Directions, type Image } from './properties';
 import { useElementSize } from '@vueuse/core';
 import { computed, ref } from 'vue';
-import { type LoadImageCallback } from '../helpers/computedMedia';
+import { type LoadImageCallback } from '@/helpers/computedMedia';
 import { ResponsiveImageSuspenseAsync } from './ResponsiveImageSuspenseAsync';
 
 withDefaults(
