@@ -27,7 +27,7 @@
     "@homescreen/web-components-client": "workspace:*",
     "@vueuse/components": "^10.11.1",
     "@vueuse/core": "^10.11.1",
-    "@vueuse/integrations": "^10.11.1",
+    "@vueuse/integrations": "^11.0.1",
     "@vueuse/motion": "^2.2.3",
     "async-validator": "^4.2.5",
     "change-case": "^4.1.2",
