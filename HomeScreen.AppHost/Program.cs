@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Projects;
 
@@ -11,6 +12,8 @@ var mediaCache = builder.AddParameter("MediaCacheDir");
 
 var mapsKey = builder.AddParameter("AzureMapsSecret", true);
 var clientId = builder.AddParameter("AzureClientID", true);
+
+var commonAddress = builder.AddParameter("CommonAddress", false);
 
 
 var seq = builder.AddSeq("homescreen-seq", 9090).WithImageTag("latest").WithOtlpExporter().WithDataVolume();
@@ -68,15 +71,17 @@ builder.AddProject<HomeScreen_Web_Slideshow_Server>("homescreen-web-slideshow-se
     .WithOtlpExporter()
     .WithReference(seq)
     .WithReference(redis)
-    .WithReference(common);
+    .WithReference(common)
+    .WithEnvironment("CommonAddress", commonAddress);
 
 builder.AddProject<HomeScreen_Web_Dashboard_Server>("homescreen-web-dashboard-server")
     .AsHttp2Service()
     .WithOtlpExporter()
     .WithReference(seq)
     .WithReference(redis)
+    .WithReference(dashboardDb)
     .WithReference(common)
-    .WithReference(dashboardDb);
+    .WithEnvironment("CommonAddress", commonAddress);
 
 var app = builder.Build();
 app.Services.GetRequiredService<ILogger<Program>>()

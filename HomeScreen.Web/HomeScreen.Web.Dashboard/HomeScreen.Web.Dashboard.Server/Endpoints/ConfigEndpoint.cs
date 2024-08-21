@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http.HttpResults;
 
-namespace HomeScreen.Web.Slideshow.Server.Endpoints;
+namespace HomeScreen.Web.Dashboard.Server.Endpoints;
 
 public record Config
 {

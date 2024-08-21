@@ -1,4 +1,5 @@
 using HomeScreen.ServiceDefaults;
+using HomeScreen.Web.Dashboard.Server.Endpoints;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +13,7 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 app.MapDefaultEndpoints();
+app.RegisterConfigEndpoints();
 
 app.UseDefaultFiles();
 app.UseStaticFiles();
