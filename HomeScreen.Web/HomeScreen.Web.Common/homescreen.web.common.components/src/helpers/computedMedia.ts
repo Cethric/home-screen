@@ -1,6 +1,6 @@
 import { computedAsync, useMemoize } from '@vueuse/core';
 import { type Ref } from 'vue';
-import {MediaTransformOptionsFormat} from "@/domain/generated/homescreen-common-api";
+import { MediaTransformOptionsFormat } from '@/domain/generated/homescreen-common-api';
 
 export interface ComputedMediaSize {
   width: number;
