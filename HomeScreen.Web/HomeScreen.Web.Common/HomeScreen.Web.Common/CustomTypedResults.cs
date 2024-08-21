@@ -1,6 +1,6 @@
 ﻿using System.Text.Json;
 
-namespace HomeScreen.Web.Slideshow.Server.Services;
+namespace HomeScreen.Web.Common;
 
 public static class CustomTypedResults
 {

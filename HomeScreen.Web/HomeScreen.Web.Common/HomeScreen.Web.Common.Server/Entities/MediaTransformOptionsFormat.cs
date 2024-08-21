@@ -1,6 +1,6 @@
 using HomeScreen.Service.MediaClient.Generated;
 
-namespace HomeScreen.Web.Slideshow.Server.Entities;
+namespace HomeScreen.Web.Common.Server.Entities;
 
 public static class MediaTransformOptionsFormatExtensions
 {

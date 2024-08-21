@@ -3,11 +3,11 @@ using Grpc.Core;
 using HomeScreen.Service.Media;
 using HomeScreen.Service.MediaClient.Generated;
 using HomeScreen.Service.Proto.Services;
-using HomeScreen.Web.Slideshow.Server.Entities;
+using HomeScreen.Web.Common.Server.Entities;
 
-namespace HomeScreen.Web.Slideshow.Server.Services;
+namespace HomeScreen.Web.Common.Server.Services;
 
-public class MediaApi(ILogger<MediaApi> logger, MediaGrpcClient client, IMediaDownloader mediaDownloader) : IMediaApi
+public class MediaApi(ILogger<MediaApi> logger, MediaGrpcClient client, IMediaFileClient mediaFileClient) : IMediaApi
 {
     public async IAsyncEnumerable<MediaItem> RandomMedia(
         uint count,
@@ -92,7 +92,8 @@ public class MediaApi(ILogger<MediaApi> logger, MediaGrpcClient client, IMediaDo
         CancellationToken cancellationToken = default
     )
     {
-        var result = await mediaDownloader.DownloadMedia(
+        logger.LogInformation("Downloading media for {MediaId}", mediaId);
+        var response = await mediaFileClient.DownloadMediaFileAsync(
             mediaId,
             width,
             height,
@@ -100,12 +101,14 @@ public class MediaApi(ILogger<MediaApi> logger, MediaGrpcClient client, IMediaDo
             format,
             cancellationToken
         );
-        if (result.StatusCode != StatusCodes.Status200OK)
+        logger.LogInformation("Downloaded media for {MediaId} - {StatusCode}", mediaId, response.StatusCode);
+        
+        if (response.StatusCode != StatusCodes.Status200OK)
         {
-            logger.LogWarning("Failed to download media item {StatusCode}", result.StatusCode);
+            logger.LogWarning("Failed to download media item {StatusCode}", response.StatusCode);
         }
 
-        return result;
+        return response;
     }
 
     private static MediaItem TransformMedia(MediaEntry entry) =>

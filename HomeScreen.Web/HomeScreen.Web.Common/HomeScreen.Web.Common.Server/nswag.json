@@ -3,7 +3,7 @@
   "defaultVariables": null,
   "documentGenerator": {
     "aspNetCoreToOpenApi": {
-      "project": "HomeScreen.Web.Slideshow.Server.csproj",
+      "project": "HomeScreen.Web.Common.Server.csproj",
       "documentName": "v1",
       "msBuildProjectExtensionsPath": null,
       "configuration": "SwaggerBuild",
@@ -45,7 +45,7 @@
       "generateResponseClasses": true,
       "responseClass": "SwaggerResponse",
       "protectedMethods": [
-        "MediaClient.processGetRandomMediaItems"
+        "MediaClient.processRandom"
       ],
       "configurationClass": null,
       "useTransformOptionsMethod": false,
@@ -65,8 +65,8 @@
       "generateDefaultValues": true,
       "excludedTypeNames": [],
       "excludedParameterNames": [],
-      "handleReferences": false,
-      "generateTypeCheckFunctions": false,
+      "handleReferences": true,
+      "generateTypeCheckFunctions": true,
       "generateConstructorInterface": true,
       "convertConstructorInterfaceData": true,
       "importRequiredTypes": true,
@@ -77,10 +77,10 @@
       "inlineNamedDictionaries": false,
       "inlineNamedAny": false,
       "includeHttpContext": false,
-      "templateDirectory": "../homescreen.web.slideshow.client/src/domain/api-template",
+      "templateDirectory": null,
       "serviceHost": null,
-      "serviceSchemes": null,
-      "output": "../homescreen.web.slideshow.client/src/domain/api/homescreen-slideshow-api.ts",
+      "serviceSchemes": [],
+      "output": "../homescreen.web.common.components/src/domain/generated/homescreen-common-api.ts",
       "newLineBehavior": "Auto"
     }
   }

@@ -1,4 +1,4 @@
-namespace HomeScreen.Web.Slideshow.Server.Entities;
+namespace HomeScreen.Web.Common.Server.Entities;
 
 public class MediaItemLocation
 {

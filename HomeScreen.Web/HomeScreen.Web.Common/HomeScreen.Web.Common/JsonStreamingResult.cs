@@ -1,9 +1,12 @@
 ﻿using System.Reflection;
 using System.Text.Json;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Metadata;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace HomeScreen.Web.Slideshow.Server.Services;
+namespace HomeScreen.Web.Common;
 
 public class JsonStreamingResult<TValue>(
     IAsyncEnumerable<TValue> data,

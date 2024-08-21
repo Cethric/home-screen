@@ -2,9 +2,11 @@
 using System.Net.Mime;
 using System.Text;
 using System.Text.Json;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
-namespace HomeScreen.Web.Slideshow.Server.Services;
+namespace HomeScreen.Web.Common;
 
 public class JsonStreamingResultExecutor
 {

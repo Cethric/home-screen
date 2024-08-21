@@ -1,11 +1,11 @@
 ﻿using Grpc.Core;
 using HomeScreen.Service.Proto.Services;
 using HomeScreen.Service.Weather;
-using HomeScreen.Web.Slideshow.Server.Entities;
-using DailyForecast = HomeScreen.Web.Slideshow.Server.Entities.DailyForecast;
-using HourlyForecast = HomeScreen.Web.Slideshow.Server.Entities.HourlyForecast;
+using HomeScreen.Web.Common.Server.Entities;
+using DailyForecast = HomeScreen.Web.Common.Server.Entities.DailyForecast;
+using HourlyForecast = HomeScreen.Web.Common.Server.Entities.HourlyForecast;
 
-namespace HomeScreen.Web.Slideshow.Server.Services;
+namespace HomeScreen.Web.Common.Server.Services;
 
 public class WeatherApi(ILogger<WeatherApi> logger, WeatherGrpcClient client) : IWeatherApi
 {

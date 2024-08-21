@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc.Infrastructure;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 
-namespace HomeScreen.Web.Slideshow.Server.Services;
+namespace HomeScreen.Web.Common;
 
 public interface IJsonStreamingResultExecutor<T> : IActionResultExecutor<JsonStreamingResult<T>>
 {

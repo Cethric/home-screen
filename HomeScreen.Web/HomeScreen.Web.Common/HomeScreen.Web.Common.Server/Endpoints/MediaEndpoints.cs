@@ -1,12 +1,12 @@
 ﻿using System.Text.Json;
 using HomeScreen.Service.Media;
 using HomeScreen.Service.MediaClient.Generated;
-using HomeScreen.Web.Slideshow.Server.Entities;
-using HomeScreen.Web.Slideshow.Server.Services;
+using HomeScreen.Web.Common.Server.Entities;
+using HomeScreen.Web.Common.Server.Services;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.Net.Http.Headers;
 
-namespace HomeScreen.Web.Slideshow.Server.Endpoints;
+namespace HomeScreen.Web.Common.Server.Endpoints;
 
 public static class MediaEndpoints
 {

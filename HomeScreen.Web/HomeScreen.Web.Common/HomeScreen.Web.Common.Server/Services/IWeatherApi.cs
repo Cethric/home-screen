@@ -1,6 +1,6 @@
-﻿using HomeScreen.Web.Slideshow.Server.Entities;
+﻿using HomeScreen.Web.Common.Server.Entities;
 
-namespace HomeScreen.Web.Slideshow.Server.Services;
+namespace HomeScreen.Web.Common.Server.Services;
 
 public interface IWeatherApi
 {
