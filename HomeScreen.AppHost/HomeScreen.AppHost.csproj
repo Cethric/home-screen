@@ -34,6 +34,7 @@
             Include="..\HomeScreen.Database\HomeScreen.Database.MediaDb.Migrations\HomeScreen.Database.MediaDb.Migrations.csproj" />
         <ProjectReference Include="..\HomeScreen.Services\HomeScreen.Service.Media\HomeScreen.Service.Media.csproj" />
         <ProjectReference Include="..\HomeScreen.Services\HomeScreen.Service.Weather\HomeScreen.Service.Weather.csproj" />
+        <ProjectReference Include="..\HomeScreen.Web\HomeScreen.Web.Common\HomeScreen.Web.Common.Server\HomeScreen.Web.Common.Server.csproj" />
         <ProjectReference
             Include="..\HomeScreen.Web\HomeScreen.Web.Dashboard\HomeScreen.Web.Dashboard.Server\HomeScreen.Web.Dashboard.Server.csproj" />
         <ProjectReference

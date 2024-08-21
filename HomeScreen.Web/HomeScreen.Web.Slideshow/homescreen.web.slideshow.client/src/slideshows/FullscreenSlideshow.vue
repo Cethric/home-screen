@@ -56,8 +56,8 @@ import {
   type Direction,
   type Image,
   type LoadImageCallback,
-} from '@homescreen/web-components-client';
-import { type IWeatherForecast } from '@/domain/api/homescreen-slideshow-api';
+  type IWeatherForecast,
+} from '@homescreen/web-common-components';
 import { computed, ref, watch } from 'vue';
 import { useDateFormat, useIntervalFn, useNow } from '@vueuse/core';
 import FullscreenModal from '@/components/fullscreen/FullscreenModal.vue';

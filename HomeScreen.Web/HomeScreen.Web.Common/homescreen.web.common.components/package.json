@@ -1,5 +1,5 @@
 {
-  "name": "@homescreen/web-components-client",
+  "name": "@homescreen/web-common-components",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -79,9 +79,9 @@
     "node": ">=20",
     "pnpm": ">=9"
   },
-  "main": "dist/web-components-client.cjs.js",
-  "unpkg": "dist/web-components-client.umd.js",
-  "module": "dist/web-components-client.es.js",
+  "main": "dist/web-common-components.cjs.js",
+  "unpkg": "dist/web-common-components.umd.js",
+  "module": "dist/web-common-components.es.js",
   "types": "dist/src/index.d.ts",
   "style": "dist/style.css",
   "files": [

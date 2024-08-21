@@ -1,25 +1,24 @@
 import { computedAsync, useMemoize } from '@vueuse/core';
 import { type Ref } from 'vue';
+import {MediaTransformOptionsFormat} from "@/domain/generated/homescreen-common-api";
 
 export interface ComputedMediaSize {
   width: number;
   height: number;
 }
 
-export type ImageFormat = 'Jpeg' | 'WebP' | 'Avif' | 'JpegXL' | 'Png';
-
 export type LoadImageCallback = (
   id: string,
   width: number,
   height: number,
   blur: boolean,
-  format: ImageFormat,
+  format: MediaTransformOptionsFormat,
   signal?: AbortSignal,
 ) => Promise<string>;
 
 export const responsiveImageLoader = (
   loadImage: LoadImageCallback,
-  format: ImageFormat,
+  format: MediaTransformOptionsFormat,
   imageId: string,
   width: number,
   height: number,
@@ -45,7 +44,7 @@ export const responsiveImageLoader = (
 
 export const asyncImage = (
   loadImage: LoadImageCallback,
-  format: ImageFormat,
+  format: MediaTransformOptionsFormat,
   imageId: string,
   width: number,
   height: number,

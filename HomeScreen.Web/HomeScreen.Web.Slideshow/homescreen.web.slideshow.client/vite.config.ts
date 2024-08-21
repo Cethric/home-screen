@@ -87,7 +87,7 @@ export default defineConfig(({command}) => {
                         nprogress: ['nprogress'],
                         vue: ['vue'],
                         luxon: ['luxon'],
-                        components: ['@homescreen/web-components-client'],
+                        components: ['@homescreen/web-common-components'],
                     },
                 },
             },

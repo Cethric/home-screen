@@ -11,7 +11,7 @@ export default defineConfig(() => {
       dts({
         tsconfigPath: fileURLToPath(
           new URL('./tsconfig.app.json', import.meta.url),
-        )
+        ),
       }),
     ],
     resolve: {
@@ -20,11 +20,12 @@ export default defineConfig(() => {
       },
     },
     build: {
+      target: "modules",
       lib: {
         entry: fileURLToPath(new URL('./src/index.ts', import.meta.url)),
         formats: ['es', 'cjs', 'umd'],
-        name: 'web-components-client',
-        fileName: (fmt) => `web-components-client.${fmt}.js`,
+        name: 'web-common-components',
+        fileName: (fmt) => `web-common-components.${fmt}.js`,
       },
       rollupOptions: {
         external: ['vue', 'leaflet', /^leaflet\/.*/],

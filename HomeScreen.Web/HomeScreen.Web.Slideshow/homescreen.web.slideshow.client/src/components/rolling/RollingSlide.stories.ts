@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/vue3';
 import RollingSlide from '@/components/rolling/RollingSlide.vue';
-import { Directions } from '@homescreen/web-components-client';
+import { Directions } from '@homescreen/web-common-components';
 import { loadPicsumImage, picsumImages } from '@/stories/helpers';
 
 const meta: Meta<typeof RollingSlide> = {

@@ -10,18 +10,12 @@
 
 import { DateTime, Duration } from "luxon";
 
-export interface IMediaClient {
+export interface IConfigClient {
 
-    random(count: number): Promise<SwaggerResponse<MediaItem>>;
-
-    toggle(mediaId: string, enabled: boolean): Promise<SwaggerResponse<MediaItem>>;
-
-    download(mediaId: string, width: number, height: number, blur: boolean, format: MediaTransformOptionsFormat): Promise<SwaggerResponse<void>>;
-
-    transform(mediaId: string, width: number, height: number, blur: boolean, format: MediaTransformOptionsFormat): Promise<SwaggerResponse<AcceptedTransformMeta>>;
+    config(): Promise<SwaggerResponse<Config>>;
 }
 
-export class MediaClient implements IMediaClient {
+export class ConfigClient implements IConfigClient {
     private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
     private baseUrl: string;
     protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
@@ -31,12 +25,8 @@ export class MediaClient implements IMediaClient {
         this.baseUrl = baseUrl ?? "";
     }
 
-    random(count: number, signal?: AbortSignal): Promise<SwaggerResponse<MediaItem>> {
-        let url_ = this.baseUrl + "/api/media/random?";
-        if (count === undefined || count === null)
-            throw new Error("The parameter 'count' must be defined and cannot be null.");
-        else
-            url_ += "count=" + encodeURIComponent("" + count) + "&";
+    config(signal?: AbortSignal): Promise<SwaggerResponse<Config>> {
+        let url_ = this.baseUrl + "/api/config";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_: RequestInit = {
@@ -48,18 +38,18 @@ export class MediaClient implements IMediaClient {
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processRandom(_response);
+            return this.processConfig(_response);
         });
     }
 
-    protected processRandom(response: Response): Promise<SwaggerResponse<MediaItem>> {
+    protected processConfig(response: Response): Promise<SwaggerResponse<Config>> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = MediaItem.fromJS(resultData200);
+            result200 = Config.fromJS(resultData200);
             return new SwaggerResponse(status, _headers, result200);
             });
         } else if (status !== 200 && status !== 204) {
@@ -67,392 +57,14 @@ export class MediaClient implements IMediaClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<SwaggerResponse<MediaItem>>(new SwaggerResponse(status, _headers, null as any));
-    }
-
-    toggle(mediaId: string, enabled: boolean, signal?: AbortSignal): Promise<SwaggerResponse<MediaItem>> {
-        let url_ = this.baseUrl + "/api/media/{mediaId}/toggle?";
-        if (mediaId === undefined || mediaId === null)
-            throw new Error("The parameter 'mediaId' must be defined.");
-        url_ = url_.replace("{mediaId}", encodeURIComponent("" + mediaId));
-        if (enabled === undefined || enabled === null)
-            throw new Error("The parameter 'enabled' must be defined and cannot be null.");
-        else
-            url_ += "enabled=" + encodeURIComponent("" + enabled) + "&";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_: RequestInit = {
-            method: "PATCH",
-            signal,
-            headers: {
-                "Accept": "application/json"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processToggle(_response);
-        });
-    }
-
-    protected processToggle(response: Response): Promise<SwaggerResponse<MediaItem>> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200) {
-            return response.text().then((_responseText) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = MediaItem.fromJS(resultData200);
-            return new SwaggerResponse(status, _headers, result200);
-            });
-        } else if (status === 404) {
-            return response.text().then((_responseText) => {
-            return throwException("A server side error occurred.", status, _responseText, _headers);
-            });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<SwaggerResponse<MediaItem>>(new SwaggerResponse(status, _headers, null as any));
-    }
-
-    download(mediaId: string, width: number, height: number, blur: boolean, format: MediaTransformOptionsFormat, signal?: AbortSignal): Promise<SwaggerResponse<void>> {
-        let url_ = this.baseUrl + "/api/media/{mediaId}/download/{width}/{height}?";
-        if (mediaId === undefined || mediaId === null)
-            throw new Error("The parameter 'mediaId' must be defined.");
-        url_ = url_.replace("{mediaId}", encodeURIComponent("" + mediaId));
-        if (width === undefined || width === null)
-            throw new Error("The parameter 'width' must be defined.");
-        url_ = url_.replace("{width}", encodeURIComponent("" + width));
-        if (height === undefined || height === null)
-            throw new Error("The parameter 'height' must be defined.");
-        url_ = url_.replace("{height}", encodeURIComponent("" + height));
-        if (blur === undefined || blur === null)
-            throw new Error("The parameter 'blur' must be defined and cannot be null.");
-        else
-            url_ += "blur=" + encodeURIComponent("" + blur) + "&";
-        if (format === undefined || format === null)
-            throw new Error("The parameter 'format' must be defined and cannot be null.");
-        else
-            url_ += "format=" + encodeURIComponent("" + format) + "&";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_: RequestInit = {
-            method: "GET",
-            signal,
-            headers: {
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processDownload(_response);
-        });
-    }
-
-    protected processDownload(response: Response): Promise<SwaggerResponse<void>> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 404) {
-            return response.text().then((_responseText) => {
-            return throwException("A server side error occurred.", status, _responseText, _headers);
-            });
-        } else if (status === 400) {
-            return response.text().then((_responseText) => {
-            return throwException("A server side error occurred.", status, _responseText, _headers);
-            });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<SwaggerResponse<void>>(new SwaggerResponse(status, _headers, null as any));
-    }
-
-    transform(mediaId: string, width: number, height: number, blur: boolean, format: MediaTransformOptionsFormat, signal?: AbortSignal): Promise<SwaggerResponse<AcceptedTransformMeta>> {
-        let url_ = this.baseUrl + "/api/media/{mediaId}/transform/{width}/{height}?";
-        if (mediaId === undefined || mediaId === null)
-            throw new Error("The parameter 'mediaId' must be defined.");
-        url_ = url_.replace("{mediaId}", encodeURIComponent("" + mediaId));
-        if (width === undefined || width === null)
-            throw new Error("The parameter 'width' must be defined.");
-        url_ = url_.replace("{width}", encodeURIComponent("" + width));
-        if (height === undefined || height === null)
-            throw new Error("The parameter 'height' must be defined.");
-        url_ = url_.replace("{height}", encodeURIComponent("" + height));
-        if (blur === undefined || blur === null)
-            throw new Error("The parameter 'blur' must be defined and cannot be null.");
-        else
-            url_ += "blur=" + encodeURIComponent("" + blur) + "&";
-        if (format === undefined || format === null)
-            throw new Error("The parameter 'format' must be defined and cannot be null.");
-        else
-            url_ += "format=" + encodeURIComponent("" + format) + "&";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_: RequestInit = {
-            method: "GET",
-            signal,
-            headers: {
-                "Accept": "application/json"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processTransform(_response);
-        });
-    }
-
-    protected processTransform(response: Response): Promise<SwaggerResponse<AcceptedTransformMeta>> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 404) {
-            return response.text().then((_responseText) => {
-            return throwException("A server side error occurred.", status, _responseText, _headers);
-            });
-        } else if (status === 202) {
-            return response.text().then((_responseText) => {
-            let result202: any = null;
-            let resultData202 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result202 = AcceptedTransformMeta.fromJS(resultData202);
-            return new SwaggerResponse(status, _headers, result202);
-            });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<SwaggerResponse<AcceptedTransformMeta>>(new SwaggerResponse(status, _headers, null as any));
+        return Promise.resolve<SwaggerResponse<Config>>(new SwaggerResponse(status, _headers, null as any));
     }
 }
 
-export interface IWeatherClient {
+export class Config implements IConfig {
+    commonUrl?: string;
 
-    current(longitude: number, latitude: number): Promise<SwaggerResponse<WeatherForecast>>;
-
-    hourly(longitude: number, latitude: number): Promise<SwaggerResponse<HourlyForecast[]>>;
-
-    daily(longitude: number, latitude: number): Promise<SwaggerResponse<DailyForecast[]>>;
-}
-
-export class WeatherClient implements IWeatherClient {
-    private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
-    private baseUrl: string;
-    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
-
-    constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
-        this.http = http ? http : window as any;
-        this.baseUrl = baseUrl ?? "";
-    }
-
-    current(longitude: number, latitude: number, signal?: AbortSignal): Promise<SwaggerResponse<WeatherForecast>> {
-        let url_ = this.baseUrl + "/api/weather/{longitude}/{latitude}/current";
-        if (longitude === undefined || longitude === null)
-            throw new Error("The parameter 'longitude' must be defined.");
-        url_ = url_.replace("{longitude}", encodeURIComponent("" + longitude));
-        if (latitude === undefined || latitude === null)
-            throw new Error("The parameter 'latitude' must be defined.");
-        url_ = url_.replace("{latitude}", encodeURIComponent("" + latitude));
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_: RequestInit = {
-            method: "GET",
-            signal,
-            headers: {
-                "Accept": "application/json"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processCurrent(_response);
-        });
-    }
-
-    protected processCurrent(response: Response): Promise<SwaggerResponse<WeatherForecast>> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200) {
-            return response.text().then((_responseText) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = WeatherForecast.fromJS(resultData200);
-            return new SwaggerResponse(status, _headers, result200);
-            });
-        } else if (status === 404) {
-            return response.text().then((_responseText) => {
-            return throwException("A server side error occurred.", status, _responseText, _headers);
-            });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<SwaggerResponse<WeatherForecast>>(new SwaggerResponse(status, _headers, null as any));
-    }
-
-    hourly(longitude: number, latitude: number, signal?: AbortSignal): Promise<SwaggerResponse<HourlyForecast[]>> {
-        let url_ = this.baseUrl + "/api/weather/{longitude}/{latitude}/hourly";
-        if (longitude === undefined || longitude === null)
-            throw new Error("The parameter 'longitude' must be defined.");
-        url_ = url_.replace("{longitude}", encodeURIComponent("" + longitude));
-        if (latitude === undefined || latitude === null)
-            throw new Error("The parameter 'latitude' must be defined.");
-        url_ = url_.replace("{latitude}", encodeURIComponent("" + latitude));
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_: RequestInit = {
-            method: "GET",
-            signal,
-            headers: {
-                "Accept": "application/json"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processHourly(_response);
-        });
-    }
-
-    protected processHourly(response: Response): Promise<SwaggerResponse<HourlyForecast[]>> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200) {
-            return response.text().then((_responseText) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            if (Array.isArray(resultData200)) {
-                result200 = [] as any;
-                for (let item of resultData200)
-                    result200!.push(HourlyForecast.fromJS(item));
-            }
-            else {
-                result200 = <any>null;
-            }
-            return new SwaggerResponse(status, _headers, result200);
-            });
-        } else if (status === 404) {
-            return response.text().then((_responseText) => {
-            return throwException("A server side error occurred.", status, _responseText, _headers);
-            });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<SwaggerResponse<HourlyForecast[]>>(new SwaggerResponse(status, _headers, null as any));
-    }
-
-    daily(longitude: number, latitude: number, signal?: AbortSignal): Promise<SwaggerResponse<DailyForecast[]>> {
-        let url_ = this.baseUrl + "/api/weather/{longitude}/{latitude}/daily";
-        if (longitude === undefined || longitude === null)
-            throw new Error("The parameter 'longitude' must be defined.");
-        url_ = url_.replace("{longitude}", encodeURIComponent("" + longitude));
-        if (latitude === undefined || latitude === null)
-            throw new Error("The parameter 'latitude' must be defined.");
-        url_ = url_.replace("{latitude}", encodeURIComponent("" + latitude));
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_: RequestInit = {
-            method: "GET",
-            signal,
-            headers: {
-                "Accept": "application/json"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processDaily(_response);
-        });
-    }
-
-    protected processDaily(response: Response): Promise<SwaggerResponse<DailyForecast[]>> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200) {
-            return response.text().then((_responseText) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            if (Array.isArray(resultData200)) {
-                result200 = [] as any;
-                for (let item of resultData200)
-                    result200!.push(DailyForecast.fromJS(item));
-            }
-            else {
-                result200 = <any>null;
-            }
-            return new SwaggerResponse(status, _headers, result200);
-            });
-        } else if (status === 404) {
-            return response.text().then((_responseText) => {
-            return throwException("A server side error occurred.", status, _responseText, _headers);
-            });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<SwaggerResponse<DailyForecast[]>>(new SwaggerResponse(status, _headers, null as any));
-    }
-}
-
-export class MediaItem implements IMediaItem {
-    id?: string;
-    created?: DateTime;
-    notes?: string;
-    enabled?: boolean;
-    location?: MediaItemLocation;
-
-    constructor(data?: IMediaItem) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-            this.location = data.location && !(<any>data.location).toJSON ? new MediaItemLocation(data.location) : <MediaItemLocation>this.location;
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.id = _data["id"];
-            this.created = _data["created"] ? DateTime.fromISO(_data["created"].toString()) : <any>undefined;
-            this.notes = _data["notes"];
-            this.enabled = _data["enabled"];
-            this.location = _data["location"] ? MediaItemLocation.fromJS(_data["location"]) : <any>undefined;
-        }
-    }
-
-    static fromJS(data: any): MediaItem {
-        data = typeof data === 'object' ? data : {};
-        let result = new MediaItem();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
-        data["created"] = this.created ? this.created.toString() : <any>undefined;
-        data["notes"] = this.notes;
-        data["enabled"] = this.enabled;
-        data["location"] = this.location ? this.location.toJSON() : <any>undefined;
-        return data;
-    }
-}
-
-export interface IMediaItem {
-    id?: string;
-    created?: DateTime;
-    notes?: string;
-    enabled?: boolean;
-    location?: IMediaItemLocation;
-}
-
-export class MediaItemLocation implements IMediaItemLocation {
-    name?: string;
-    latitude?: number;
-    longitude?: number;
-
-    constructor(data?: IMediaItemLocation) {
+    constructor(data?: IConfig) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -463,331 +75,26 @@ export class MediaItemLocation implements IMediaItemLocation {
 
     init(_data?: any) {
         if (_data) {
-            this.name = _data["name"];
-            this.latitude = _data["latitude"];
-            this.longitude = _data["longitude"];
+            this.commonUrl = _data["commonUrl"];
         }
     }
 
-    static fromJS(data: any): MediaItemLocation {
+    static fromJS(data: any): Config {
         data = typeof data === 'object' ? data : {};
-        let result = new MediaItemLocation();
+        let result = new Config();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["name"] = this.name;
-        data["latitude"] = this.latitude;
-        data["longitude"] = this.longitude;
+        data["commonUrl"] = this.commonUrl;
         return data;
     }
 }
 
-export interface IMediaItemLocation {
-    name?: string;
-    latitude?: number;
-    longitude?: number;
-}
-
-export enum MediaTransformOptionsFormat {
-    Jpeg = "Jpeg",
-    JpegXL = "JpegXL",
-    Png = "Png",
-    WebP = "WebP",
-    Avif = "Avif",
-}
-
-export class AcceptedTransformMeta implements IAcceptedTransformMeta {
-    mediaId?: string;
-    width?: number;
-    height?: number;
-    blur?: boolean;
-    format?: MediaTransformOptionsFormat;
-
-    constructor(data?: IAcceptedTransformMeta) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.mediaId = _data["mediaId"];
-            this.width = _data["width"];
-            this.height = _data["height"];
-            this.blur = _data["blur"];
-            this.format = _data["format"];
-        }
-    }
-
-    static fromJS(data: any): AcceptedTransformMeta {
-        data = typeof data === 'object' ? data : {};
-        let result = new AcceptedTransformMeta();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["mediaId"] = this.mediaId;
-        data["width"] = this.width;
-        data["height"] = this.height;
-        data["blur"] = this.blur;
-        data["format"] = this.format;
-        return data;
-    }
-}
-
-export interface IAcceptedTransformMeta {
-    mediaId?: string;
-    width?: number;
-    height?: number;
-    blur?: boolean;
-    format?: MediaTransformOptionsFormat;
-}
-
-export class WeatherForecast implements IWeatherForecast {
-    feelsLikeTemperature?: number;
-    maxTemperature?: number;
-    minTemperature?: number;
-    chanceOfRain?: number;
-    amountOfRain?: number;
-    weatherCode?: string;
-
-    constructor(data?: IWeatherForecast) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.feelsLikeTemperature = _data["feelsLikeTemperature"];
-            this.maxTemperature = _data["maxTemperature"];
-            this.minTemperature = _data["minTemperature"];
-            this.chanceOfRain = _data["chanceOfRain"];
-            this.amountOfRain = _data["amountOfRain"];
-            this.weatherCode = _data["weatherCode"];
-        }
-    }
-
-    static fromJS(data: any): WeatherForecast {
-        data = typeof data === 'object' ? data : {};
-        let result = new WeatherForecast();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["feelsLikeTemperature"] = this.feelsLikeTemperature;
-        data["maxTemperature"] = this.maxTemperature;
-        data["minTemperature"] = this.minTemperature;
-        data["chanceOfRain"] = this.chanceOfRain;
-        data["amountOfRain"] = this.amountOfRain;
-        data["weatherCode"] = this.weatherCode;
-        return data;
-    }
-}
-
-export interface IWeatherForecast {
-    feelsLikeTemperature?: number;
-    maxTemperature?: number;
-    minTemperature?: number;
-    chanceOfRain?: number;
-    amountOfRain?: number;
-    weatherCode?: string;
-}
-
-export class HourlyForecast implements IHourlyForecast {
-    time?: DateTime;
-    apparentTemperature?: number;
-    precipitation?: number;
-    precipitationProbability?: number;
-    windDirection?: number;
-    windSpeed?: number;
-    windGusts?: number;
-    isDay?: boolean;
-    cloudCover?: number;
-
-    constructor(data?: IHourlyForecast) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.time = _data["time"] ? DateTime.fromISO(_data["time"].toString()) : <any>undefined;
-            this.apparentTemperature = _data["apparentTemperature"];
-            this.precipitation = _data["precipitation"];
-            this.precipitationProbability = _data["precipitationProbability"];
-            this.windDirection = _data["windDirection"];
-            this.windSpeed = _data["windSpeed"];
-            this.windGusts = _data["windGusts"];
-            this.isDay = _data["isDay"];
-            this.cloudCover = _data["cloudCover"];
-        }
-    }
-
-    static fromJS(data: any): HourlyForecast {
-        data = typeof data === 'object' ? data : {};
-        let result = new HourlyForecast();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["time"] = this.time ? this.time.toString() : <any>undefined;
-        data["apparentTemperature"] = this.apparentTemperature;
-        data["precipitation"] = this.precipitation;
-        data["precipitationProbability"] = this.precipitationProbability;
-        data["windDirection"] = this.windDirection;
-        data["windSpeed"] = this.windSpeed;
-        data["windGusts"] = this.windGusts;
-        data["isDay"] = this.isDay;
-        data["cloudCover"] = this.cloudCover;
-        return data;
-    }
-}
-
-export interface IHourlyForecast {
-    time?: DateTime;
-    apparentTemperature?: number;
-    precipitation?: number;
-    precipitationProbability?: number;
-    windDirection?: number;
-    windSpeed?: number;
-    windGusts?: number;
-    isDay?: boolean;
-    cloudCover?: number;
-}
-
-export class DailyForecast implements IDailyForecast {
-    time?: DateTime;
-    apparentTemperatureMin?: number;
-    apparentTemperatureMax?: number;
-    daylightDuration?: number;
-    sunrise?: DateTime;
-    sunset?: DateTime;
-    uvIndexClearSkyMax?: number;
-    uvIndexMax?: number;
-    weatherCode?: WmoWeatherCode;
-    weatherCodeLabel?: string;
-    precipitationSum?: number;
-    precipitationProbabilityMax?: number;
-    precipitationProbabilityMin?: number;
-
-    constructor(data?: IDailyForecast) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.time = _data["time"] ? DateTime.fromISO(_data["time"].toString()) : <any>undefined;
-            this.apparentTemperatureMin = _data["apparentTemperatureMin"];
-            this.apparentTemperatureMax = _data["apparentTemperatureMax"];
-            this.daylightDuration = _data["daylightDuration"];
-            this.sunrise = _data["sunrise"] ? DateTime.fromISO(_data["sunrise"].toString()) : <any>undefined;
-            this.sunset = _data["sunset"] ? DateTime.fromISO(_data["sunset"].toString()) : <any>undefined;
-            this.uvIndexClearSkyMax = _data["uvIndexClearSkyMax"];
-            this.uvIndexMax = _data["uvIndexMax"];
-            this.weatherCode = _data["weatherCode"];
-            this.weatherCodeLabel = _data["weatherCodeLabel"];
-            this.precipitationSum = _data["precipitationSum"];
-            this.precipitationProbabilityMax = _data["precipitationProbabilityMax"];
-            this.precipitationProbabilityMin = _data["precipitationProbabilityMin"];
-        }
-    }
-
-    static fromJS(data: any): DailyForecast {
-        data = typeof data === 'object' ? data : {};
-        let result = new DailyForecast();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["time"] = this.time ? this.time.toFormat('yyyy-MM-dd') : <any>undefined;
-        data["apparentTemperatureMin"] = this.apparentTemperatureMin;
-        data["apparentTemperatureMax"] = this.apparentTemperatureMax;
-        data["daylightDuration"] = this.daylightDuration;
-        data["sunrise"] = this.sunrise ? this.sunrise.toString() : <any>undefined;
-        data["sunset"] = this.sunset ? this.sunset.toString() : <any>undefined;
-        data["uvIndexClearSkyMax"] = this.uvIndexClearSkyMax;
-        data["uvIndexMax"] = this.uvIndexMax;
-        data["weatherCode"] = this.weatherCode;
-        data["weatherCodeLabel"] = this.weatherCodeLabel;
-        data["precipitationSum"] = this.precipitationSum;
-        data["precipitationProbabilityMax"] = this.precipitationProbabilityMax;
-        data["precipitationProbabilityMin"] = this.precipitationProbabilityMin;
-        return data;
-    }
-}
-
-export interface IDailyForecast {
-    time?: DateTime;
-    apparentTemperatureMin?: number;
-    apparentTemperatureMax?: number;
-    daylightDuration?: number;
-    sunrise?: DateTime;
-    sunset?: DateTime;
-    uvIndexClearSkyMax?: number;
-    uvIndexMax?: number;
-    weatherCode?: WmoWeatherCode;
-    weatherCodeLabel?: string;
-    precipitationSum?: number;
-    precipitationProbabilityMax?: number;
-    precipitationProbabilityMin?: number;
-}
-
-export enum WmoWeatherCode {
-    Clear = "Clear",
-    MostlyClear = "MostlyClear",
-    PartlyClear = "PartlyClear",
-    Overcast = "Overcast",
-    Fog = "Fog",
-    RimeFog = "RimeFog",
-    LightDrizzle = "LightDrizzle",
-    MediumDrizzle = "MediumDrizzle",
-    HeavyDrizzle = "HeavyDrizzle",
-    LightFreezingDrizzle = "LightFreezingDrizzle",
-    HeavyFreezingDrizzle = "HeavyFreezingDrizzle",
-    LightRain = "LightRain",
-    MediumRain = "MediumRain",
-    HeavyRain = "HeavyRain",
-    LightFreezingRain = "LightFreezingRain",
-    HeavyFreezingRain = "HeavyFreezingRain",
-    LightSnow = "LightSnow",
-    MediumSnow = "MediumSnow",
-    HeavySnow = "HeavySnow",
-    GrainySnow = "GrainySnow",
-    LightRainShower = "LightRainShower",
-    MediumRainShower = "MediumRainShower",
-    HeavyRainShower = "HeavyRainShower",
-    LightSnowShower = "LightSnowShower",
-    HeavySnowShower = "HeavySnowShower",
-    Thunderstorm = "Thunderstorm",
-    ThunderstormWithSomeRain = "ThunderstormWithSomeRain",
-    ThunderstormWithHeavyRain = "ThunderstormWithHeavyRain",
+export interface IConfig {
+    commonUrl?: string;
 }
 
 export class SwaggerResponse<TResult> {

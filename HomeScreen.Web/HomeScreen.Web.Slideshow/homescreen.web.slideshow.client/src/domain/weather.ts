@@ -1,11 +1,12 @@
 import {
-  WeatherClient,
+  type IWeatherClient,
   WeatherForecast,
-} from '@/domain/api/homescreen-slideshow-api';
-
-const weatherApi = new WeatherClient();
+} from '@homescreen/web-common-components';
+import { inject } from 'vue';
 
 export const loadWeather = async (): Promise<WeatherForecast> => {
+  const weatherApi = inject<IWeatherClient>('weatherApi')!;
+  console.log(weatherApi);
   try {
     const response = await weatherApi.current(151.20732, -33.86785);
     return response.result;

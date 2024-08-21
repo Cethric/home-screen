@@ -31,9 +31,9 @@ import {
   type Direction,
   type Image,
   type LoadImageCallback,
-} from '@homescreen/web-components-client';
+  type IWeatherForecast,
+} from '@homescreen/web-common-components';
 import { useIntervalFn } from '@vueuse/core';
-import { type IWeatherForecast } from '@/domain/api/homescreen-slideshow-api';
 import { range, rangeRNG } from '@/helpers/random';
 import {
   DateTimeWeatherComboKinds,

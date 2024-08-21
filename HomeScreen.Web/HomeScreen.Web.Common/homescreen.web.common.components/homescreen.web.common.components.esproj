@@ -14,4 +14,7 @@
     <CleanCommand>pnpm run clean</CleanCommand>
     <ShouldRunNpmInstall>false</ShouldRunNpmInstall>
   </PropertyGroup>
+  <ItemGroup>
+    <Folder Include="src\domain\generated\" />
+  </ItemGroup>
 </Project>

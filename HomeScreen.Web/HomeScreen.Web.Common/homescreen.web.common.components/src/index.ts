@@ -21,6 +21,30 @@ import type {
   LoadImageCallback,
 } from './helpers/computedMedia';
 
+import {
+  getMediaClient,
+  type IMediaClientWithStreaming,
+} from './domain/client/media';
+import { getWeatherClient } from './domain/client/weather';
+import { getConfigClient } from './domain/client/config';
+
+import {
+  Config,
+  ConfigClient,
+  type IConfig,
+  type IConfigClient,
+  type IMediaClient,
+  type IMediaItem,
+  type IWeatherClient,
+  type IWeatherForecast,
+  MediaClient,
+  MediaItem,
+  MediaTransformOptionsFormat,
+  WeatherClient,
+  WeatherForecast,
+  WmoWeatherCode,
+} from './domain/generated/homescreen-common-api';
+
 export {
   PolaroidCard,
   LeafletMap,
@@ -38,4 +62,22 @@ export {
   Variants,
   type ComputedMediaSize,
   type LoadImageCallback,
+  getMediaClient,
+  type IMediaClientWithStreaming,
+  getWeatherClient,
+  getConfigClient,
+  Config,
+  ConfigClient,
+  type IConfig,
+  type IConfigClient,
+  type IMediaClient,
+  type IMediaItem,
+  type IWeatherClient,
+  type IWeatherForecast,
+  MediaClient,
+  MediaItem,
+  MediaTransformOptionsFormat,
+  WeatherClient,
+  WeatherForecast,
+  WmoWeatherCode,
 };

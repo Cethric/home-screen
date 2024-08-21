@@ -30,6 +30,7 @@ import {
   responsiveImageLoader,
 } from '@/helpers/computedMedia';
 import LoadingSpinner from './LoadingSpinner.vue';
+import { MediaTransformOptionsFormat } from '@/domain/generated/homescreen-common-api';
 
 const props = defineProps<{
   image: Image;
@@ -39,7 +40,7 @@ const props = defineProps<{
 
 const loading = asyncImage(
   props.loadImage,
-  'Jpeg',
+  MediaTransformOptionsFormat.Jpeg,
   props.image.id,
   props.imageSize.width,
   props.imageSize.height,
@@ -48,7 +49,7 @@ const loading = asyncImage(
 
 const fullAvif = responsiveImageLoader(
   props.loadImage,
-  'Avif',
+  MediaTransformOptionsFormat.Avif,
   props.image.id,
   props.imageSize.width,
   props.imageSize.height,
@@ -56,7 +57,7 @@ const fullAvif = responsiveImageLoader(
 );
 const fullJxl = responsiveImageLoader(
   props.loadImage,
-  'JpegXL',
+  MediaTransformOptionsFormat.JpegXL,
   props.image.id,
   props.imageSize.width,
   props.imageSize.height,
@@ -64,7 +65,7 @@ const fullJxl = responsiveImageLoader(
 );
 const fullWebP = responsiveImageLoader(
   props.loadImage,
-  'WebP',
+  MediaTransformOptionsFormat.WebP,
   props.image.id,
   props.imageSize.width,
   props.imageSize.height,
@@ -72,7 +73,7 @@ const fullWebP = responsiveImageLoader(
 );
 const fullPng = responsiveImageLoader(
   props.loadImage,
-  'Png',
+  MediaTransformOptionsFormat.Png,
   props.image.id,
   props.imageSize.width,
   props.imageSize.height,
@@ -80,7 +81,7 @@ const fullPng = responsiveImageLoader(
 );
 const fullJpeg = responsiveImageLoader(
   props.loadImage,
-  'Jpeg',
+  MediaTransformOptionsFormat.Jpeg,
   props.image.id,
   props.imageSize.width,
   props.imageSize.height,

@@ -28,8 +28,8 @@ import {
   Directions,
   type Image,
   type LoadImageCallback,
-} from '@homescreen/web-components-client';
-import { type IWeatherForecast } from '@/domain/api/homescreen-slideshow-api';
+  type IWeatherForecast,
+} from '@homescreen/web-common-components';
 import { computed } from 'vue';
 import RollingSlider from '@/components/rolling/RollingSlider.vue';
 import {

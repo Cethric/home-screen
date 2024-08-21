@@ -2,7 +2,7 @@
   <component
     :is="kind"
     :class="[
-      'w-98 max-w-110 fixed z-50 text-ellipsis bg-stone-400/40 p-4 drop-shadow-md backdrop-blur',
+      'fixed z-50 w-98 max-w-110 text-ellipsis bg-stone-400/40 p-4 drop-shadow-md backdrop-blur',
       {
         'left-0 top-0 rounded-br-2xl':
           kind === DateTimeWeatherComboKinds.header,
@@ -60,11 +60,11 @@
 
 <script lang="ts" setup>
 import { useDateFormat, useNow } from '@vueuse/core';
-import type { IWeatherForecast } from '@/domain/api/homescreen-slideshow-api';
 import {
   type DateTimeWeatherComboKind,
   DateTimeWeatherComboKinds,
 } from '@/components/properties';
+import type { IWeatherForecast } from '@homescreen/web-common-components';
 
 defineProps<{
   weatherForecast: IWeatherForecast;

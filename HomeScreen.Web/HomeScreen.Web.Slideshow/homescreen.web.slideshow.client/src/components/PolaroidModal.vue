@@ -53,7 +53,7 @@ import {
   type LoadImageCallback,
   ModalDialog,
   PolaroidCard,
-} from '@homescreen/web-components-client';
+} from '@homescreen/web-common-components';
 import type { PolaroidImage } from '@/components/properties';
 
 defineProps<{

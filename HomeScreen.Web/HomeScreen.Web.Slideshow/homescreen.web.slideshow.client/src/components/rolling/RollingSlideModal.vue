@@ -78,7 +78,7 @@ import {
   ModalDialog,
   PolaroidCard,
   ResponsiveImageSuspenseAsync,
-} from '@homescreen/web-components-client';
+} from '@homescreen/web-common-components';
 import { useElementVisibility } from '@vueuse/core';
 import { ref } from 'vue';
 import LargeImage from '@/components/LargeImage.vue';

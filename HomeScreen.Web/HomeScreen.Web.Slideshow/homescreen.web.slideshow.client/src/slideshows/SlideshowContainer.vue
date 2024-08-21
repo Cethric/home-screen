@@ -19,9 +19,12 @@
 
 <script lang="ts" setup>
 import { type Slideshow, Slideshows } from './properties';
-import { Directions, type Image } from '@homescreen/web-components-client';
-import { loadImageCallback, loadMedia as loadMediaBase } from '@/domain/media';
-import type { WeatherForecast } from '@/domain/api/homescreen-slideshow-api';
+import {
+  Directions,
+  type Image,
+  type WeatherForecast,
+} from '@homescreen/web-common-components';
+import { injectMediaApi, loadImageCallback, loadMedia } from '@/domain/media';
 import {
   computed,
   defineAsyncComponent,
@@ -73,7 +76,6 @@ const total = {
 const props = defineProps<{
   activeSlideshow: Slideshow;
   forecast: WeatherForecast;
-  loadMedia: typeof loadMediaBase;
 }>();
 
 const images = ref<Image[]>([]);
@@ -91,6 +93,8 @@ const { isLoading, progress } = useNProgress(0, {
   speed: 0,
 });
 
+const mediaApi = injectMediaApi();
+
 const { execute, isReady } = useAsyncState(
   async (signal?: AbortSignal) => {
     console.log(`Loading ${total[props.activeSlideshow]} images`);
@@ -101,7 +105,8 @@ const { execute, isReady } = useAsyncState(
       images.value = [];
     });
     let loaded = 0;
-    for await (const item of props.loadMedia(
+    for await (const item of loadMedia(
+      mediaApi,
       total[props.activeSlideshow],
       signal,
     )) {

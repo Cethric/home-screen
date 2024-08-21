@@ -1,5 +1,5 @@
 import { DateTime } from 'luxon';
-import { type Image } from '@homescreen/web-components-client';
+import { type Image } from '@homescreen/web-common-components';
 
 export const picsumImages = (count: number = 300) =>
   Array.from({ length: count }).map((_, i) => {

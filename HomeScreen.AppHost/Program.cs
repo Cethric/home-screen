@@ -55,7 +55,7 @@ var weather = builder.AddProject<HomeScreen_Service_Weather>("homescreen-service
     .WithReference(seq)
     .WithReference(redis);
 
-builder.AddProject<HomeScreen_Web_Slideshow_Server>("homescreen-web-slideshow-server")
+var common = builder.AddProject<HomeScreen_Web_Common_Server>("homescreen-web-common-server")
     .AsHttp2Service()
     .WithOtlpExporter()
     .WithReference(seq)
@@ -63,13 +63,19 @@ builder.AddProject<HomeScreen_Web_Slideshow_Server>("homescreen-web-slideshow-se
     .WithReference(weather)
     .WithReference(media);
 
+builder.AddProject<HomeScreen_Web_Slideshow_Server>("homescreen-web-slideshow-server")
+    .AsHttp2Service()
+    .WithOtlpExporter()
+    .WithReference(seq)
+    .WithReference(redis)
+    .WithReference(common);
+
 builder.AddProject<HomeScreen_Web_Dashboard_Server>("homescreen-web-dashboard-server")
     .AsHttp2Service()
     .WithOtlpExporter()
     .WithReference(seq)
     .WithReference(redis)
-    .WithReference(weather)
-    .WithReference(media)
+    .WithReference(common)
     .WithReference(dashboardDb);
 
 var app = builder.Build();

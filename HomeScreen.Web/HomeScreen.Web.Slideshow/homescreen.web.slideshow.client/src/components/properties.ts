@@ -1,4 +1,4 @@
-import type { Image } from '@homescreen/web-components-client';
+import type { Image } from '@homescreen/web-common-components';
 
 export enum RollingDirections {
   'forward' = 'forward',

@@ -2,7 +2,6 @@
   <SlideshowContainer
     :active-slideshow="activeSlideshow"
     :forecast="forecast"
-    :load-media="loadMedia"
   />
   <div class="fixed bottom-4 left-4 z-50">
     <button
@@ -23,18 +22,12 @@ import { type Slideshow, Slideshows } from '@/slideshows/properties';
 import { choice } from '@/helpers/random';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { faHome } from '@fortawesome/free-solid-svg-icons';
-import { loadWeather as loadWeatherBase } from '@/domain/weather';
-import { loadMedia as loadMediaBase } from '@/domain/media';
-
-const props = defineProps<{
-  loadWeather: typeof loadWeatherBase;
-  loadMedia: typeof loadMediaBase;
-}>();
+import { loadWeather } from '@/domain/weather';
 
 const location = useBrowserLocation({});
 const activeSlideshow = ref<Slideshow>(choice(Object.values(Slideshows)));
 
-const forecast = await props.loadWeather();
+const forecast = await loadWeather();
 
 useIntervalFn(
   () => {
