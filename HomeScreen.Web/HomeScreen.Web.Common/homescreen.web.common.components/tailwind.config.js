@@ -11,12 +11,12 @@ export default {
         100: '42rem'
       },
       maxHeight: {
-        100: '42rem',
+        100: '42rem'
       },
       height: {
         100: '42rem'
       }
-    },
+    }
   },
-  plugins: [],
-};
+  plugins: []
+}
