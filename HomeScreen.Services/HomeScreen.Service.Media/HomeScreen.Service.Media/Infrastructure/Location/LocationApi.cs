@@ -11,18 +11,18 @@ public class LocationApi(ILogger<LocationApi> logger, LocationGrpcClient client)
         double altitude,
         CancellationToken cancellationToken = default
     )
-    {
-        logger.LogInformation("Searching for location name at {Longitude}, {Latitude}", longitude, latitude);
-        var result = await client.SearchForLocationAsync(
-            new SearchForLocationRequest { Longitude = longitude, Latitude = latitude, Altitude = altitude },
-            cancellationToken: cancellationToken
-        );
-        logger.LogInformation(
-            "Found location {Longitude}, {Latitude} => {Location}",
-            longitude,
-            latitude,
-            result.Location
-        );
-        return result.Location;
-    }
+{
+    logger.LogInformation("Searching for location name at {Longitude}, {Latitude}", longitude, latitude);
+    var result = await client.SearchForLocationAsync(
+        new SearchForLocationRequest { Longitude = longitude, Latitude = latitude, Altitude = altitude },
+        cancellationToken: cancellationToken
+    );
+    logger.LogInformation(
+        "Found location {Longitude}, {Latitude} => {Location}",
+        longitude,
+        latitude,
+        result.Location
+    );
+    return result.Location;
+}
 }

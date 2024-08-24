@@ -28,13 +28,13 @@ paths:
       summary: "Reverse Geocoding"
       description: |
         Reverse geocoding generates an address from a coordinate given as latitude and longitude.
-        
+
         # How it works
-        
+
         The reverse geocoding API does not exactly compute the address for the coordinate it receives. It works by finding the closest suitable OSM object and returning its address information. This may occasionally lead to unexpected results.
-        
+
         First of all, Nominatim only includes OSM objects in its index that are suitable for searching. Small, unnamed paths for example are missing from the database and can therefore not be used for reverse geocoding either.
-        
+
         The other issue to be aware of is that the closest OSM object may not always have a similar enough address to the coordinate you were requesting. For example, in dense city areas it may belong to a completely different street."
       parameters:
         - name: lat
@@ -162,7 +162,7 @@ paths:
           default: 0
           schema:
             $ref: "#/components/schemas/NumberBoolean"
-      
+
       responses:
         200:
           description: "Successfully retrieve the current forecast"
@@ -184,21 +184,21 @@ paths:
               schema:
                 type: string
 
-webhooks: { }
+webhooks: {}
 components:
   schemas:
     OutputFormat:
       type: string
-      enum: [ "xml", "json", "jsonv2", "geojson", "geocodejson" ]
+      enum: ["xml", "json", "jsonv2", "geojson", "geocodejson"]
     NumberBoolean:
       type: number
       format: int32
-      enum: [ 0, 1 ]
+      enum: [0, 1]
       minimum: 0
       maximum: 1
     Layer:
       type: string
-      enum: [ "address", "poi", "railway", "natural", "manmade" ]
+      enum: ["address", "poi", "railway", "natural", "manmade"]
     ReverseOutputJsonBase:
       type: object
       properties:
@@ -252,7 +252,7 @@ components:
           items:
             type: string
             format: float
-    
+
     ReverseOutputJson:
       allOf:
         - type: object
@@ -631,7 +631,7 @@ components:
             country_code:
               type: string
       xml:
-        name: 'reversegeocode'
+        name: "reversegeocode"
       example: |
         <reversegeocode timestamp="Sat, 20 Jul 2024 04:06:44 +00:00" attribution="Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright" querystring="lat=52.5487429714954&lon=-1.81602098644987&format=xml&zoom=18">
           <result place_id="241931941" osm_type="way" osm_id="88378435" lat="52.5486796" lon="-1.8157850" boundingbox="52.5485735,52.5487962,-1.8161646,-1.8154131" place_rank="30" address_rank="30">Pilkington Avenue, Maney, Sutton Coldfield, Birmingham, West Midlands Combined Authority, England, B72 1LH, United Kingdom</result>
@@ -649,7 +649,7 @@ components:
             <country_code>gb</country_code>
           </addressparts>
         </reversegeocode>
-security: [ ]
-tags: [ ]
+security: []
+tags: []
 externalDocs:
   url: "https://nominatim.org/release-docs/develop/api/"

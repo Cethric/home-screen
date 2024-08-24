@@ -8,13 +8,13 @@ public class BlankLocationApi(ILogger<BlankLocationApi> logger) : ILocationApi
         double altitude,
         CancellationToken cancellationToken = default
     )
-    {
-        logger.LogInformation(
-            "Using blank location for address at {Longitude}, {Latitude}, {Altitude}",
-            longitude,
-            latitude,
-            altitude
-        );
-        return Task.FromResult(ILocationApi.UnknownLocation);
-    }
+{
+    logger.LogInformation(
+        "Using blank location for address at {Longitude}, {Latitude}, {Altitude}",
+        longitude,
+        latitude,
+        altitude
+    );
+    return Task.FromResult(ILocationApi.UnknownLocation);
+}
 }
