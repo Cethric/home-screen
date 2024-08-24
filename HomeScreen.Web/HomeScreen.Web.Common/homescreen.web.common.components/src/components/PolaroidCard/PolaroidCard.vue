@@ -13,8 +13,7 @@
     :data-direction="direction"
   >
     <div class="max-h-100 max-w-100 grow">
-      <component
-        :is="ResponsiveImageSuspenseAsync"
+      <ResponsiveImageSuspenseAsync
         :image="image"
         :image-size="imageSize"
         :load-image="loadImage"
@@ -31,12 +30,16 @@
         },
       ]"
     >
-      <div class="flex grow flex-col items-center justify-center gap-2">
-        <p v-if="image.location?.name">Location: {{ image.location?.name }}</p>
-        <p>
-          Time: {{ image.dateTime.toFormat('DDDD') }}
-          {{ image.dateTime.toFormat('TTT') }}
-        </p>
+      <div class="flex grow flex-col justify-center gap-2">
+        <div class="text-left">
+          <p v-if="image.location?.name">
+            Location: {{ image.location?.name }}
+          </p>
+          <p>
+            Time: {{ image.dateTime.toFormat('DDDD') }}
+            {{ image.dateTime.toFormat('TTT') }}
+          </p>
+        </div>
         <div class="flex grow flex-col items-center justify-center gap-2">
           <slot :image="image" name="details" />
         </div>
@@ -52,7 +55,7 @@ import { computed, ref } from 'vue';
 import { type LoadImageCallback } from '@/helpers/computedMedia';
 import { ResponsiveImageSuspenseAsync } from '../ResponsiveImage/ResponsiveImageSuspenseAsync';
 
-withDefaults(
+const props = withDefaults(
   defineProps<{
     direction?: Direction;
     image: Image;
@@ -74,8 +77,14 @@ const { width, height } = useElementSize(
 );
 
 const imageSize = computed(() => ({
-  width: Math.trunc(width.value),
-  height: Math.trunc(height.value),
+  width: Math.min(
+    Math.trunc(width.value),
+    props.direction === Directions.horizontal ? 250 : 500,
+  ),
+  height: Math.min(
+    Math.trunc(height.value),
+    props.direction === Directions.horizontal ? 250 : 500,
+  ),
 }));
 </script>
 

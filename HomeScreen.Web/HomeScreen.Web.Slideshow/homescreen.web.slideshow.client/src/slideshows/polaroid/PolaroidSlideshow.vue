@@ -1,6 +1,5 @@
 <template>
-  <component
-    :is="DateTimeWeatherComboAsync"
+  <DateTimeWeatherComboAsync
     :kind="DateTimeWeatherComboKinds.header"
     :weather-forecast="weatherForecast"
   />
@@ -32,7 +31,7 @@ import {
   type Image,
   type IWeatherForecast,
   type LoadImageCallback,
-} from '../../../../../HomeScreen.Web.Common/homescreen.web.common.components';
+} from '@homescreen/web-common-components';
 import { useIntervalFn } from '@vueuse/core';
 import { range, rangeRNG } from '@/helpers/random';
 import {

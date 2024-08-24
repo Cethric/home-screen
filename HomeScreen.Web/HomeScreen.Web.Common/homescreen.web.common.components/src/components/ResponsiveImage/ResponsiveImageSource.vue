@@ -20,8 +20,8 @@ const props = defineProps<{
 
 const srcset = await props.loadImage(
   props.image.id,
-  props.imageSize.width,
-  props.imageSize.height,
+  Math.max(props.imageSize.width, 250),
+  Math.max(props.imageSize.height, 250),
   props.blur,
   props.format,
 );

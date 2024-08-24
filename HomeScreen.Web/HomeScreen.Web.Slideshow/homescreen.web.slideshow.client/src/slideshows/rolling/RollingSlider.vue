@@ -47,7 +47,7 @@ import {
   Directions,
   type Image,
   type LoadImageCallback,
-} from '../../../../../HomeScreen.Web.Common/homescreen.web.common.components';
+} from '@homescreen/web-common-components';
 import {
   type RollingDirection,
   RollingDirections,

@@ -26,8 +26,7 @@
               v-bind="props"
             >
               <template #details="{ image }">
-                <component
-                  :is="LeafletMapAsync"
+                <LeafletMapAsync
                   v-if="image.location?.latitude && image.location?.longitude"
                   :latitude="image.location.latitude"
                   :longitude="image.location.longitude"
