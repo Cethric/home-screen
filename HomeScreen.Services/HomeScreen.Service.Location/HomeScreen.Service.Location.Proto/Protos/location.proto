@@ -1,0 +1,19 @@
+﻿syntax = "proto3";
+
+option csharp_namespace = "HomeScreen.Service.Location";
+
+package location;
+
+service Location {
+  rpc SearchForLocation(SearchForLocationRequest) returns (SearchForLocationResponse);
+}
+
+message SearchForLocationRequest {
+  double latitude = 1;
+  double longitude = 2;
+  double altitude = 3;
+}
+
+message SearchForLocationResponse {
+  string location = 1;
+}

@@ -1,6 +1,6 @@
 ﻿using System.Text.Json;
 using HomeScreen.Service.Media;
-using HomeScreen.Service.MediaClient.Generated;
+using HomeScreen.Service.Media.Client.Generated;
 using HomeScreen.Web.Common.Server.Entities;
 using HomeScreen.Web.Common.Server.Services;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -17,10 +17,10 @@ public static class MediaEndpoints
         group.MapGet("random", RandomMedia).WithName(nameof(RandomMedia)).WithRequestTimeout(TimeSpan.FromMinutes(2));
         group.MapPatch("{mediaId:guid:required}/toggle", ToggleMedia).WithName(nameof(ToggleMedia));
         group.MapGet("{mediaId:guid:required}/download/{width:int:required}/{height:int:required}", DownloadMedia)
-            .WithName(nameof(DownloadMedia))
-            .WithRequestTimeout(TimeSpan.FromMinutes(1));
+             .WithName(nameof(DownloadMedia))
+             .WithRequestTimeout(TimeSpan.FromMinutes(1));
         group.MapGet("{mediaId:guid:required}/transform/{width:int:required}/{height:int:required}", TransformMedia)
-            .WithName(nameof(TransformMedia));
+             .WithName(nameof(TransformMedia));
     }
 
     private static Task<JsonStreamingResult<MediaItem>> RandomMedia(
@@ -89,6 +89,7 @@ public static class MediaEndpoints
         bool blur,
         MediaTransformOptionsFormat format,
         IMediaApi service,
+        HttpContext context,
         CancellationToken cancellationToken
     )
     {
@@ -102,6 +103,25 @@ public static class MediaEndpoints
         );
         if (result == TransformMediaState.Transformed)
         {
+            var linkGenerator = context.RequestServices.GetRequiredService<LinkGenerator>();
+            var url = linkGenerator.GetUriByRouteValues(
+                context,
+                nameof(DownloadMedia),
+                new
+                {
+                    mediaId,
+                    width,
+                    height,
+                    blur,
+                    format
+                },
+                fragment: FragmentString.Empty
+            );
+            if (url == null)
+            {
+                return TypedResults.NotFound();
+            }
+
             return TypedResults.AcceptedAtRoute(
                 new AcceptedTransformMeta
                 {
@@ -109,7 +129,8 @@ public static class MediaEndpoints
                     Width = width,
                     Height = height,
                     Blur = blur,
-                    Format = format
+                    Format = format,
+                    Url = url
                 },
                 nameof(DownloadMedia),
                 new
@@ -127,11 +148,12 @@ public static class MediaEndpoints
     }
 }
 
-class AcceptedTransformMeta
+internal class AcceptedTransformMeta
 {
     public Guid MediaId { get; set; }
     public int Width { get; set; }
     public int Height { get; set; }
     public bool Blur { get; set; }
     public MediaTransformOptionsFormat Format { get; set; }
+    public string Url { get; set; } = string.Empty;
 }

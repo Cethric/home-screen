@@ -26,11 +26,11 @@
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Grpc.AspNetCore" Version="2.65.0" />
+        <PackageReference Include="Grpc.AspNetCore" Version="2.65.0"/>
         <PackageReference Include="Microsoft.AspNetCore.SpaProxy">
             <Version>8.0.8</Version>
         </PackageReference>
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.7.0" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.7.0"/>
     </ItemGroup>
 
     <ItemGroup>
@@ -40,7 +40,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\..\HomeScreen.ServiceDefaults\HomeScreen.ServiceDefaults.csproj" />
+        <ProjectReference Include="..\..\..\HomeScreen.ServiceDefaults\HomeScreen.ServiceDefaults.csproj"/>
         <ProjectReference Include="..\homescreen.web.dashboard.client\homescreen.web.dashboard.client.esproj">
             <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
         </ProjectReference>

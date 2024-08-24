@@ -1,6 +1,6 @@
 import { computedAsync, useMemoize } from '@vueuse/core';
 import { type Ref } from 'vue';
-import {MediaTransformOptionsFormat} from "@/domain/generated/homescreen-common-api";
+import { MediaTransformOptionsFormat } from '@/domain/generated/homescreen-common-api';
 
 export interface ComputedMediaSize {
   width: number;
@@ -15,32 +15,6 @@ export type LoadImageCallback = (
   format: MediaTransformOptionsFormat,
   signal?: AbortSignal,
 ) => Promise<string>;
-
-export const responsiveImageLoader = (
-  loadImage: LoadImageCallback,
-  format: MediaTransformOptionsFormat,
-  imageId: string,
-  width: number,
-  height: number,
-  loading: Ref<string | null>,
-) => {
-  const imageSrc = useMemoize(async (width: number, height: number) => {
-    return await loadImage(
-      imageId,
-      Math.max(width, 200),
-      Math.max(height, 200),
-      false,
-      format,
-    );
-  });
-
-  return computedAsync(async () => {
-    if (loading.value === null || loading.value.trim().length === 0) {
-      return '';
-    }
-    return await imageSrc(width, height);
-  }, loading?.value ?? '');
-};
 
 export const asyncImage = (
   loadImage: LoadImageCallback,

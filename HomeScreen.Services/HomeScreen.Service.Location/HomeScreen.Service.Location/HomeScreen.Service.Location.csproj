@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <RuntimeIdentifiers>linux-x64</RuntimeIdentifiers>
+        <EnableSdkContainerDebugging>True</EnableSdkContainerDebugging>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="GitVersion.MsBuild" Version="6.0.2">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Azure.Maps.Search" Version="1.0.0-beta.5"/>
+        <PackageReference Include="Grpc.AspNetCore" Version="2.65.0"/>
+        <PackageReference Include="NSwag.MSBuild" Version="14.1.0">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\..\HomeScreen.ServiceDefaults\HomeScreen.ServiceDefaults.csproj" />
+      <ProjectReference Include="..\HomeScreen.Service.Location.Proto\HomeScreen.Service.Location.Proto.csproj" />
+    </ItemGroup>
+
+    <Target Name="NSwag-Pre" BeforeTargets="PreBuildEvent">
+        <Exec WorkingDirectory="$(ProjectDir)"
+              EnvironmentVariables="ASPNETCORE_ENVIRONMENT=Development"
+              Command="$(NSwagExe_Net80) run Infrastructure/Location/NominatimLocationService/nominatim.nswag /variables:Configuration=$(Configuration)"/>
+    </Target>
+
+</Project>

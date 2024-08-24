@@ -1,5 +1,5 @@
 ﻿using HomeScreen.Service.Media;
-using HomeScreen.Service.MediaClient.Generated;
+using HomeScreen.Service.Media.Client.Generated;
 using HomeScreen.Web.Common.Server.Entities;
 
 namespace HomeScreen.Web.Common.Server.Services;

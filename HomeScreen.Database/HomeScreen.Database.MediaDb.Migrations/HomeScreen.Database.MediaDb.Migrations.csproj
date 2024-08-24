@@ -12,12 +12,12 @@
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.8" />
-        <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.8"/>
+        <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0"/>
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\HomeScreen.ServiceDefaults\HomeScreen.ServiceDefaults.csproj" />
-        <ProjectReference Include="..\HomeScreen.Database.MediaDb\HomeScreen.Database.MediaDb.csproj" />
+        <ProjectReference Include="..\..\HomeScreen.ServiceDefaults\HomeScreen.ServiceDefaults.csproj"/>
+        <ProjectReference Include="..\HomeScreen.Database.MediaDb\HomeScreen.Database.MediaDb.csproj"/>
     </ItemGroup>
 </Project>

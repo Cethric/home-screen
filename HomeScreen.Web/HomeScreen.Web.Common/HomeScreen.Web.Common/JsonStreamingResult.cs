@@ -23,13 +23,6 @@ public class JsonStreamingResult<TValue>(
         await executor.ExecuteAsync(context, this);
     }
 
-    public async Task ExecuteAsync(HttpContext httpContext)
-    {
-        var executor = httpContext.RequestServices.GetRequiredService<IJsonStreamingResultExecutor<TValue>>();
-
-        await executor.ExecuteAsync(httpContext, this);
-    }
-
     public static void PopulateMetadata(MethodInfo method, EndpointBuilder builder)
     {
         ArgumentNullException.ThrowIfNull(method);
@@ -38,6 +31,13 @@ public class JsonStreamingResult<TValue>(
         builder.Metadata.Add(
             new ProducesResponseTypeMetadata(StatusCodes.Status200OK, typeof(TValue), new[] { "application/json" })
         );
+    }
+
+    public async Task ExecuteAsync(HttpContext httpContext)
+    {
+        var executor = httpContext.RequestServices.GetRequiredService<IJsonStreamingResultExecutor<TValue>>();
+
+        await executor.ExecuteAsync(httpContext, this);
     }
 
     public int? StatusCode => StatusCodes.Status200OK;

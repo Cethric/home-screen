@@ -77,10 +77,10 @@
       "inlineNamedDictionaries": false,
       "inlineNamedAny": false,
       "includeHttpContext": false,
-      "templateDirectory": "../homescreen.web.slideshow.client/src/domain/api-template",
+      "templateDirectory": null,
       "serviceHost": null,
       "serviceSchemes": null,
-      "output": "../homescreen.web.slideshow.client/src/domain/api/homescreen-slideshow-api.ts",
+      "output": "../homescreen.web.slideshow.client/src/domain/generated/homescreen-slideshow-api.ts",
       "newLineBehavior": "Auto"
     }
   }

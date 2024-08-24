@@ -20,7 +20,7 @@ export default defineConfig(() => {
       },
     },
     build: {
-      target: "modules",
+      target: 'modules',
       lib: {
         entry: fileURLToPath(new URL('./src/index.ts', import.meta.url)),
         formats: ['es', 'cjs', 'umd'],

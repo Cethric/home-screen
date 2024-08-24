@@ -1,0 +1,9 @@
+namespace HomeScreen.Service.Media.UnitTests;
+
+public class UnitTest1
+{
+    [Fact]
+    public void Test1()
+    {
+    }
+}

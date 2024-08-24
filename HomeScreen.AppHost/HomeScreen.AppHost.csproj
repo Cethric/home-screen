@@ -22,23 +22,21 @@
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Aspire.Hosting" Version="8.1.0" />
-        <PackageReference Include="Aspire.Hosting.AppHost" Version="8.1.0" />
-        <PackageReference Include="Aspire.Hosting.Redis" Version="8.1.0" />
-        <PackageReference Include="Aspire.Hosting.Seq" Version="8.1.0" />
-        <PackageReference Include="Aspire.Hosting.SqlServer" Version="8.1.0" />
+        <PackageReference Include="Aspire.Hosting" Version="8.1.0"/>
+        <PackageReference Include="Aspire.Hosting.AppHost" Version="8.1.0"/>
+        <PackageReference Include="Aspire.Hosting.Redis" Version="8.1.0"/>
+        <PackageReference Include="Aspire.Hosting.Seq" Version="8.1.0"/>
+        <PackageReference Include="Aspire.Hosting.SqlServer" Version="8.1.0"/>
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference
-            Include="..\HomeScreen.Database\HomeScreen.Database.MediaDb.Migrations\HomeScreen.Database.MediaDb.Migrations.csproj" />
-        <ProjectReference Include="..\HomeScreen.Services\HomeScreen.Service.Media\HomeScreen.Service.Media.csproj" />
-        <ProjectReference Include="..\HomeScreen.Services\HomeScreen.Service.Weather\HomeScreen.Service.Weather.csproj" />
-        <ProjectReference Include="..\HomeScreen.Web\HomeScreen.Web.Common\HomeScreen.Web.Common.Server\HomeScreen.Web.Common.Server.csproj" />
-        <ProjectReference
-            Include="..\HomeScreen.Web\HomeScreen.Web.Dashboard\HomeScreen.Web.Dashboard.Server\HomeScreen.Web.Dashboard.Server.csproj" />
-        <ProjectReference
-            Include="..\HomeScreen.Web\HomeScreen.Web.Slideshow\HomeScreen.Web.Slideshow.Server\HomeScreen.Web.Slideshow.Server.csproj" />
+      <ProjectReference Include="..\HomeScreen.Database\HomeScreen.Database.MediaDb.Migrations\HomeScreen.Database.MediaDb.Migrations.csproj" />
+      <ProjectReference Include="..\HomeScreen.Services\HomeScreen.Service.Location\HomeScreen.Service.Location\HomeScreen.Service.Location.csproj" />
+      <ProjectReference Include="..\HomeScreen.Services\HomeScreen.Service.Media\HomeScreen.Service.Media\HomeScreen.Service.Media.csproj" />
+      <ProjectReference Include="..\HomeScreen.Services\HomeScreen.Service.Weather\HomeScreen.Service.Weather\HomeScreen.Service.Weather.csproj" />
+      <ProjectReference Include="..\HomeScreen.Web\HomeScreen.Web.Common\HomeScreen.Web.Common.Server\HomeScreen.Web.Common.Server.csproj" />
+      <ProjectReference Include="..\HomeScreen.Web\HomeScreen.Web.Dashboard\HomeScreen.Web.Dashboard.Server\HomeScreen.Web.Dashboard.Server.csproj" />
+      <ProjectReference Include="..\HomeScreen.Web\HomeScreen.Web.Slideshow\HomeScreen.Web.Slideshow.Server\HomeScreen.Web.Slideshow.Server.csproj" />
     </ItemGroup>
 
 </Project>

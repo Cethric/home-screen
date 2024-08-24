@@ -1,8 +1,3 @@
 ﻿namespace HomeScreen.Database.MediaDb.Entities;
 
-public enum LongitudeDirection
-{
-    Invalid,
-    East,
-    West
-}
+public enum LongitudeDirection { Invalid, East, West }

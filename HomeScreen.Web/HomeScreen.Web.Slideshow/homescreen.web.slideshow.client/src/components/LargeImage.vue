@@ -1,6 +1,5 @@
 <template>
-  <component
-    :is="ResponsiveImageSuspenseAsync"
+  <ResponsiveImageSuspenseAsync
     :image="image"
     :image-size="imageSize"
     :load-image="loadImage"

@@ -21,11 +21,11 @@ public static class ConfigEndpoint
         _commonUrl = (app.Environment.IsProduction()
                          ? app.Configuration.GetValue<string>("CommonAddress")
                          : app.Configuration.GetSection("services")
-                             .GetSection("homescreen-web-common-server")
-                             .GetSection("http")
-                             .GetChildren()
-                             .FirstOrDefault()
-                             ?.Value) ??
+                              .GetSection("homescreen-web-common-server")
+                              .GetSection("http")
+                              .GetChildren()
+                              .FirstOrDefault()
+                              ?.Value) ??
                      string.Empty;
     }
 

@@ -594,6 +594,7 @@ export class AcceptedTransformMeta implements IAcceptedTransformMeta {
     height?: number;
     blur?: boolean;
     format?: MediaTransformOptionsFormat;
+    url?: string;
 
     constructor(data?: IAcceptedTransformMeta) {
         if (data) {
@@ -611,6 +612,7 @@ export class AcceptedTransformMeta implements IAcceptedTransformMeta {
             this.height = _data["height"];
             this.blur = _data["blur"];
             this.format = _data["format"];
+            this.url = _data["url"];
         }
     }
 
@@ -626,6 +628,7 @@ export class AcceptedTransformMeta implements IAcceptedTransformMeta {
         data["height"] = this.height;
         data["blur"] = this.blur;
         data["format"] = this.format;
+        data["url"] = this.url;
         return data;
     }
 }
@@ -636,6 +639,7 @@ export interface IAcceptedTransformMeta {
     height?: number;
     blur?: boolean;
     format?: MediaTransformOptionsFormat;
+    url?: string;
 }
 
 export class WeatherForecast implements IWeatherForecast {

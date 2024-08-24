@@ -6,6 +6,25 @@ namespace HomeScreen.Database.MediaDb.Entities;
 [PrimaryKey(nameof(MediaId))]
 public class MediaEntry
 {
+    public MediaEntry()
+    {
+    }
+
+    public MediaEntry(FileInfo file, string hash)
+    {
+        MediaId = Guid.NewGuid();
+        OriginalHash = hash;
+        OriginalFile = file.FullName;
+        Notes = string.Empty;
+        CapturedUtc = DateTimeOffset.UtcNow;
+        CapturedOffset = TimeSpan.Zero;
+        Latitude = 0;
+        LatitudeDirection = LatitudeDirection.Invalid;
+        Longitude = 0;
+        LongitudeDirection = LongitudeDirection.Invalid;
+        Enabled = false;
+    }
+
     [Required]
     public Guid MediaId { get; set; }
 
@@ -44,23 +63,4 @@ public class MediaEntry
     public string Notes { get; set; } = string.Empty;
 
     public bool Enabled { get; set; } = true;
-
-    public MediaEntry()
-    {
-    }
-
-    public MediaEntry(FileInfo file, string hash)
-    {
-        MediaId = Guid.NewGuid();
-        OriginalHash = hash;
-        OriginalFile = file.FullName;
-        Notes = string.Empty;
-        CapturedUtc = DateTimeOffset.UtcNow;
-        CapturedOffset = TimeSpan.Zero;
-        Latitude = 0;
-        LatitudeDirection = LatitudeDirection.Invalid;
-        Longitude = 0;
-        LongitudeDirection = LongitudeDirection.Invalid;
-        Enabled = false;
-    }
 }

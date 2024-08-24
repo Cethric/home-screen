@@ -24,7 +24,11 @@ import {
   type Image,
   type WeatherForecast,
 } from '@homescreen/web-common-components';
-import { injectMediaApi, loadImageCallback, loadMedia } from '@/domain/media';
+import {
+  injectMediaApi,
+  loadImageCallback,
+  loadMedia,
+} from '@/domain/client/media';
 import {
   computed,
   defineAsyncComponent,
@@ -33,29 +37,29 @@ import {
   onMounted,
   ref,
 } from 'vue';
-import FullscreenMainLoader from '@/components/FullscreenMainLoader.vue';
+import FullscreenMainLoader from '@/slideshows/fullscreen/FullscreenMainLoader.vue';
 import { choice } from '@/helpers/random';
 import { useNProgress } from '@vueuse/integrations';
 import { useAsyncState, useIntervalFn } from '@vueuse/core';
 
 const slideshows = {
   [Slideshows.rolling_slideshow]: defineAsyncComponent({
-    loader: () => import('@/slideshows/RollingSlideshow.vue'),
+    loader: () => import('@/slideshows/rolling/RollingSlideshow.vue'),
     timeout: 10,
     loadingComponent: FullscreenMainLoader,
   }),
   [Slideshows.polaroid_slideshow]: defineAsyncComponent({
-    loader: () => import('@/slideshows/PolaroidSlideshow.vue'),
+    loader: () => import('@/slideshows/polaroid/PolaroidSlideshow.vue'),
     timeout: 10,
     loadingComponent: FullscreenMainLoader,
   }),
   [Slideshows.fullscreen_slideshow]: defineAsyncComponent({
-    loader: () => import('@/slideshows/FullscreenSlideshow.vue'),
+    loader: () => import('@/slideshows/fullscreen/FullscreenSlideshow.vue'),
     timeout: 10,
     loadingComponent: FullscreenMainLoader,
   }),
   [Slideshows.grid_slideshow]: defineAsyncComponent({
-    loader: () => import('@/slideshows/GridSlideshow.vue'),
+    loader: () => import('@/slideshows/grid/GridSlideshow.vue'),
     timeout: 10,
     loadingComponent: FullscreenMainLoader,
   }),

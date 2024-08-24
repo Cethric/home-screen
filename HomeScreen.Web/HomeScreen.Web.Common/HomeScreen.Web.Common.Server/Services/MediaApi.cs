@@ -1,8 +1,8 @@
 ﻿using System.Runtime.CompilerServices;
 using Grpc.Core;
 using HomeScreen.Service.Media;
-using HomeScreen.Service.MediaClient.Generated;
-using HomeScreen.Service.Proto.Services;
+using HomeScreen.Service.Media.Proto.Services;
+using HomeScreen.Service.Media.Client.Generated;
 using HomeScreen.Web.Common.Server.Entities;
 
 namespace HomeScreen.Web.Common.Server.Services;
@@ -19,8 +19,8 @@ public class MediaApi(ILogger<MediaApi> logger, MediaGrpcClient client, IMediaFi
         using var response = client.RandomMedia(
             new MediaRequest { Count = count },
             new CallOptions().WithDeadline(DateTimeOffset.UtcNow.AddMinutes(10).UtcDateTime)
-                .WithCancellationToken(cancellationToken)
-                .WithWaitForReady()
+                             .WithCancellationToken(cancellationToken)
+                             .WithWaitForReady()
         );
         if (response is null)
         {
@@ -45,7 +45,7 @@ public class MediaApi(ILogger<MediaApi> logger, MediaGrpcClient client, IMediaFi
         var response = await client.ToggleMediaAsync(
             new ToggleMediaRequest { Id = mediaId.ToString("D"), Enabled = enabled },
             new CallOptions().WithDeadline(DateTimeOffset.UtcNow.AddMinutes(5).UtcDateTime)
-                .WithCancellationToken(cancellationToken)
+                             .WithCancellationToken(cancellationToken)
         );
         logger.LogInformation("ToggleMedia end");
         return response != null ? TransformMedia(response) : null;
@@ -78,7 +78,7 @@ public class MediaApi(ILogger<MediaApi> logger, MediaGrpcClient client, IMediaFi
                 }
             },
             new CallOptions().WithDeadline(DateTimeOffset.UtcNow.AddMinutes(5).UtcDateTime)
-                .WithCancellationToken(cancellationToken)
+                             .WithCancellationToken(cancellationToken)
         );
         return result?.State ?? TransformMediaState.NotFound;
     }
@@ -102,7 +102,7 @@ public class MediaApi(ILogger<MediaApi> logger, MediaGrpcClient client, IMediaFi
             cancellationToken
         );
         logger.LogInformation("Downloaded media for {MediaId} - {StatusCode}", mediaId, response.StatusCode);
-        
+
         if (response.StatusCode != StatusCodes.Status200OK)
         {
             logger.LogWarning("Failed to download media item {StatusCode}", response.StatusCode);
@@ -119,8 +119,8 @@ public class MediaApi(ILogger<MediaApi> logger, MediaGrpcClient client, IMediaFi
             Notes = entry.Notes,
             Enabled = entry.Enabled,
             Location = new MediaItemLocation
-            {
-                Name = entry.Location, Latitude = entry.Latitude, Longitude = entry.Longitude
-            }
+                       {
+                           Name = entry.Location, Latitude = entry.Latitude, Longitude = entry.Longitude
+                       }
         };
 }

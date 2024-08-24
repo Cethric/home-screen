@@ -15,9 +15,9 @@
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.8"/>
-        <PackageReference Include="NJsonSchema" Version="11.0.2" />
+        <PackageReference Include="NJsonSchema" Version="11.0.2"/>
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0"/>
-        <PackageReference Include="NSwag.AspNetCore" Version="14.1.0" />
+        <PackageReference Include="NSwag.AspNetCore" Version="14.1.0"/>
         <PackageReference Include="NSwag.MSBuild" Version="14.1.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -25,10 +25,11 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\..\HomeScreen.ServiceDefaults\HomeScreen.ServiceDefaults.csproj" />
-        <ProjectReference Include="..\..\..\HomeScreen.Services\HomeScreen.Service.MediaClient\HomeScreen.Service.MediaClient.csproj" />
-        <ProjectReference Include="..\..\..\HomeScreen.Services\HomeScreen.Service.Proto\HomeScreen.Service.Proto.csproj"/>
-        <ProjectReference Include="..\HomeScreen.Web.Common\HomeScreen.Web.Common.csproj" />
+      <ProjectReference Include="..\..\..\HomeScreen.ServiceDefaults\HomeScreen.ServiceDefaults.csproj" />
+      <ProjectReference Include="..\..\..\HomeScreen.Services\HomeScreen.Service.Media\HomeScreen.Service.Media.Client\HomeScreen.Service.Media.Client.csproj" />
+      <ProjectReference Include="..\..\..\HomeScreen.Services\HomeScreen.Service.Media\HomeScreen.Service.Media.Proto\HomeScreen.Service.Media.Proto.csproj" />
+      <ProjectReference Include="..\..\..\HomeScreen.Services\HomeScreen.Service.Weather\HomeScreen.Service.Weather.Proto\HomeScreen.Service.Weather.Proto.csproj" />
+      <ProjectReference Include="..\HomeScreen.Web.Common\HomeScreen.Web.Common.csproj" />
     </ItemGroup>
 
     <PropertyGroup>

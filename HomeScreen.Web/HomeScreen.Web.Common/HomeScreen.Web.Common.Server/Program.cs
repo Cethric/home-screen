@@ -1,5 +1,6 @@
-using HomeScreen.Service.MediaClient.Generated;
-using HomeScreen.Service.Proto.Services;
+using HomeScreen.Service.Media.Proto.Services;
+using HomeScreen.Service.Media.Client.Generated;
+using HomeScreen.Service.Weather.Proto.Services;
 using HomeScreen.ServiceDefaults;
 using HomeScreen.Web.Common;
 using HomeScreen.Web.Common.Server.Endpoints;
@@ -23,20 +24,20 @@ builder.Services.AddGrpcClient<MediaGrpcClient>(
     "homescreen-service-media",
     c => c.Address = new Uri(
         builder.Configuration.GetSection("services")
-            .GetSection("homescreen-service-media")
-            .GetSection("http")
-            .GetChildren()
-            .FirstOrDefault()!.Value!
+               .GetSection("homescreen-service-media")
+               .GetSection("http")
+               .GetChildren()
+               .FirstOrDefault()!.Value!
     )
 );
 builder.Services.AddGrpcClient<WeatherGrpcClient>(
     "homescreen-service-weather",
     c => c.Address = new Uri(
         builder.Configuration.GetSection("services")
-            .GetSection("homescreen-service-weather")
-            .GetSection("http")
-            .GetChildren()
-            .FirstOrDefault()!.Value!
+               .GetSection("homescreen-service-weather")
+               .GetSection("http")
+               .GetChildren()
+               .FirstOrDefault()!.Value!
     )
 );
 builder.Services.AddHttpClient(
@@ -45,10 +46,10 @@ builder.Services.AddHttpClient(
     {
         client.BaseAddress = new Uri(
             builder.Configuration.GetSection("services")
-                .GetSection("homescreen-service-media")
-                .GetSection("http")
-                .GetChildren()
-                .FirstOrDefault()!.Value!
+                   .GetSection("homescreen-service-media")
+                   .GetSection("http")
+                   .GetChildren()
+                   .FirstOrDefault()!.Value!
         );
         client.DefaultRequestVersion = new Version(2, 0);
         client.DefaultVersionPolicy = HttpVersionPolicy.RequestVersionOrHigher;
@@ -77,5 +78,5 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.Services.GetRequiredService<ILogger<Program>>()
-    .LogInformation("Launching version: {Version}", GitVersionInformation.InformationalVersion);
+   .LogInformation("Launching version: {Version}", GitVersionInformation.InformationalVersion);
 await app.RunAsync();

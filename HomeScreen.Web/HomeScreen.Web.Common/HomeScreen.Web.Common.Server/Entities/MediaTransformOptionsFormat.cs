@@ -1,4 +1,4 @@
-using HomeScreen.Service.MediaClient.Generated;
+using HomeScreen.Service.Media.Client.Generated;
 
 namespace HomeScreen.Web.Common.Server.Entities;
 

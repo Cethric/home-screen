@@ -22,7 +22,7 @@ import { type Slideshow, Slideshows } from '@/slideshows/properties';
 import { choice } from '@/helpers/random';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { faHome } from '@fortawesome/free-solid-svg-icons';
-import { loadWeather } from '@/domain/weather';
+import { loadWeather } from '@/domain/client/weather';
 
 const location = useBrowserLocation({});
 const activeSlideshow = ref<Slideshow>(choice(Object.values(Slideshows)));
