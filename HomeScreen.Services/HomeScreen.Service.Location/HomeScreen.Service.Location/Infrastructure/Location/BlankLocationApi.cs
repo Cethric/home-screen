@@ -1,7 +1,11 @@
-﻿namespace HomeScreen.Service.Location.Infrastructure.Location;
+﻿using System.Diagnostics;
+
+namespace HomeScreen.Service.Location.Infrastructure.Location;
 
 public class BlankLocationApi(ILogger<BlankLocationApi> logger) : ILocationApi
 {
+    private static ActivitySource ActivitySource => new(nameof(BlankLocationApi));
+
     public Task<string> SearchForLocation(
         double longitude,
         double latitude,
@@ -9,6 +13,7 @@ public class BlankLocationApi(ILogger<BlankLocationApi> logger) : ILocationApi
         CancellationToken cancellationToken = default
     )
     {
+        using var activity = ActivitySource.StartActivity();
         logger.LogInformation(
             "Using blank location for address at {Longitude}, {Latitude}, {Altitude}",
             longitude,

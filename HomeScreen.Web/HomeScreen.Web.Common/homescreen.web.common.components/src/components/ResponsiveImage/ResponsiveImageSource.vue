@@ -31,7 +31,7 @@ switch (props.format) {
   case MediaTransformOptionsFormat.Jpeg:
     type = 'image/jpeg';
     break;
-  case MediaTransformOptionsFormat.JpegXL:
+  case MediaTransformOptionsFormat.JpegXl:
     type = 'image/jxl';
     break;
   case MediaTransformOptionsFormat.Png:

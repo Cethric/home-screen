@@ -31,7 +31,7 @@ namespace HomeScreen.Service.Media.Client.Generated
     using System = global::System;
 
     [System.CodeDom.Compiler.GeneratedCode("NSwag", "14.1.0.0 (NJsonSchema v11.0.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class Client : IClient
+    public partial class MediaClient : IMediaClient
     {
         #pragma warning disable 8618
         private string _baseUrl;
@@ -42,7 +42,7 @@ namespace HomeScreen.Service.Media.Client.Generated
         private System.Text.Json.JsonSerializerOptions _instanceSettings;
 
     #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-        public Client(string baseUrl, HttpClient httpClient)
+        public MediaClient(string baseUrl, HttpClient httpClient)
     #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         {
             BaseUrl = baseUrl;
@@ -80,8 +80,23 @@ namespace HomeScreen.Service.Media.Client.Generated
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<SwaggerResponse<string>> GetAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task<FileResponse> MediaAsync(System.Guid mediaId, int width, int height, bool blur, MediaTransformOptionsFormat format, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
+            if (mediaId == null)
+                throw new System.ArgumentNullException("mediaId");
+
+            if (width == null)
+                throw new System.ArgumentNullException("width");
+
+            if (height == null)
+                throw new System.ArgumentNullException("height");
+
+            if (blur == null)
+                throw new System.ArgumentNullException("blur");
+
+            if (format == null)
+                throw new System.ArgumentNullException("format");
+
             var client_ = _httpClient;
             var disposeClient_ = false;
             try
@@ -89,11 +104,21 @@ namespace HomeScreen.Service.Media.Client.Generated
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
                     request_.Method = new System.Net.Http.HttpMethod("GET");
-                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
+                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("image/jpeg"));
 
                     var urlBuilder_ = new System.Text.StringBuilder();
                     if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
-                    // Operation Path: ""
+                    // Operation Path: "media/{mediaId}/download/{width}/{height}"
+                    urlBuilder_.Append("media/");
+                    urlBuilder_.Append(System.Uri.EscapeDataString(ConvertToString(mediaId, System.Globalization.CultureInfo.InvariantCulture)));
+                    urlBuilder_.Append("/download/");
+                    urlBuilder_.Append(System.Uri.EscapeDataString(ConvertToString(width, System.Globalization.CultureInfo.InvariantCulture)));
+                    urlBuilder_.Append('/');
+                    urlBuilder_.Append(System.Uri.EscapeDataString(ConvertToString(height, System.Globalization.CultureInfo.InvariantCulture)));
+                    urlBuilder_.Append('?');
+                    urlBuilder_.Append(System.Uri.EscapeDataString("blur")).Append('=').Append(System.Uri.EscapeDataString(ConvertToString(blur, System.Globalization.CultureInfo.InvariantCulture))).Append('&');
+                    urlBuilder_.Append(System.Uri.EscapeDataString("format")).Append('=').Append(System.Uri.EscapeDataString(ConvertToString(format, System.Globalization.CultureInfo.InvariantCulture))).Append('&');
+                    urlBuilder_.Length--;
 
                     PrepareRequest(client_, request_, urlBuilder_);
 
@@ -118,14 +143,12 @@ namespace HomeScreen.Service.Media.Client.Generated
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 200)
+                        if (status_ == 200 || status_ == 206)
                         {
-                            var objectResponse_ = await ReadObjectResponseAsync<string>(response_, headers_, cancellationToken).ConfigureAwait(false);
-                            if (objectResponse_.Object == null)
-                            {
-                                throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
-                            }
-                            return new SwaggerResponse<string>(status_, headers_, objectResponse_.Object);
+                            var responseStream_ = response_.Content == null ? System.IO.Stream.Null : await response_.Content.ReadAsStreamAsync().ConfigureAwait(false);
+                            var fileResponse_ = new FileResponse(status_, headers_, responseStream_, null, response_);
+                            disposeClient_ = false; disposeResponse_ = false; // response and client are disposed by FileResponse
+                            return fileResponse_;
                         }
                         else
                         {
@@ -257,7 +280,7 @@ namespace HomeScreen.Service.Media.Client.Generated
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NSwag", "14.1.0.0 (NJsonSchema v11.0.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class MediaFileClient : IMediaFileClient
+    public partial class Client : IClient
     {
         #pragma warning disable 8618
         private string _baseUrl;
@@ -268,7 +291,7 @@ namespace HomeScreen.Service.Media.Client.Generated
         private System.Text.Json.JsonSerializerOptions _instanceSettings;
 
     #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-        public MediaFileClient(string baseUrl, HttpClient httpClient)
+        public Client(string baseUrl, HttpClient httpClient)
     #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         {
             BaseUrl = baseUrl;
@@ -306,7 +329,7 @@ namespace HomeScreen.Service.Media.Client.Generated
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<FileResponse> DownloadMediaFileAsync(System.Guid? mediaId = null, int? width = null, int? height = null, bool? blur = null, MediaTransformOptionsFormat? format = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task<SwaggerResponse<string>> GetAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -315,34 +338,11 @@ namespace HomeScreen.Service.Media.Client.Generated
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
                     request_.Method = new System.Net.Http.HttpMethod("GET");
-                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/octet-stream"));
+                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
                     var urlBuilder_ = new System.Text.StringBuilder();
                     if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
-                    // Operation Path: "MediaFile/DownloadMediaFile"
-                    urlBuilder_.Append("MediaFile/DownloadMediaFile");
-                    urlBuilder_.Append('?');
-                    if (mediaId != null)
-                    {
-                        urlBuilder_.Append(System.Uri.EscapeDataString("mediaId")).Append('=').Append(System.Uri.EscapeDataString(ConvertToString(mediaId, System.Globalization.CultureInfo.InvariantCulture))).Append('&');
-                    }
-                    if (width != null)
-                    {
-                        urlBuilder_.Append(System.Uri.EscapeDataString("width")).Append('=').Append(System.Uri.EscapeDataString(ConvertToString(width, System.Globalization.CultureInfo.InvariantCulture))).Append('&');
-                    }
-                    if (height != null)
-                    {
-                        urlBuilder_.Append(System.Uri.EscapeDataString("height")).Append('=').Append(System.Uri.EscapeDataString(ConvertToString(height, System.Globalization.CultureInfo.InvariantCulture))).Append('&');
-                    }
-                    if (blur != null)
-                    {
-                        urlBuilder_.Append(System.Uri.EscapeDataString("blur")).Append('=').Append(System.Uri.EscapeDataString(ConvertToString(blur, System.Globalization.CultureInfo.InvariantCulture))).Append('&');
-                    }
-                    if (format != null)
-                    {
-                        urlBuilder_.Append(System.Uri.EscapeDataString("format")).Append('=').Append(System.Uri.EscapeDataString(ConvertToString(format, System.Globalization.CultureInfo.InvariantCulture))).Append('&');
-                    }
-                    urlBuilder_.Length--;
+                    // Operation Path: ""
 
                     PrepareRequest(client_, request_, urlBuilder_);
 
@@ -367,22 +367,14 @@ namespace HomeScreen.Service.Media.Client.Generated
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 200 || status_ == 206)
+                        if (status_ == 200)
                         {
-                            var responseStream_ = response_.Content == null ? System.IO.Stream.Null : await response_.Content.ReadAsStreamAsync().ConfigureAwait(false);
-                            var fileResponse_ = new FileResponse(status_, headers_, responseStream_, null, response_);
-                            disposeClient_ = false; disposeResponse_ = false; // response and client are disposed by FileResponse
-                            return fileResponse_;
-                        }
-                        else
-                        if (status_ == 404)
-                        {
-                            var objectResponse_ = await ReadObjectResponseAsync<FileResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            var objectResponse_ = await ReadObjectResponseAsync<string>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
                                 throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new ApiException<FileResponse>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            return new SwaggerResponse<string>(status_, headers_, objectResponse_.Object);
                         }
                         else
                         {

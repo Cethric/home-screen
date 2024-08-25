@@ -46,8 +46,8 @@
       "propertySetterAccessModifier": "",
       "generateNativeRecords": true,
       "generateContractsOutput": true,
-      "contractsNamespace": "HomeScreen.Service.MediaClient.Generated",
-      "contractsOutputFilePath": "../HomeScreen.Service.MediaClient/Generated/IMediaClient.cs",
+      "contractsNamespace": "HomeScreen.Service.Media.Client.Generated",
+      "contractsOutputFilePath": "../HomeScreen.Service.Media.Client/Generated/IMediaClient.cs",
       "parameterDateTimeFormat": "s",
       "parameterDateFormat": "yyyy-MM-dd",
       "generateUpdateJsonSerializerSettingsMethod": true,
@@ -55,7 +55,7 @@
       "serializeTypeInformation": false,
       "queryNullValue": "",
       "className": "{controller}Client",
-      "operationGenerationMode": "MultipleClientsFromOperationId",
+      "operationGenerationMode": "MultipleClientsFromFirstTagAndOperationId",
       "additionalNamespaceUsages": [
         "System",
         "System.Collections.Generic",
@@ -79,7 +79,7 @@
       "wrapResponseMethods": [],
       "generateResponseClasses": true,
       "responseClass": "SwaggerResponse",
-      "namespace": "HomeScreen.Service.MediaClient.Generated",
+      "namespace": "HomeScreen.Service.Media.Client.Generated",
       "requiredPropertiesMustBeDefined": true,
       "dateType": "DateOnly",
       "jsonConverters": null,
@@ -113,7 +113,7 @@
       "templateDirectory": null,
       "serviceHost": null,
       "serviceSchemes": null,
-      "output": "../HomeScreen.Service.MediaClient/Generated/MediaClient.cs",
+      "output": "../HomeScreen.Service.Media.Client/Generated/MediaClient.cs",
       "newLineBehavior": "Auto"
     }
   }

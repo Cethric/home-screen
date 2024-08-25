@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
+﻿using System.Diagnostics;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace HomeScreen.Web.Slideshow.Server.Endpoints;
 
@@ -10,6 +11,7 @@ public record Config
 public static class ConfigEndpoint
 {
     private static string _commonUrl = string.Empty;
+    private static ActivitySource ActivitySource => new(nameof(ConfigEndpoint));
 
     public static void RegisterConfigEndpoints(this WebApplication app)
     {
@@ -21,13 +23,17 @@ public static class ConfigEndpoint
         _commonUrl = (app.Environment.IsProduction()
                          ? app.Configuration.GetValue<string>("CommonAddress")
                          : app.Configuration.GetSection("services")
-                              .GetSection("homescreen-web-common-server")
-                              .GetSection("http")
-                              .GetChildren()
-                              .FirstOrDefault()
-                              ?.Value) ??
+                             .GetSection("homescreen-web-common-server")
+                             .GetSection("http")
+                             .GetChildren()
+                             .FirstOrDefault()
+                             ?.Value) ??
                      string.Empty;
     }
 
-    private static Task<Ok<Config>> Config() => Task.FromResult(TypedResults.Ok(new Config { CommonUrl = _commonUrl }));
+    private static Task<Ok<Config>> Config()
+    {
+        using var activity = ActivitySource.StartActivity("Config", ActivityKind.Client);
+        return Task.FromResult(TypedResults.Ok(new Config { CommonUrl = _commonUrl }));
+    }
 }

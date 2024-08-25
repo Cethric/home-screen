@@ -1,4 +1,5 @@
-﻿using HomeScreen.Service.Location.Infrastructure.Location.NominatimLocationService.Generated.Entities;
+﻿using System.Diagnostics;
+using HomeScreen.Service.Location.Infrastructure.Location.NominatimLocationService.Generated.Entities;
 using Microsoft.Extensions.Caching.Distributed;
 
 namespace HomeScreen.Service.Location.Infrastructure.Location.NominatimLocationService;
@@ -9,6 +10,8 @@ public class NominatimLocationApi(
     INominatimClient nominatimClient
 ) : ILocationApi
 {
+    private static ActivitySource ActivitySource => new(nameof(NominatimLocationApi));
+
     public async Task<string> SearchForLocation(
         double longitude,
         double latitude,
@@ -16,6 +19,7 @@ public class NominatimLocationApi(
         CancellationToken cancellationToken = default
     )
     {
+        using var activity = ActivitySource.StartActivity();
         logger.LogInformation(
             "Attempting to search for address at {Longitude}, {Latitude}, {Altitude}",
             longitude,
@@ -27,6 +31,7 @@ public class NominatimLocationApi(
         var label = await distributedCache.GetStringAsync(key, cancellationToken);
         if (!string.IsNullOrEmpty(label))
         {
+            activity?.AddEvent(new ActivityEvent("Cached Location")).AddBaggage("value", label);
             logger.LogInformation(
                 "Using cached address for {Longitude}, {Latitude}, {Altitude} - {FormattedAddress}",
                 longitude,
@@ -55,9 +60,12 @@ public class NominatimLocationApi(
                 label
             );
             label = response.Result.Display_name ?? ILocationApi.UnknownLocation;
+            logger.LogInformation("Found Address {FormattedAddress}", label);
+            activity?.AddEvent(new ActivityEvent("Found Location")).AddBaggage("value", label);
         }
         else
         {
+            activity?.AddEvent(new ActivityEvent("Unknown Location"));
             logger.LogWarning(
                 "No Address found for {Longitude}, {Latitude}, {Altitude}",
                 longitude,
@@ -67,6 +75,7 @@ public class NominatimLocationApi(
         }
 
         await distributedCache.SetStringAsync(key, label, cancellationToken);
+        activity?.AddEvent(new ActivityEvent("Caching Location")).AddBaggage("value", label);
         return label;
     }
 }

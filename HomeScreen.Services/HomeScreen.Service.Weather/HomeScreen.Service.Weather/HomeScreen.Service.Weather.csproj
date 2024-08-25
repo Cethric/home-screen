@@ -29,8 +29,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\..\HomeScreen.ServiceDefaults\HomeScreen.ServiceDefaults.csproj" />
-      <ProjectReference Include="..\HomeScreen.Service.Weather.Proto\HomeScreen.Service.Weather.Proto.csproj" />
+        <ProjectReference Include="..\..\..\HomeScreen.ServiceDefaults\HomeScreen.ServiceDefaults.csproj"/>
+        <ProjectReference Include="..\HomeScreen.Service.Weather.Proto\HomeScreen.Service.Weather.Proto.csproj"/>
     </ItemGroup>
 
     <Target Name="NSwag" BeforeTargets="PreBuildEvent">

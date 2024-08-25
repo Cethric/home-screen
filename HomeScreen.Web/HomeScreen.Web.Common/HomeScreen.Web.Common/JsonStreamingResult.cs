@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Diagnostics;
+using System.Reflection;
 using System.Text.Json;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -13,11 +14,13 @@ public class JsonStreamingResult<TValue>(
     JsonSerializerOptions? jsonSerializerOptions = null
 ) : IActionResult, IResult, IEndpointMetadataProvider, IStatusCodeHttpResult
 {
+    private static ActivitySource ActivitySource => new(nameof(JsonStreamingResult<TValue>));
     public IAsyncEnumerable<TValue> Data { get; } = data;
     public JsonSerializerOptions? JsonSerializerOptions { get; } = jsonSerializerOptions;
 
     public async Task ExecuteResultAsync(ActionContext context)
     {
+        using var activity = ActivitySource.StartActivity("ExecuteResultAsync", ActivityKind.Client);
         var executor = context.HttpContext.RequestServices.GetRequiredService<IJsonStreamingResultExecutor<TValue>>();
 
         await executor.ExecuteAsync(context, this);
@@ -25,6 +28,7 @@ public class JsonStreamingResult<TValue>(
 
     public static void PopulateMetadata(MethodInfo method, EndpointBuilder builder)
     {
+        using var activity = ActivitySource.StartActivity("PopulateMetadata", ActivityKind.Client);
         ArgumentNullException.ThrowIfNull(method);
         ArgumentNullException.ThrowIfNull(builder);
 
@@ -35,6 +39,7 @@ public class JsonStreamingResult<TValue>(
 
     public async Task ExecuteAsync(HttpContext httpContext)
     {
+        using var activity = ActivitySource.StartActivity("ExecuteAsync", ActivityKind.Client);
         var executor = httpContext.RequestServices.GetRequiredService<IJsonStreamingResultExecutor<TValue>>();
 
         await executor.ExecuteAsync(httpContext, this);

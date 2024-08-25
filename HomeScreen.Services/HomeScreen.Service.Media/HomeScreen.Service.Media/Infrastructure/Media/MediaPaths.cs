@@ -1,4 +1,5 @@
-﻿using HomeScreen.Service.Media.Configuration;
+﻿using System.Diagnostics;
+using HomeScreen.Service.Media.Configuration;
 using HomeScreen.Service.Media.Entities;
 
 namespace HomeScreen.Service.Media.Infrastructure.Media;
@@ -16,8 +17,11 @@ public class MediaPaths(ILogger<MediaPaths> logger, MediaDirectories mediaDirect
         ".tiff"
     ];
 
+    private static ActivitySource ActivitySource => new(nameof(MediaHasher));
+
     public DirectoryInfo GetTransformDirectory(string fileHash)
     {
+        using var activity = ActivitySource.StartActivity("GetTransformDirectory", ActivityKind.Client);
         logger.LogInformation("Getting transform directory for {FileHash}", fileHash);
         var hash = fileHash.GetHashCode();
         const int mask = 255;
@@ -44,6 +48,7 @@ public class MediaPaths(ILogger<MediaPaths> logger, MediaDirectories mediaDirect
 
     public FileInfo GetCachePath(MediaTransformOptions mediaTransformOptions, string fileHash)
     {
+        using var activity = ActivitySource.StartActivity("GetCachePath", ActivityKind.Client);
         logger.LogInformation(
             "Getting cache path for {FileHash} with transform options {Width} {Height} {Blur} {Format}",
             fileHash,
@@ -73,11 +78,12 @@ public class MediaPaths(ILogger<MediaPaths> logger, MediaDirectories mediaDirect
 
     public List<FileInfo> GetRawFiles()
     {
+        using var activity = ActivitySource.StartActivity("GetRawFiles", ActivityKind.Client);
         logger.LogInformation("Getting raw files from {SearchDirectory}", mediaDirectories.MediaSourceDir);
         var files = Directory.EnumerateFiles(mediaDirectories.MediaSourceDir, "*.*", SearchOption.TopDirectoryOnly)
-                             .Where(f => AllowedImageExtensions.Contains(Path.GetExtension(f).ToLowerInvariant()))
-                             .Select(f => new FileInfo(f))
-                             .ToList();
+            .Where(f => AllowedImageExtensions.Contains(Path.GetExtension(f).ToLowerInvariant()))
+            .Select(f => new FileInfo(f))
+            .ToList();
         logger.LogInformation(
             "Found {FilesCount} raw files in {SearchDirectory}",
             files.Count,

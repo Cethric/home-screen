@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
+﻿using System.Diagnostics;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace HomeScreen.Web.Common.Server.Endpoints;
 
@@ -9,6 +10,8 @@ public record Config
 
 public static class ConfigEndpoint
 {
+    private static ActivitySource ActivitySource => new(nameof(ConfigEndpoint));
+
     public static void RegisterConfigEndpoints(this WebApplication app)
     {
         var group = app.MapGroup("api/config").WithTags("config").WithName("Config").WithGroupName("Config");
@@ -16,6 +19,9 @@ public static class ConfigEndpoint
         group.MapGet("/", Config).WithName(nameof(Config));
     }
 
-    private static Task<Ok<Config>> Config() =>
-        Task.FromResult(TypedResults.Ok(new Config { MediaUrl = "https://media" }));
+    private static Task<Ok<Config>> Config()
+    {
+        using var activity = ActivitySource.StartActivity("Config", ActivityKind.Client);
+        return Task.FromResult(TypedResults.Ok(new Config { MediaUrl = "https://media" }));
+    }
 }

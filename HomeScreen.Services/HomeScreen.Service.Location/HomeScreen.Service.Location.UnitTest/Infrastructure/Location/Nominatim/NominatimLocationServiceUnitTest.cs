@@ -24,7 +24,7 @@ public class NominatimLocationServiceUnitTest
         var logger = new Mock<ILogger<NominatimLocationApi>>();
         var cache = new Mock<IDistributedCache>();
         cache.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-             .ReturnsAsync(Encoding.UTF8.GetBytes(value));
+            .ReturnsAsync(Encoding.UTF8.GetBytes(value));
         var searchService = new Mock<INominatimClient>();
         var service = new NominatimLocationApi(logger.Object, cache.Object, searchService.Object);
         // Act
@@ -48,33 +48,33 @@ public class NominatimLocationServiceUnitTest
         cache.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(null as byte[]);
         var searchService = new Mock<INominatimClient>();
         searchService.Setup(
-                         x => x.Reverse_phpAsync(
-                             lat,
-                             lon,
-                             It.IsAny<OutputFormat>(),
-                             null,
-                             null,
-                             null,
-                             null,
-                             It.IsAny<double>(),
-                             null,
-                             null,
-                             null,
-                             null,
-                             null,
-                             null,
-                             null,
-                             null,
-                             It.IsAny<CancellationToken>()
-                         )
-                     )
-                     .ReturnsAsync(
-                         new SwaggerResponse<ReverseOutputJson>(
-                             404,
-                             new Dictionary<string, IEnumerable<string>>(),
-                             ReverseOutputJson.FromJson("{}")
-                         )
-                     );
+                x => x.Reverse_phpAsync(
+                    lat,
+                    lon,
+                    It.IsAny<OutputFormat>(),
+                    null,
+                    null,
+                    null,
+                    null,
+                    It.IsAny<double>(),
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .ReturnsAsync(
+                new SwaggerResponse<ReverseOutputJson>(
+                    404,
+                    new Dictionary<string, IEnumerable<string>>(),
+                    ReverseOutputJson.FromJson("{}")
+                )
+            );
         var service = new NominatimLocationApi(logger.Object, cache.Object, searchService.Object);
         // Act
         var result = await service.SearchForLocation(lon, lat, 0, CancellationToken.None);
@@ -98,33 +98,33 @@ public class NominatimLocationServiceUnitTest
         cache.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(null as byte[]);
         var searchService = new Mock<INominatimClient>();
         searchService.Setup(
-                         x => x.Reverse_phpAsync(
-                             lat,
-                             lon,
-                             It.IsAny<OutputFormat>(),
-                             null,
-                             null,
-                             null,
-                             null,
-                             It.IsAny<double>(),
-                             null,
-                             null,
-                             null,
-                             null,
-                             null,
-                             null,
-                             null,
-                             null,
-                             It.IsAny<CancellationToken>()
-                         )
-                     )
-                     .ReturnsAsync(
-                         new SwaggerResponse<ReverseOutputJson>(
-                             200,
-                             new Dictionary<string, IEnumerable<string>>(),
-                             ReverseOutputJson.FromJson($"{{\"display_name\": \"{location}\"}}")
-                         )
-                     );
+                x => x.Reverse_phpAsync(
+                    lat,
+                    lon,
+                    It.IsAny<OutputFormat>(),
+                    null,
+                    null,
+                    null,
+                    null,
+                    It.IsAny<double>(),
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .ReturnsAsync(
+                new SwaggerResponse<ReverseOutputJson>(
+                    200,
+                    new Dictionary<string, IEnumerable<string>>(),
+                    ReverseOutputJson.FromJson($"{{\"display_name\": \"{location}\"}}")
+                )
+            );
         var service = new NominatimLocationApi(logger.Object, cache.Object, searchService.Object);
         // Act
         var result = await service.SearchForLocation(lon, lat, 0, CancellationToken.None);

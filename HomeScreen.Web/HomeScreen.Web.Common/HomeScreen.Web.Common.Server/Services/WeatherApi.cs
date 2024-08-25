@@ -1,4 +1,5 @@
-﻿using Grpc.Core;
+﻿using System.Diagnostics;
+using Grpc.Core;
 using HomeScreen.Service.Weather;
 using HomeScreen.Service.Weather.Proto.Services;
 using HomeScreen.Web.Common.Server.Entities;
@@ -9,17 +10,20 @@ namespace HomeScreen.Web.Common.Server.Services;
 
 public class WeatherApi(ILogger<WeatherApi> logger, WeatherGrpcClient client) : IWeatherApi
 {
+    private static ActivitySource ActivitySource => new(nameof(WeatherApi));
+
     public async Task<WeatherForecast?> GetCurrentForecast(
         float longitude,
         float latitude,
         CancellationToken cancellationToken
     )
     {
+        using var activity = ActivitySource.StartActivity("GetCurrentForecast", ActivityKind.Client);
         logger.LogInformation("Request current weather forecast");
         var result = await client.CurrentForecastAsync(
             new ForecastRequest { Longitude = longitude, Latitude = latitude },
             new CallOptions().WithDeadline(DateTimeOffset.UtcNow.AddMinutes(2).UtcDateTime)
-                             .WithCancellationToken(cancellationToken)
+                .WithCancellationToken(cancellationToken)
         );
         if (result is null)
         {
@@ -43,11 +47,12 @@ public class WeatherApi(ILogger<WeatherApi> logger, WeatherGrpcClient client) : 
         CancellationToken cancellationToken
     )
     {
+        using var activity = ActivitySource.StartActivity("GetHourlyForecast", ActivityKind.Client);
         logger.LogInformation("Request hourly weather forecast");
         var result = await client.HourlyForecastAsync(
             new ForecastRequest { Longitude = longitude, Latitude = latitude },
             new CallOptions().WithDeadline(DateTimeOffset.UtcNow.AddMinutes(2).UtcDateTime)
-                             .WithCancellationToken(cancellationToken)
+                .WithCancellationToken(cancellationToken)
         );
         return result?.Forecast.Select(
             forecast => new HourlyForecast
@@ -71,11 +76,12 @@ public class WeatherApi(ILogger<WeatherApi> logger, WeatherGrpcClient client) : 
         CancellationToken cancellationToken
     )
     {
+        using var activity = ActivitySource.StartActivity("GetDailyForecast", ActivityKind.Client);
         logger.LogInformation("Request daily weather forecast");
         var result = await client.DailyForecastAsync(
             new ForecastRequest { Longitude = longitude, Latitude = latitude },
             new CallOptions().WithDeadline(DateTimeOffset.UtcNow.AddMinutes(2).UtcDateTime)
-                             .WithCancellationToken(cancellationToken)
+                .WithCancellationToken(cancellationToken)
         );
         return result?.Forecast.Select(
             forecast => new DailyForecast

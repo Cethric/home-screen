@@ -1,15 +1,20 @@
-﻿using System.Text.Json;
+﻿using System.Diagnostics;
+using System.Net.Mime;
+using System.Text.Json;
 using HomeScreen.Service.Media;
 using HomeScreen.Service.Media.Client.Generated;
 using HomeScreen.Web.Common.Server.Entities;
 using HomeScreen.Web.Common.Server.Services;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.Net.Http.Headers;
+using NotFound = Microsoft.AspNetCore.Http.HttpResults.NotFound;
 
 namespace HomeScreen.Web.Common.Server.Endpoints;
 
 public static class MediaEndpoints
 {
+    private static ActivitySource ActivitySource => new(nameof(MediaEndpoints));
+
     public static void RegisterMediaEndpoints(this WebApplication app)
     {
         var group = app.MapGroup("api/media").WithTags("media").WithName("Media").WithGroupName("Media");
@@ -17,23 +22,35 @@ public static class MediaEndpoints
         group.MapGet("random", RandomMedia).WithName(nameof(RandomMedia)).WithRequestTimeout(TimeSpan.FromMinutes(2));
         group.MapPatch("{mediaId:guid:required}/toggle", ToggleMedia).WithName(nameof(ToggleMedia));
         group.MapGet("{mediaId:guid:required}/download/{width:int:required}/{height:int:required}", DownloadMedia)
-             .WithName(nameof(DownloadMedia))
-             .WithRequestTimeout(TimeSpan.FromMinutes(1));
+            .WithName(nameof(DownloadMedia))
+            .Produces<FileStreamHttpResult>(
+                StatusCodes.Status200OK,
+                MediaTransformOptionsFormat.Jpeg.TransformFormatToMime(),
+                MediaTransformOptionsFormat.JpegXl.TransformFormatToMime(),
+                MediaTransformOptionsFormat.Png.TransformFormatToMime(),
+                MediaTransformOptionsFormat.WebP.TransformFormatToMime(),
+                MediaTransformOptionsFormat.Avif.TransformFormatToMime()
+            )
+            .Produces<NotFound>(StatusCodes.Status404NotFound, MediaTypeNames.Application.Json)
+            .Produces<BadRequest>(StatusCodes.Status400BadRequest, MediaTypeNames.Application.Json);
         group.MapGet("{mediaId:guid:required}/transform/{width:int:required}/{height:int:required}", TransformMedia)
-             .WithName(nameof(TransformMedia));
+            .WithName(nameof(TransformMedia));
     }
 
     private static Task<JsonStreamingResult<MediaItem>> RandomMedia(
         uint count,
         IMediaApi service,
         CancellationToken cancellationToken
-    ) =>
-        Task.FromResult(
+    )
+    {
+        using var activity = ActivitySource.StartActivity("RandomMedia", ActivityKind.Client);
+        return Task.FromResult(
             CustomTypedResults.JsonStreaming(
                 service.RandomMedia(count, cancellationToken),
                 new JsonSerializerOptions(JsonSerializerDefaults.Web)
             )
         );
+    }
 
     private static async Task<Results<Ok<MediaItem>, NotFound>> ToggleMedia(
         Guid mediaId,
@@ -42,6 +59,7 @@ public static class MediaEndpoints
         CancellationToken cancellationToken
     )
     {
+        using var activity = ActivitySource.StartActivity("ToggleMedia", ActivityKind.Client);
         var response = await service.ToggleMedia(mediaId, enabled, cancellationToken);
         return response != null ? TypedResults.Ok(response) : TypedResults.NotFound();
     }
@@ -56,6 +74,7 @@ public static class MediaEndpoints
         CancellationToken cancellationToken
     )
     {
+        using var activity = ActivitySource.StartActivity("DownloadMedia", ActivityKind.Client);
         var response = await service.DownloadMedia(
             mediaId,
             width,
@@ -93,6 +112,7 @@ public static class MediaEndpoints
         CancellationToken cancellationToken
     )
     {
+        using var activity = ActivitySource.StartActivity("TransformMedia", ActivityKind.Client);
         var result = await service.TransformMedia(
             mediaId,
             width,

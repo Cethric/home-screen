@@ -1,5 +1,4 @@
-﻿using HomeScreen.Database.MediaDb.Entities;
-using HomeScreen.Service.Media.Entities;
+﻿using HomeScreen.Service.Media.Entities;
 
 namespace HomeScreen.Service.Media.Infrastructure.Media;
 

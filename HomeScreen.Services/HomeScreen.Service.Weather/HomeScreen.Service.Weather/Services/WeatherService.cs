@@ -1,12 +1,16 @@
-﻿using Grpc.Core;
+﻿using System.Diagnostics;
+using Grpc.Core;
 using HomeScreen.Service.Weather.Generated.Entities;
 
 namespace HomeScreen.Service.Weather.Services;
 
 public class WeatherService(ILogger<WeatherService> logger, IWeatherApi weatherApi) : Weather.WeatherBase
 {
+    private static ActivitySource ActivitySource => new(nameof(WeatherService));
+
     public override async Task<CurrentForecastReply> CurrentForecast(ForecastRequest request, ServerCallContext context)
     {
+        using var activity = ActivitySource.StartActivity("CurrentForecast", ActivityKind.Client);
         logger.LogInformation("Get current Forecast: {Request}", request);
         try
         {
@@ -22,6 +26,7 @@ public class WeatherService(ILogger<WeatherService> logger, IWeatherApi weatherA
 
     public override async Task<HourlyForecastReply> HourlyForecast(ForecastRequest request, ServerCallContext context)
     {
+        using var activity = ActivitySource.StartActivity("HourlyForecast", ActivityKind.Client);
         logger.LogInformation("Get hourly Forecast: {Request}", request);
         var response = await weatherApi.GetHourlyForecast(
             request.Latitude,
@@ -33,6 +38,7 @@ public class WeatherService(ILogger<WeatherService> logger, IWeatherApi weatherA
 
     public override async Task<DailyForecastReply> DailyForecast(ForecastRequest request, ServerCallContext context)
     {
+        using var activity = ActivitySource.StartActivity("DailyForecast", ActivityKind.Client);
         logger.LogInformation("Get daily Forecast: {Request}", request);
         var response = await weatherApi.GetDailyForecast(
             request.Latitude,

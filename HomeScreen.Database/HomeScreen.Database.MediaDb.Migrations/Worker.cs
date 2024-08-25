@@ -19,7 +19,7 @@ public class Worker(
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        using var activity = ActivitySource.StartActivity("Migrating database", ActivityKind.Client);
+        using var activity = ActivitySource.StartActivity(nameof(ExecuteAsync), ActivityKind.Client);
         logger.LogInformation("Migrating database");
 
         try
@@ -44,6 +44,7 @@ public class Worker(
 
     private static async Task EnsureDatabaseAsync(MediaDbContext dbContext, CancellationToken cancellationToken)
     {
+        using var activity = ActivitySource.StartActivity();
         var dbCreator = dbContext.GetService<IRelationalDatabaseCreator>();
 
         var strategy = dbContext.Database.CreateExecutionStrategy();
@@ -62,6 +63,7 @@ public class Worker(
 
     private static async Task RunMigrationAsync(MediaDbContext dbContext, CancellationToken cancellationToken)
     {
+        using var activity = ActivitySource.StartActivity();
         var strategy = dbContext.Database.CreateExecutionStrategy();
         await strategy.ExecuteAsync(
             async () =>
@@ -76,6 +78,7 @@ public class Worker(
 
     private static async Task SeedDataAsync(MediaDbContext dbContext, CancellationToken cancellationToken)
     {
+        using var activity = ActivitySource.StartActivity();
         MediaEntry firstEntry = new() { MediaId = Guid.NewGuid() };
 
         var strategy = dbContext.Database.CreateExecutionStrategy();

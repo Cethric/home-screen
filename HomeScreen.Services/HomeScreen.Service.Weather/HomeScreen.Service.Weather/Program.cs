@@ -30,5 +30,5 @@ app.MapGet(
 );
 
 app.Services.GetRequiredService<ILogger<Program>>()
-   .LogInformation("Launching version: {Version}", GitVersionInformation.InformationalVersion);
+    .LogInformation("Launching version: {Version}", GitVersionInformation.InformationalVersion);
 await app.RunAsync();

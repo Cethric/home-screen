@@ -34,5 +34,5 @@ app.MapControllers();
 app.MapFallbackToFile("/index.html");
 
 app.Services.GetRequiredService<ILogger<Program>>()
-   .LogInformation("Launching version: {Version}", GitVersionInformation.InformationalVersion);
+    .LogInformation("Launching version: {Version}", GitVersionInformation.InformationalVersion);
 await app.RunAsync();

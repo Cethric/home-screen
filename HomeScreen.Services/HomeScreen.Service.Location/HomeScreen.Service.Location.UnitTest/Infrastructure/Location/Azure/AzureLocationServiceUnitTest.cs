@@ -26,7 +26,7 @@ public class AzureLocationServiceUnitTest
         var logger = new Mock<ILogger<AzureLocationApi>>();
         var cache = new Mock<IDistributedCache>();
         cache.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-             .ReturnsAsync(Encoding.UTF8.GetBytes(value));
+            .ReturnsAsync(Encoding.UTF8.GetBytes(value));
         var searchService = new Mock<IAzureMapsSearchApi>();
         var service = new AzureLocationApi(logger.Object, cache.Object, searchService.Object);
         // Act

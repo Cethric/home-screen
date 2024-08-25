@@ -9,7 +9,7 @@ public static class MediaTransformOptionsFormatExtensions
         return format switch
         {
             MediaTransformOptionsFormat.Jpeg => "image/jpeg",
-            MediaTransformOptionsFormat.JpegXL => "image/jxl",
+            MediaTransformOptionsFormat.JpegXl => "image/jxl",
             MediaTransformOptionsFormat.Png => "image/png",
             MediaTransformOptionsFormat.WebP => "image/webp",
             MediaTransformOptionsFormat.Avif => "image/avif",

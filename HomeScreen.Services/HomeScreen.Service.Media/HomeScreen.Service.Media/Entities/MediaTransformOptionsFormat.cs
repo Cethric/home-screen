@@ -1,3 +1,4 @@
+using System.Net.Mime;
 using ImageMagick;
 
 namespace HomeScreen.Service.Media.Entities;
@@ -5,7 +6,7 @@ namespace HomeScreen.Service.Media.Entities;
 public enum MediaTransformOptionsFormat
 {
     Jpeg,
-    JpegXL,
+    JpegXl,
     Png,
     WebP,
     Avif
@@ -18,7 +19,7 @@ public static class MediaTransformOptionsFormatExtensions
         return format switch
         {
             MediaTransformOptionsFormat.Jpeg => MagickFormat.Jpeg,
-            MediaTransformOptionsFormat.JpegXL => MagickFormat.Jxl,
+            MediaTransformOptionsFormat.JpegXl => MagickFormat.Jxl,
             MediaTransformOptionsFormat.Png => MagickFormat.Png,
             MediaTransformOptionsFormat.WebP => MagickFormat.WebP,
             MediaTransformOptionsFormat.Avif => MagickFormat.Avif,
@@ -30,11 +31,11 @@ public static class MediaTransformOptionsFormatExtensions
     {
         return format switch
         {
-            MediaTransformOptionsFormat.Jpeg => "image/jpeg",
-            MediaTransformOptionsFormat.JpegXL => "image/jxl",
-            MediaTransformOptionsFormat.Png => "image/png",
-            MediaTransformOptionsFormat.WebP => "image/webp",
-            MediaTransformOptionsFormat.Avif => "image/avif",
+            MediaTransformOptionsFormat.Jpeg => MediaTypeNames.Image.Jpeg,
+            MediaTransformOptionsFormat.JpegXl => "image/jxl",
+            MediaTransformOptionsFormat.Png => MediaTypeNames.Image.Png,
+            MediaTransformOptionsFormat.WebP => MediaTypeNames.Image.Webp,
+            MediaTransformOptionsFormat.Avif => MediaTypeNames.Image.Avif,
             _ => throw new ArgumentOutOfRangeException(nameof(format), format, "Invalid transform format provided")
         };
     }

@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Diagnostics;
+using System.Net;
 using System.Net.Mime;
 using System.Text;
 using System.Text.Json;
@@ -20,13 +21,17 @@ public class JsonStreamingResultExecutor
 public class JsonStreamingResultExecutor<T>(ILogger<JsonStreamingResult<T>> logger)
     : JsonStreamingResultExecutor, IJsonStreamingResultExecutor<T>
 {
+    private static ActivitySource ActivitySource => new(nameof(JsonStreamingResultExecutor<T>));
+
     public async Task ExecuteAsync(ActionContext context, JsonStreamingResult<T> result)
     {
+        using var activity = ActivitySource.StartActivity("ExecuteAsync", ActivityKind.Client);
         await ExecuteAsync(context.HttpContext, result);
     }
 
     public async Task ExecuteAsync(HttpContext httpContext, JsonStreamingResult<T> result)
     {
+        using var activity = ActivitySource.StartActivity("ExecuteAsync", ActivityKind.Client);
         logger.LogInformation("Executing JsonStreamingResult");
         var response = httpContext.Response;
         response.StatusCode = (int)HttpStatusCode.OK;

@@ -1,6 +1,6 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using HomeScreen.Database.MediaDb.Contexts;
-using HomeScreen.Database.MediaDb.Entities;
 using HomeScreen.Service.Media.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,16 +15,19 @@ public class MediaApi(
     MediaDbContext context
 ) : IMediaApi
 {
+    private static ActivitySource ActivitySource => new(nameof(MediaApi));
+
     public async IAsyncEnumerable<MediaEntry> GetRandomMedia(
         uint count,
         [EnumeratorCancellation] CancellationToken cancellationToken = default
     )
     {
+        using var activity = ActivitySource.StartActivity("GetRandomMedia", ActivityKind.Client);
         logger.LogInformation("GetRandomMedia Start {Count}", count);
         var disabled = await context.MediaEntries.Where(entry => !entry.Enabled).ToListAsync(cancellationToken);
         var files = mediaPaths.GetRawFiles()
-                              .Where(f => !disabled.Exists(d => d.OriginalFile.Contains(f.FullName)))
-                              .ToArray();
+            .Where(f => !disabled.Exists(d => d.OriginalFile.Contains(f.FullName)))
+            .ToArray();
         if (files.Length == 0)
         {
             logger.LogInformation("GetRandomMedia End {Count}", count);
@@ -36,7 +39,7 @@ public class MediaApi(
             cancellationToken.ThrowIfCancellationRequested();
             var hash = await mediaHasher.HashMedia(file, cancellationToken);
             var entry = await context.MediaEntries.Where(entry => entry.OriginalHash == hash)
-                                     .FirstOrDefaultAsync(cancellationToken);
+                .FirstOrDefaultAsync(cancellationToken);
             if (entry is null)
             {
                 entry = await mediaProcessor.ProcessMediaEntry(file, hash, cancellationToken);
@@ -53,8 +56,9 @@ public class MediaApi(
 
     public async Task<MediaEntry> ToggleMedia(Guid mediaId, bool state, CancellationToken cancellationToken)
     {
+        using var activity = ActivitySource.StartActivity("ToggleMedia", ActivityKind.Client);
         var mediaEntry = await context.MediaEntries.Where(x => Equals(x.MediaId, mediaId))
-                                      .FirstOrDefaultAsync(cancellationToken);
+            .FirstOrDefaultAsync(cancellationToken);
         if (mediaEntry == null)
         {
             throw new ArgumentException("Invalid Media ID provided", nameof(mediaId));
@@ -73,9 +77,10 @@ public class MediaApi(
         CancellationToken cancellationToken
     )
     {
+        using var activity = ActivitySource.StartActivity("TransformMedia", ActivityKind.Client);
         logger.LogInformation("Attempting to download media for {MediaId}", mediaId);
         var mediaEntry = await context.MediaEntries.Where(x => x.MediaId == mediaId)
-                                      .FirstOrDefaultAsync(cancellationToken);
+            .FirstOrDefaultAsync(cancellationToken);
         if (mediaEntry == null)
         {
             logger.LogInformation("No media found {MediaId} while try to transform media", mediaId);
@@ -92,9 +97,10 @@ public class MediaApi(
         CancellationToken cancellationToken
     )
     {
+        using var activity = ActivitySource.StartActivity("GetTransformedMedia", ActivityKind.Client);
         logger.LogInformation("Attempting to download media for {MediaId}", mediaId);
         var mediaEntry = await context.MediaEntries.Where(x => x.MediaId == mediaId)
-                                      .FirstOrDefaultAsync(cancellationToken);
+            .FirstOrDefaultAsync(cancellationToken);
         if (mediaEntry == null)
         {
             logger.LogInformation("No media found {MediaId} while try to transform media", mediaId);

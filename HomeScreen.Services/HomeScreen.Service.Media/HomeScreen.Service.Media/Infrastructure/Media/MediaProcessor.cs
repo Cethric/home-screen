@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using System.Diagnostics;
+using System.Globalization;
 using HomeScreen.Database.MediaDb.Entities;
 using HomeScreen.Service.Media.Infrastructure.Location;
 using ImageMagick;
@@ -8,12 +9,15 @@ namespace HomeScreen.Service.Media.Infrastructure.Media;
 public class MediaProcessor(ILogger<MediaProcessor> logger, IMediaPaths mediaPaths, ILocationApi locationApi)
     : IMediaProcessor
 {
+    private static ActivitySource ActivitySource => new(nameof(MediaHasher));
+
     public async Task<Database.MediaDb.Entities.MediaEntry> ProcessMediaEntry(
         FileInfo file,
         string hash,
         CancellationToken cancellationToken
     )
     {
+        using var activity = ActivitySource.StartActivity("ProcessMediaEntry", ActivityKind.Client);
         try
         {
             logger.LogInformation("Attempting to process media entry {FileName} - {Hash}", file.Name, hash);
@@ -79,6 +83,7 @@ public class MediaProcessor(ILogger<MediaProcessor> logger, IMediaPaths mediaPat
 
     private static void ProcessDateTime(IExifProfile profile, Database.MediaDb.Entities.MediaEntry entry, FileInfo info)
     {
+        using var activity = ActivitySource.StartActivity("ProcessDateTime", ActivityKind.Client);
         if (DateTime.TryParseExact(
                 profile.GetValue(ExifTag.DateTimeOriginal)?.Value,
                 "yyyy:MM:dd HH:mm:ss",
@@ -121,13 +126,13 @@ public class MediaProcessor(ILogger<MediaProcessor> logger, IMediaPaths mediaPat
             {
                 entry.CapturedUtc = info.LastWriteTimeUtc;
                 entry.CapturedOffset = TimeZoneInfo.FindSystemTimeZoneById("E. Australia Standard Time")
-                                                   .GetUtcOffset(info.LastWriteTime);
+                    .GetUtcOffset(info.LastWriteTime);
             }
             else
             {
                 entry.CapturedUtc = info.CreationTimeUtc;
                 entry.CapturedOffset = TimeZoneInfo.FindSystemTimeZoneById("E. Australia Standard Time")
-                                                   .GetUtcOffset(info.CreationTime);
+                    .GetUtcOffset(info.CreationTime);
             }
         }
     }
@@ -138,6 +143,7 @@ public class MediaProcessor(ILogger<MediaProcessor> logger, IMediaPaths mediaPat
         CancellationToken cancellationToken
     )
     {
+        using var activity = ActivitySource.StartActivity("ProcessLocation", ActivityKind.Client);
         if (profile.GetValue(ExifTag.GPSLongitude) == null)
         {
             return;
@@ -180,6 +186,7 @@ public class MediaProcessor(ILogger<MediaProcessor> logger, IMediaPaths mediaPat
 
     private static LongitudeDirection GpsLongitudeRefToLongitudeDirection(string? lonRef)
     {
+        using var activity = ActivitySource.StartActivity("GpsLongitudeRefToLongitudeDirection", ActivityKind.Client);
         return lonRef switch
         {
             "W" => LongitudeDirection.West,
@@ -194,6 +201,7 @@ public class MediaProcessor(ILogger<MediaProcessor> logger, IMediaPaths mediaPat
 
     private static LatitudeDirection GpsLatitudeRefToLatitudeDirection(string? latRef)
     {
+        using var activity = ActivitySource.StartActivity("GpsLatitudeRefToLatitudeDirection", ActivityKind.Client);
         return latRef switch
         {
             "N" => LatitudeDirection.North,

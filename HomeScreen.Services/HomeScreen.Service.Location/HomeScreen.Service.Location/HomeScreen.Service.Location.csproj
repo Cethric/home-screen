@@ -23,8 +23,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\..\HomeScreen.ServiceDefaults\HomeScreen.ServiceDefaults.csproj" />
-      <ProjectReference Include="..\HomeScreen.Service.Location.Proto\HomeScreen.Service.Location.Proto.csproj" />
+        <ProjectReference Include="..\..\..\HomeScreen.ServiceDefaults\HomeScreen.ServiceDefaults.csproj"/>
+        <ProjectReference Include="..\HomeScreen.Service.Location.Proto\HomeScreen.Service.Location.Proto.csproj"/>
     </ItemGroup>
 
     <Target Name="NSwag-Pre" BeforeTargets="PreBuildEvent">

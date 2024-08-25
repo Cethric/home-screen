@@ -1,12 +1,16 @@
-﻿using System.Security.Cryptography;
+﻿using System.Diagnostics;
+using System.Security.Cryptography;
 using Microsoft.Extensions.Caching.Distributed;
 
 namespace HomeScreen.Service.Media.Infrastructure.Media;
 
 public class MediaHasher(ILogger<MediaHasher> logger, IDistributedCache distributedCache) : IMediaHasher
 {
+    private static ActivitySource ActivitySource => new(nameof(MediaHasher));
+
     public async Task<string> HashMedia(FileInfo fileInfo, CancellationToken cancellationToken = default)
     {
+        using var activity = ActivitySource.StartActivity("HashMedia", ActivityKind.Client);
         logger.LogInformation("Hashing file {FileName}", fileInfo.FullName);
         var hash = await distributedCache.GetStringAsync(fileInfo.FullName, cancellationToken);
         if (!string.IsNullOrEmpty(hash))

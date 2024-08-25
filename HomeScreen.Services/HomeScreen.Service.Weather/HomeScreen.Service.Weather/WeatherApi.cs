@@ -1,15 +1,19 @@
-﻿using HomeScreen.Service.Weather.Generated.Entities;
+﻿using System.Diagnostics;
+using HomeScreen.Service.Weather.Generated.Entities;
 
 namespace HomeScreen.Service.Weather;
 
 public class WeatherApi(ILogger<WeatherApi> logger, IOpenMeteoClient openMeteoClient) : IWeatherApi
 {
+    private static ActivitySource ActivitySource => new(nameof(WeatherApi));
+
     public async Task<CurrentForecastReply> GetForecast(
         float latitude,
         float longitude,
         CancellationToken cancellationToken
     )
     {
+        using var activity = ActivitySource.StartActivity("GetForecast", ActivityKind.Client);
         logger.LogInformation(
             "Attempting to request new weather information for {Latitude}, {Longitude}",
             latitude,
@@ -51,6 +55,7 @@ public class WeatherApi(ILogger<WeatherApi> logger, IOpenMeteoClient openMeteoCl
         CancellationToken cancellationToken
     )
     {
+        using var activity = ActivitySource.StartActivity("GetHourlyForecast", ActivityKind.Client);
         logger.LogInformation(
             "Attempting to request the hourly forecast information for {Latitude}, {Longitude}",
             latitude,
@@ -76,34 +81,42 @@ public class WeatherApi(ILogger<WeatherApi> logger, IOpenMeteoClient openMeteoCl
             past_days: 0,
             cancellationToken: cancellationToken
         );
-        if (response.Result.Hourly != null)
+        if (response.Result.Hourly == null)
         {
-            var forecast = new HourlyForecastReply();
-            for (var i = response.Result.Hourly.Time.Count - 1; i >= 0; i--)
-            {
-                forecast.Forecast.Add(
-                    new HourlyForecast
-                    {
-                        Time = response.Result.Hourly.Time[i].ToUnixTimeMilliseconds(),
-                        ApparentTemperature = response.Result.Hourly.Apparent_temperature![i],
-                        Precipitation = response.Result.Hourly.Precipitation![i],
-                        PrecipitationProbability = response.Result.Hourly.Precipitation_probability![i],
-                        WindDirection = response.Result.Hourly.Wind_direction_10m![i],
-                        WindSpeed = response.Result.Hourly.Wind_speed_10m![i],
-                        WindGusts = response.Result.Hourly.Wind_gusts_10m![i],
-                        IsDay = response.Result.Hourly.Is_day![i] == 1,
-                        CloudCover = response.Result.Hourly.Cloud_cover![i]
-                    }
-                );
-            }
-
-            return forecast;
+            throw new AggregateException(
+                new ArgumentOutOfRangeException(
+                    nameof(latitude),
+                    latitude,
+                    "Unable to find hourly forecast at latitude"
+                ),
+                new ArgumentOutOfRangeException(
+                    nameof(longitude),
+                    longitude,
+                    "Unable to find hourly forecast at longitude"
+                )
+            );
         }
 
-        throw new AggregateException(
-            new ArgumentOutOfRangeException(nameof(latitude), latitude, "Unable to find hourly forecast at latitude"),
-            new ArgumentOutOfRangeException(nameof(longitude), longitude, "Unable to find hourly forecast at longitude")
-        );
+        var forecast = new HourlyForecastReply();
+        for (var i = response.Result.Hourly.Time.Count - 1; i >= 0; i--)
+        {
+            forecast.Forecast.Add(
+                new HourlyForecast
+                {
+                    Time = response.Result.Hourly.Time[i].ToUnixTimeMilliseconds(),
+                    ApparentTemperature = response.Result.Hourly.Apparent_temperature![i],
+                    Precipitation = response.Result.Hourly.Precipitation![i],
+                    PrecipitationProbability = response.Result.Hourly.Precipitation_probability![i],
+                    WindDirection = response.Result.Hourly.Wind_direction_10m![i],
+                    WindSpeed = response.Result.Hourly.Wind_speed_10m![i],
+                    WindGusts = response.Result.Hourly.Wind_gusts_10m![i],
+                    IsDay = response.Result.Hourly.Is_day![i] == 1,
+                    CloudCover = response.Result.Hourly.Cloud_cover![i]
+                }
+            );
+        }
+
+        return forecast;
     }
 
     public async Task<DailyForecastReply> GetDailyForecast(
@@ -112,6 +125,7 @@ public class WeatherApi(ILogger<WeatherApi> logger, IOpenMeteoClient openMeteoCl
         CancellationToken cancellationToken
     )
     {
+        using var activity = ActivitySource.StartActivity("GetDailyForecast", ActivityKind.Client);
         logger.LogInformation(
             "Attempting to request the daily forecast information for {Latitude}, {Longitude}",
             latitude,
@@ -138,46 +152,53 @@ public class WeatherApi(ILogger<WeatherApi> logger, IOpenMeteoClient openMeteoCl
             cancellationToken: cancellationToken
         );
 
-        if (response.Result.Daily != null)
+        if (response.Result.Daily == null)
         {
-            var forecast = new DailyForecastReply();
-            for (var i = response.Result.Daily.Time.Count - 1; i >= 0; i--)
-            {
-                forecast.Forecast.Add(
-                    new DailyForecast
-                    {
-                        Time =
-                            new DateTimeOffset(
-                                response.Result.Daily.Time[i].ToDateTime(TimeOnly.MinValue),
-                                TimeSpan.Zero
-                            ).ToUnixTimeMilliseconds(),
-                        ApparentTemperatureMin = response.Result.Daily.Apparent_temperature_min![i],
-                        ApparentTemperatureMax = response.Result.Daily.Apparent_temperature_max![i],
-                        DaylightDuration = response.Result.Daily.Daylight_duration![i],
-                        Sunrise = response.Result.Daily.Sunrise![i].ToUnixTimeMilliseconds(),
-                        Sunset = response.Result.Daily.Sunset![i].ToUnixTimeMilliseconds(),
-                        UvIndexClearSkyMax = response.Result.Daily.Uv_index_clear_sky_max![i],
-                        UvIndexMax = response.Result.Daily.Uv_index_max![i],
-                        WeatherCode = (WmoWeatherCode)(int)response.Result.Daily.Weather_code![i],
-                        WeatherCodeLabel = WmoToString(response.Result.Daily.Weather_code[i]),
-                        PrecipitationSum = response.Result.Daily.Precipitation_sum![i],
-                        PrecipitationProbabilityMax = response.Result.Daily.Precipitation_probability_max![i],
-                        PrecipitationProbabilityMin = response.Result.Daily.Precipitation_probability_min![i]
-                    }
-                );
-            }
-
-            return forecast;
+            throw new AggregateException(
+                new ArgumentOutOfRangeException(
+                    nameof(latitude),
+                    latitude,
+                    "Unable to find hourly forecast at latitude"
+                ),
+                new ArgumentOutOfRangeException(
+                    nameof(longitude),
+                    longitude,
+                    "Unable to find hourly forecast at longitude"
+                )
+            );
         }
 
-        throw new AggregateException(
-            new ArgumentOutOfRangeException(nameof(latitude), latitude, "Unable to find hourly forecast at latitude"),
-            new ArgumentOutOfRangeException(nameof(longitude), longitude, "Unable to find hourly forecast at longitude")
-        );
+        var forecast = new DailyForecastReply();
+        for (var i = response.Result.Daily.Time.Count - 1; i >= 0; i--)
+        {
+            forecast.Forecast.Add(
+                new DailyForecast
+                {
+                    Time =
+                        new DateTimeOffset(response.Result.Daily.Time[i].ToDateTime(TimeOnly.MinValue), TimeSpan.Zero)
+                            .ToUnixTimeMilliseconds(),
+                    ApparentTemperatureMin = response.Result.Daily.Apparent_temperature_min![i],
+                    ApparentTemperatureMax = response.Result.Daily.Apparent_temperature_max![i],
+                    DaylightDuration = response.Result.Daily.Daylight_duration![i],
+                    Sunrise = response.Result.Daily.Sunrise![i].ToUnixTimeMilliseconds(),
+                    Sunset = response.Result.Daily.Sunset![i].ToUnixTimeMilliseconds(),
+                    UvIndexClearSkyMax = response.Result.Daily.Uv_index_clear_sky_max![i],
+                    UvIndexMax = response.Result.Daily.Uv_index_max![i],
+                    WeatherCode = (WmoWeatherCode)(int)response.Result.Daily.Weather_code![i],
+                    WeatherCodeLabel = WmoToString(response.Result.Daily.Weather_code[i]),
+                    PrecipitationSum = response.Result.Daily.Precipitation_sum![i],
+                    PrecipitationProbabilityMax = response.Result.Daily.Precipitation_probability_max![i],
+                    PrecipitationProbabilityMin = response.Result.Daily.Precipitation_probability_min![i]
+                }
+            );
+        }
+
+        return forecast;
     }
 
     private string WmoToString(Generated.Entities.WmoWeatherCode wmo)
     {
+        using var activity = ActivitySource.StartActivity("WmoToString", ActivityKind.Client);
         return wmo switch
         {
             Generated.Entities.WmoWeatherCode._0 => "Clear",

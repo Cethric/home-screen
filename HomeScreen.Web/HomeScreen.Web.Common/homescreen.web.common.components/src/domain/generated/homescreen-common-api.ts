@@ -68,7 +68,7 @@ export interface IMediaClient {
 
     toggle(mediaId: string, enabled: boolean): Promise<SwaggerResponse<MediaItem>>;
 
-    download(mediaId: string, width: number, height: number, blur: boolean, format: MediaTransformOptionsFormat): Promise<SwaggerResponse<void>>;
+    download(mediaId: string, width: number, height: number, blur: boolean, format: MediaTransformOptionsFormat): Promise<SwaggerResponse<FileResponse>>;
 
     transform(mediaId: string, width: number, height: number, blur: boolean, format: MediaTransformOptionsFormat): Promise<SwaggerResponse<AcceptedTransformMeta>>;
 }
@@ -170,7 +170,7 @@ export class MediaClient implements IMediaClient {
         return Promise.resolve<SwaggerResponse<MediaItem>>(new SwaggerResponse(status, _headers, null as any));
     }
 
-    download(mediaId: string, width: number, height: number, blur: boolean, format: MediaTransformOptionsFormat, signal?: AbortSignal): Promise<SwaggerResponse<void>> {
+    download(mediaId: string, width: number, height: number, blur: boolean, format: MediaTransformOptionsFormat, signal?: AbortSignal): Promise<SwaggerResponse<FileResponse>> {
         let url_ = this.baseUrl + "/api/media/{mediaId}/download/{width}/{height}?";
         if (mediaId === undefined || mediaId === null)
             throw new Error("The parameter 'mediaId' must be defined.");
@@ -195,6 +195,7 @@ export class MediaClient implements IMediaClient {
             method: "GET",
             signal,
             headers: {
+                "Accept": "image/jpeg"
             }
         };
 
@@ -203,23 +204,26 @@ export class MediaClient implements IMediaClient {
         });
     }
 
-    protected processDownload(response: Response): Promise<SwaggerResponse<void>> {
+    protected processDownload(response: Response): Promise<SwaggerResponse<FileResponse>> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 404) {
-            return response.text().then((_responseText) => {
-            return throwException("A server side error occurred.", status, _responseText, _headers);
-            });
-        } else if (status === 400) {
-            return response.text().then((_responseText) => {
-            return throwException("A server side error occurred.", status, _responseText, _headers);
-            });
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return response.blob().then(blob => { return new SwaggerResponse(status, _headers, { fileName: fileName, data: blob, status: status, headers: _headers }); });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<SwaggerResponse<void>>(new SwaggerResponse(status, _headers, null as any));
+        return Promise.resolve<SwaggerResponse<FileResponse>>(new SwaggerResponse(status, _headers, null as any));
     }
 
     transform(mediaId: string, width: number, height: number, blur: boolean, format: MediaTransformOptionsFormat, signal?: AbortSignal): Promise<SwaggerResponse<AcceptedTransformMeta>> {
@@ -579,13 +583,80 @@ export interface IMediaItemLocation {
     longitude?: number;
 }
 
-/** 0 = Jpeg 1 = JpegXL 2 = Png 3 = WebP 4 = Avif */
+export class NotFound implements INotFound {
+    statusCode?: number;
+
+    constructor(data?: INotFound) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any, _mappings?: any) {
+        if (_data) {
+            this.statusCode = _data["statusCode"];
+        }
+    }
+
+    static fromJS(data: any, _mappings?: any): NotFound | null {
+        data = typeof data === 'object' ? data : {};
+        return createInstance<NotFound>(data, _mappings, NotFound);
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["statusCode"] = this.statusCode;
+        return data;
+    }
+}
+
+export interface INotFound {
+    statusCode?: number;
+}
+
+export class BadRequest implements IBadRequest {
+    statusCode?: number;
+
+    constructor(data?: IBadRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any, _mappings?: any) {
+        if (_data) {
+            this.statusCode = _data["statusCode"];
+        }
+    }
+
+    static fromJS(data: any, _mappings?: any): BadRequest | null {
+        data = typeof data === 'object' ? data : {};
+        return createInstance<BadRequest>(data, _mappings, BadRequest);
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["statusCode"] = this.statusCode;
+        return data;
+    }
+}
+
+export interface IBadRequest {
+    statusCode?: number;
+}
+
 export enum MediaTransformOptionsFormat {
-    Jpeg = 0,
-    JpegXL = 1,
-    Png = 2,
-    WebP = 3,
-    Avif = 4,
+    Jpeg = "Jpeg",
+    JpegXl = "JpegXl",
+    Png = "Png",
+    WebP = "WebP",
+    Avif = "Avif",
 }
 
 export class AcceptedTransformMeta implements IAcceptedTransformMeta {
@@ -844,36 +915,35 @@ export interface IDailyForecast {
     precipitationProbabilityMin?: number;
 }
 
-/** 0 = Clear 1 = MostlyClear 2 = PartlyClear 3 = Overcast 45 = Fog 48 = RimeFog 51 = LightDrizzle 53 = MediumDrizzle 55 = HeavyDrizzle 56 = LightFreezingDrizzle 57 = HeavyFreezingDrizzle 61 = LightRain 63 = MediumRain 65 = HeavyRain 66 = LightFreezingRain 67 = HeavyFreezingRain 71 = LightSnow 73 = MediumSnow 75 = HeavySnow 77 = GrainySnow 80 = LightRainShower 81 = MediumRainShower 82 = HeavyRainShower 85 = LightSnowShower 86 = HeavySnowShower 95 = Thunderstorm 96 = ThunderstormWithSomeRain 99 = ThunderstormWithHeavyRain */
 export enum WmoWeatherCode {
-    Clear = 0,
-    MostlyClear = 1,
-    PartlyClear = 2,
-    Overcast = 3,
-    Fog = 45,
-    RimeFog = 48,
-    LightDrizzle = 51,
-    MediumDrizzle = 53,
-    HeavyDrizzle = 55,
-    LightFreezingDrizzle = 56,
-    HeavyFreezingDrizzle = 57,
-    LightRain = 61,
-    MediumRain = 63,
-    HeavyRain = 65,
-    LightFreezingRain = 66,
-    HeavyFreezingRain = 67,
-    LightSnow = 71,
-    MediumSnow = 73,
-    HeavySnow = 75,
-    GrainySnow = 77,
-    LightRainShower = 80,
-    MediumRainShower = 81,
-    HeavyRainShower = 82,
-    LightSnowShower = 85,
-    HeavySnowShower = 86,
-    Thunderstorm = 95,
-    ThunderstormWithSomeRain = 96,
-    ThunderstormWithHeavyRain = 99,
+    Clear = "Clear",
+    MostlyClear = "MostlyClear",
+    PartlyClear = "PartlyClear",
+    Overcast = "Overcast",
+    Fog = "Fog",
+    RimeFog = "RimeFog",
+    LightDrizzle = "LightDrizzle",
+    MediumDrizzle = "MediumDrizzle",
+    HeavyDrizzle = "HeavyDrizzle",
+    LightFreezingDrizzle = "LightFreezingDrizzle",
+    HeavyFreezingDrizzle = "HeavyFreezingDrizzle",
+    LightRain = "LightRain",
+    MediumRain = "MediumRain",
+    HeavyRain = "HeavyRain",
+    LightFreezingRain = "LightFreezingRain",
+    HeavyFreezingRain = "HeavyFreezingRain",
+    LightSnow = "LightSnow",
+    MediumSnow = "MediumSnow",
+    HeavySnow = "HeavySnow",
+    GrainySnow = "GrainySnow",
+    LightRainShower = "LightRainShower",
+    MediumRainShower = "MediumRainShower",
+    HeavyRainShower = "HeavyRainShower",
+    LightSnowShower = "LightSnowShower",
+    HeavySnowShower = "HeavySnowShower",
+    Thunderstorm = "Thunderstorm",
+    ThunderstormWithSomeRain = "ThunderstormWithSomeRain",
+    ThunderstormWithHeavyRain = "ThunderstormWithHeavyRain",
 }
 
 function jsonParse(json: any, reviver?: any) {
@@ -948,6 +1018,13 @@ export class SwaggerResponse<TResult> {
         this.headers = headers;
         this.result = result;
     }
+}
+
+export interface FileResponse {
+    data: Blob;
+    status: number;
+    fileName?: string;
+    headers?: { [name: string]: any };
 }
 
 export class ApiException extends Error {

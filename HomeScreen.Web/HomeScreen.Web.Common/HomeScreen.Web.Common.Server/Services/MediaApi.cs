@@ -1,26 +1,30 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using Grpc.Core;
 using HomeScreen.Service.Media;
-using HomeScreen.Service.Media.Proto.Services;
 using HomeScreen.Service.Media.Client.Generated;
+using HomeScreen.Service.Media.Proto.Services;
 using HomeScreen.Web.Common.Server.Entities;
 
 namespace HomeScreen.Web.Common.Server.Services;
 
-public class MediaApi(ILogger<MediaApi> logger, MediaGrpcClient client, IMediaFileClient mediaFileClient) : IMediaApi
+public class MediaApi(ILogger<MediaApi> logger, MediaGrpcClient client, IMediaClient mediaFileClient) : IMediaApi
 {
+    private static ActivitySource ActivitySource => new(nameof(MediaApi));
+
     public async IAsyncEnumerable<MediaItem> RandomMedia(
         uint count,
         [EnumeratorCancellation] CancellationToken cancellationToken = default
     )
     {
+        using var activity = ActivitySource.StartActivity("RandomMedia", ActivityKind.Client);
         logger.LogInformation("RandomMedia start");
 
         using var response = client.RandomMedia(
             new MediaRequest { Count = count },
             new CallOptions().WithDeadline(DateTimeOffset.UtcNow.AddMinutes(10).UtcDateTime)
-                             .WithCancellationToken(cancellationToken)
-                             .WithWaitForReady()
+                .WithCancellationToken(cancellationToken)
+                .WithWaitForReady()
         );
         if (response is null)
         {
@@ -41,11 +45,12 @@ public class MediaApi(ILogger<MediaApi> logger, MediaGrpcClient client, IMediaFi
 
     public async Task<MediaItem?> ToggleMedia(Guid mediaId, bool enabled, CancellationToken cancellationToken = default)
     {
+        using var activity = ActivitySource.StartActivity("ToggleMedia", ActivityKind.Client);
         logger.LogInformation("ToggleMedia start");
         var response = await client.ToggleMediaAsync(
             new ToggleMediaRequest { Id = mediaId.ToString("D"), Enabled = enabled },
             new CallOptions().WithDeadline(DateTimeOffset.UtcNow.AddMinutes(5).UtcDateTime)
-                             .WithCancellationToken(cancellationToken)
+                .WithCancellationToken(cancellationToken)
         );
         logger.LogInformation("ToggleMedia end");
         return response != null ? TransformMedia(response) : null;
@@ -60,6 +65,7 @@ public class MediaApi(ILogger<MediaApi> logger, MediaGrpcClient client, IMediaFi
         CancellationToken cancellationToken = default
     )
     {
+        using var activity = ActivitySource.StartActivity("TransformMedia", ActivityKind.Client);
         var result = await client.TransformMediaAsync(
             new TransformMediaRequest
             {
@@ -70,7 +76,7 @@ public class MediaApi(ILogger<MediaApi> logger, MediaGrpcClient client, IMediaFi
                 MediaFormat = format switch
                 {
                     MediaTransformOptionsFormat.Jpeg => TransformMediaFormat.Jpeg,
-                    MediaTransformOptionsFormat.JpegXL => TransformMediaFormat.JpegXl,
+                    MediaTransformOptionsFormat.JpegXl => TransformMediaFormat.JpegXl,
                     MediaTransformOptionsFormat.Png => TransformMediaFormat.Png,
                     MediaTransformOptionsFormat.WebP => TransformMediaFormat.WebP,
                     MediaTransformOptionsFormat.Avif => TransformMediaFormat.Avif,
@@ -78,7 +84,7 @@ public class MediaApi(ILogger<MediaApi> logger, MediaGrpcClient client, IMediaFi
                 }
             },
             new CallOptions().WithDeadline(DateTimeOffset.UtcNow.AddMinutes(5).UtcDateTime)
-                             .WithCancellationToken(cancellationToken)
+                .WithCancellationToken(cancellationToken)
         );
         return result?.State ?? TransformMediaState.NotFound;
     }
@@ -92,8 +98,9 @@ public class MediaApi(ILogger<MediaApi> logger, MediaGrpcClient client, IMediaFi
         CancellationToken cancellationToken = default
     )
     {
+        using var activity = ActivitySource.StartActivity("DownloadMedia", ActivityKind.Client);
         logger.LogInformation("Downloading media for {MediaId}", mediaId);
-        var response = await mediaFileClient.DownloadMediaFileAsync(
+        var response = await mediaFileClient.MediaAsync(
             mediaId,
             width,
             height,

@@ -16,10 +16,10 @@ public static class DependencyInjection
             "homescreen-service-location",
             c => c.Address = new Uri(
                 builder.Configuration.GetSection("services")
-                       .GetSection("homescreen-service-location")
-                       .GetSection("http")
-                       .GetChildren()
-                       .FirstOrDefault()!.Value!
+                    .GetSection("homescreen-service-location")
+                    .GetSection("http")
+                    .GetChildren()
+                    .FirstOrDefault()!.Value!
             )
         );
 

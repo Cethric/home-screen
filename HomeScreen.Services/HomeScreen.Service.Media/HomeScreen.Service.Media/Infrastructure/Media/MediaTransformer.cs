@@ -1,16 +1,20 @@
-﻿using HomeScreen.Service.Media.Entities;
+﻿using System.Diagnostics;
+using HomeScreen.Service.Media.Entities;
 using ImageMagick;
 
 namespace HomeScreen.Service.Media.Infrastructure.Media;
 
 public class MediaTransformer(ILogger<MediaTransformer> logger, IMediaPaths mediaPaths) : IMediaTransformer
 {
+    private static ActivitySource ActivitySource => new(nameof(MediaHasher));
+
     public async Task<FileInfo> GetTransformedMedia(
         Database.MediaDb.Entities.MediaEntry mediaEntry,
         MediaTransformOptions options,
         CancellationToken cancellationToken
     )
     {
+        using var activity = ActivitySource.StartActivity("GetTransformedMedia", ActivityKind.Client);
         var transformedInfo = mediaPaths.GetCachePath(options, mediaEntry.OriginalHash);
         if (transformedInfo.Exists)
         {

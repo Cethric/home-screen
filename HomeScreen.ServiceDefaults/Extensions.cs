@@ -1,10 +1,13 @@
+using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using OpenTelemetry;
+using OpenTelemetry.Exporter;
+using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
@@ -20,7 +23,14 @@ public static class Extensions
     {
         builder.ConfigureOpenTelemetry(version);
 #if !SwaggerBuild
-        builder.AddSeqEndpoint("homescreen-seq");
+        builder.AddSeqEndpoint(
+            "homescreen-seq",
+            settings =>
+            {
+                settings.ServerUrl = builder.Configuration.GetConnectionString("homescreen-seq");
+                settings.DisableHealthChecks = false;
+            }
+        );
         builder.Logging.AddConsole();
         builder.AddRedisOutputCache("homescreen-redis");
         builder.AddRedisDistributedCache("homescreen-redis");
@@ -63,54 +73,84 @@ public static class Extensions
             }
         );
 
-        builder.Services.AddOpenTelemetry()
-               .WithMetrics(
-                   metrics =>
-                   {
-                       metrics.AddAspNetCoreInstrumentation()
-                              .AddHttpClientInstrumentation()
-                              .AddRuntimeInstrumentation();
-                   }
-               )
-               .WithTracing(
-                   tracing =>
-                   {
-                       tracing.AddAspNetCoreInstrumentation()
-                              // Uncomment the following line to enable gRPC instrumentation (requires the OpenTelemetry.Instrumentation.GrpcNetClient package)
-                              .AddGrpcClientInstrumentation()
-                              .AddHttpClientInstrumentation();
-                   }
-               );
-
-        builder.AddOpenTelemetryExporters(version);
-
-        return builder;
-    }
-
-    private static IHostApplicationBuilder AddOpenTelemetryExporters(
-        this IHostApplicationBuilder builder,
-        string version
-    )
-    {
-        var useOtlpExporter = !string.IsNullOrWhiteSpace(builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"]);
-
-        if (useOtlpExporter)
+        var endpoint = builder.Configuration.GetConnectionString("homescreen-seq");
+        if (endpoint is null)
         {
-            builder.Services.AddOpenTelemetry()
-                   .UseOtlpExporter()
-                   .ConfigureResource(
-                       c =>
-                       {
-                           c.AddAttributes(
-                               new List<KeyValuePair<string, object>>
-                               {
-                                   new("service.default.version", GitVersionInformation.InformationalVersion),
-                                   new("service.version", version)
-                               }
-                           );
-                       }
-                   );
+            return builder;
         }
+
+        if (string.IsNullOrWhiteSpace(builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"]))
+        {
+            return builder;
+        }
+
+        var otlpEndpoint = new UriBuilder(endpoint) { Path = "/ingest/otlp/" };
+
+        builder.Services.AddOpenTelemetry()
+            // .UseOtlpExporter()
+            // .UseOtlpExporter(OtlpExportProtocol.HttpProtobuf, otlpEndpoint.Uri)
+            .ConfigureResource(
+                c =>
+                {
+                    c.AddTelemetrySdk()
+                        .AddService(
+                            typeof(Extensions).Assembly.GetName().Name ?? "HomeScreen.ServiceDefaults",
+                            "HomeScreen",
+                            GitVersionInformation.InformationalVersion
+                        )
+                        .AddService(
+                            Assembly.GetEntryAssembly()!.GetName().Name ?? "HomeScreen.Service",
+                            "HomeScreen",
+                            version
+                        );
+                }
+            )
+            .WithMetrics(
+                metrics =>
+                {
+                    metrics.AddAspNetCoreInstrumentation()
+                        .AddHttpClientInstrumentation()
+                        .AddRuntimeInstrumentation()
+                        .AddOtlpExporter(
+                            options =>
+                            {
+                                options.Endpoint = new Uri(builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"]!);
+                                options.Protocol = OtlpExportProtocol.Grpc;
+                            }
+                        );
+                }
+            )
+            .WithTracing(
+                tracing =>
+                {
+                    tracing.AddAspNetCoreInstrumentation()
+                        .AddGrpcClientInstrumentation()
+                        .AddHttpClientInstrumentation()
+                        .AddEntityFrameworkCoreInstrumentation()
+                        .AddOtlpExporter(
+                            options =>
+                            {
+                                otlpEndpoint.Path = "/ingest/otlp/v1/traces";
+                                options.Endpoint = otlpEndpoint.Uri;
+                                options.Protocol = OtlpExportProtocol.HttpProtobuf;
+                            }
+                        );
+                }
+            )
+            .WithLogging(
+                logging =>
+                {
+                    logging.AddOtlpExporter(
+                            options =>
+                            {
+                                otlpEndpoint.Path = "/ingest/otlp/v1/logs";
+                                options.Endpoint = otlpEndpoint.Uri;
+                                options.Protocol = OtlpExportProtocol.HttpProtobuf;
+                            }
+                        )
+                        .AddConsoleExporter();
+                }
+            );
 
         return builder;
     }
@@ -118,18 +158,18 @@ public static class Extensions
     public static IHostApplicationBuilder AddDefaultHealthChecks(this IHostApplicationBuilder builder, string version)
     {
         builder.Services.AddHealthChecks()
-               // Add a default liveness check to ensure app is responsive
-               .AddCheck(
-                   "self",
-                   () => HealthCheckResult.Healthy(
-                       data: new Dictionary<string, object>
-                             {
-                                 { "service.defaults.version", GitVersionInformation.InformationalVersion },
-                                 { "service.version", version }
-                             }
-                   ),
-                   ["live"]
-               );
+            // Add a default liveness check to ensure app is responsive
+            .AddCheck(
+                "self",
+                () => HealthCheckResult.Healthy(
+                    data: new Dictionary<string, object>
+                          {
+                              { "service.defaults.version", GitVersionInformation.InformationalVersion },
+                              { "service.version", version }
+                          }
+                ),
+                ["live"]
+            );
 
         return builder;
     }
@@ -145,6 +185,11 @@ public static class Extensions
 
             // Only health checks tagged with the "live" tag must pass for app to be considered alive
             app.MapHealthChecks("/alive", new HealthCheckOptions { Predicate = r => r.Tags.Contains("live") });
+
+            app.UseOpenApi(p => p.Path = "/swagger/{documentName}/swagger.yaml");
+            app.UseSwaggerUi(p => p.DocumentPath = "/swagger/{documentName}/swagger.yaml");
+            app.UseApimundo(p => p.DocumentPath = "/swagger/{documentName}/swagger.json");
+            app.UseDeveloperExceptionPage();
         }
 
         return app;
