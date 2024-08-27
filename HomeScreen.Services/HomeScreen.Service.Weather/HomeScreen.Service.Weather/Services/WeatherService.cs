@@ -8,43 +8,43 @@ public class WeatherService(ILogger<WeatherService> logger, IWeatherApi weatherA
 {
     private static ActivitySource ActivitySource => new(nameof(WeatherService));
 
-    public override async Task<CurrentForecastReply> CurrentForecast(ForecastRequest request, ServerCallContext context)
+public override async Task<CurrentForecastReply> CurrentForecast(ForecastRequest request, ServerCallContext context)
+{
+    using var activity = ActivitySource.StartActivity("CurrentForecast", ActivityKind.Client);
+    logger.LogInformation("Get current Forecast: {Request}", request);
+    try
     {
-        using var activity = ActivitySource.StartActivity("CurrentForecast", ActivityKind.Client);
-        logger.LogInformation("Get current Forecast: {Request}", request);
-        try
-        {
-            var response = await weatherApi.GetForecast(request.Latitude, request.Longitude, context.CancellationToken);
-            return response;
-        }
-        catch (ApiException ex)
-        {
-            logger.LogError(ex, "Failed to get current forecast");
-            throw;
-        }
-    }
-
-    public override async Task<HourlyForecastReply> HourlyForecast(ForecastRequest request, ServerCallContext context)
-    {
-        using var activity = ActivitySource.StartActivity("HourlyForecast", ActivityKind.Client);
-        logger.LogInformation("Get hourly Forecast: {Request}", request);
-        var response = await weatherApi.GetHourlyForecast(
-            request.Latitude,
-            request.Longitude,
-            context.CancellationToken
-        );
+        var response = await weatherApi.GetForecast(request.Latitude, request.Longitude, context.CancellationToken);
         return response;
     }
-
-    public override async Task<DailyForecastReply> DailyForecast(ForecastRequest request, ServerCallContext context)
+    catch (ApiException ex)
     {
-        using var activity = ActivitySource.StartActivity("DailyForecast", ActivityKind.Client);
-        logger.LogInformation("Get daily Forecast: {Request}", request);
-        var response = await weatherApi.GetDailyForecast(
-            request.Latitude,
-            request.Longitude,
-            context.CancellationToken
-        );
-        return response;
+        logger.LogError(ex, "Failed to get current forecast");
+        throw;
     }
+}
+
+public override async Task<HourlyForecastReply> HourlyForecast(ForecastRequest request, ServerCallContext context)
+{
+    using var activity = ActivitySource.StartActivity("HourlyForecast", ActivityKind.Client);
+    logger.LogInformation("Get hourly Forecast: {Request}", request);
+    var response = await weatherApi.GetHourlyForecast(
+        request.Latitude,
+        request.Longitude,
+        context.CancellationToken
+    );
+    return response;
+}
+
+public override async Task<DailyForecastReply> DailyForecast(ForecastRequest request, ServerCallContext context)
+{
+    using var activity = ActivitySource.StartActivity("DailyForecast", ActivityKind.Client);
+    logger.LogInformation("Get daily Forecast: {Request}", request);
+    var response = await weatherApi.GetDailyForecast(
+        request.Latitude,
+        request.Longitude,
+        context.CancellationToken
+    );
+    return response;
+}
 }
