@@ -1,23 +1,4 @@
 version = 1
 
 [[analyzers]]
-name = "javascript"
-
-  [analyzers.meta]
-  plugins = ["vue"]
-  environment = [
-    "vitest",
-    "nodejs"
-  ]
-
-[[analyzers]]
-name = "csharp"
-
-[[transformers]]
-name = "dotnet-format"
-
-[[transformers]]
-name = "standardjs"
-
-[[transformers]]
-name = "prettier"
+name = "secrets"
