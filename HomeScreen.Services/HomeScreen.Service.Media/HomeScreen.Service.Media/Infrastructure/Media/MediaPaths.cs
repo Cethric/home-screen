@@ -17,78 +17,78 @@ public class MediaPaths(ILogger<MediaPaths> logger, MediaDirectories mediaDirect
         ".tiff"
     ];
 
-    private static ActivitySource ActivitySource => new(nameof(MediaHasher));
+private static ActivitySource ActivitySource => new(nameof(MediaHasher));
 
-    public DirectoryInfo GetTransformDirectory(string fileHash)
-    {
-        using var activity = ActivitySource.StartActivity("GetTransformDirectory", ActivityKind.Client);
-        logger.LogInformation("Getting transform directory for {FileHash}", fileHash);
-        var hash = fileHash.GetHashCode();
-        const int mask = 255;
-        var first = hash & mask;
-        var second = (hash >> 8) & mask;
-        var third = (hash >> 16) & mask;
-        var directory = new DirectoryInfo(
-            Path.Combine(
-                mediaDirectories.MediaCacheDir,
-                "cached",
-                $"{first:03d}",
-                $"{second:03d}",
-                $"{third:03d}"
-            )
-        );
-        directory.Create();
-        logger.LogInformation(
-            "Transform directory for {FileHash} is created at {Directory}",
-            fileHash,
-            directory.FullName
-        );
-        return directory;
-    }
+public DirectoryInfo GetTransformDirectory(string fileHash)
+{
+    using var activity = ActivitySource.StartActivity("GetTransformDirectory", ActivityKind.Client);
+    logger.LogInformation("Getting transform directory for {FileHash}", fileHash);
+    var hash = fileHash.GetHashCode();
+    const int mask = 255;
+    var first = hash & mask;
+    var second = (hash >> 8) & mask;
+    var third = (hash >> 16) & mask;
+    var directory = new DirectoryInfo(
+        Path.Combine(
+            mediaDirectories.MediaCacheDir,
+            "cached",
+            $"{first:03d}",
+            $"{second:03d}",
+            $"{third:03d}"
+        )
+    );
+    directory.Create();
+    logger.LogInformation(
+        "Transform directory for {FileHash} is created at {Directory}",
+        fileHash,
+        directory.FullName
+    );
+    return directory;
+}
 
-    public FileInfo GetCachePath(MediaTransformOptions mediaTransformOptions, string fileHash)
-    {
-        using var activity = ActivitySource.StartActivity("GetCachePath", ActivityKind.Client);
-        logger.LogInformation(
-            "Getting cache path for {FileHash} with transform options {Width} {Height} {Blur} {Format}",
-            fileHash,
-            mediaTransformOptions.Width,
-            mediaTransformOptions.Height,
-            mediaTransformOptions.Blur,
-            mediaTransformOptions.Format
-        );
-        var directory = GetTransformDirectory(fileHash);
-        var fileInfo = new FileInfo(
-            Path.Combine(
-                directory.FullName,
-                $"transformed-{mediaTransformOptions.Width}-{mediaTransformOptions.Height}-{mediaTransformOptions.Blur}.{mediaTransformOptions.Format}"
-            )
-        );
-        logger.LogInformation(
-            "Retrieved cache path for {FileHash} with transform options {Width} {Height} {Blur} {Format}. {FileName}",
-            fileHash,
-            mediaTransformOptions.Width,
-            mediaTransformOptions.Height,
-            mediaTransformOptions.Blur,
-            mediaTransformOptions.Format,
-            fileInfo
-        );
-        return fileInfo;
-    }
+public FileInfo GetCachePath(MediaTransformOptions mediaTransformOptions, string fileHash)
+{
+    using var activity = ActivitySource.StartActivity("GetCachePath", ActivityKind.Client);
+    logger.LogInformation(
+        "Getting cache path for {FileHash} with transform options {Width} {Height} {Blur} {Format}",
+        fileHash,
+        mediaTransformOptions.Width,
+        mediaTransformOptions.Height,
+        mediaTransformOptions.Blur,
+        mediaTransformOptions.Format
+    );
+    var directory = GetTransformDirectory(fileHash);
+    var fileInfo = new FileInfo(
+        Path.Combine(
+            directory.FullName,
+            $"transformed-{mediaTransformOptions.Width}-{mediaTransformOptions.Height}-{mediaTransformOptions.Blur}.{mediaTransformOptions.Format}"
+        )
+    );
+    logger.LogInformation(
+        "Retrieved cache path for {FileHash} with transform options {Width} {Height} {Blur} {Format}. {FileName}",
+        fileHash,
+        mediaTransformOptions.Width,
+        mediaTransformOptions.Height,
+        mediaTransformOptions.Blur,
+        mediaTransformOptions.Format,
+        fileInfo
+    );
+    return fileInfo;
+}
 
-    public List<FileInfo> GetRawFiles()
-    {
-        using var activity = ActivitySource.StartActivity("GetRawFiles", ActivityKind.Client);
-        logger.LogInformation("Getting raw files from {SearchDirectory}", mediaDirectories.MediaSourceDir);
-        var files = Directory.EnumerateFiles(mediaDirectories.MediaSourceDir, "*.*", SearchOption.TopDirectoryOnly)
-            .Where(f => AllowedImageExtensions.Contains(Path.GetExtension(f).ToLowerInvariant()))
-            .Select(f => new FileInfo(f))
-            .ToList();
-        logger.LogInformation(
-            "Found {FilesCount} raw files in {SearchDirectory}",
-            files.Count,
-            mediaDirectories.MediaSourceDir
-        );
-        return files;
-    }
+public List<FileInfo> GetRawFiles()
+{
+    using var activity = ActivitySource.StartActivity("GetRawFiles", ActivityKind.Client);
+    logger.LogInformation("Getting raw files from {SearchDirectory}", mediaDirectories.MediaSourceDir);
+    var files = Directory.EnumerateFiles(mediaDirectories.MediaSourceDir, "*.*", SearchOption.TopDirectoryOnly)
+        .Where(f => AllowedImageExtensions.Contains(Path.GetExtension(f).ToLowerInvariant()))
+        .Select(f => new FileInfo(f))
+        .ToList();
+    logger.LogInformation(
+        "Found {FilesCount} raw files in {SearchDirectory}",
+        files.Count,
+        mediaDirectories.MediaSourceDir
+    );
+    return files;
+}
 }
