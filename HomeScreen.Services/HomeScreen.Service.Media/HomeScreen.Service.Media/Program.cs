@@ -74,13 +74,13 @@ builder.Services.AddOpenApiDocument(
                     context.OperationDescription.Operation.Responses.Clear();
 
                     var response = new OpenApiResponse()
-                                   {
-                                       Schema = new JsonSchema()
-                                                {
-                                                    Type = JsonObjectType.File,
-                                                    Reference = context.Document.Definitions["FileStreamHttpResult"]
-                                                }
-                                   };
+                    {
+                        Schema = new JsonSchema()
+                        {
+                            Type = JsonObjectType.File,
+                            Reference = context.Document.Definitions["FileStreamHttpResult"]
+                        }
+                    };
                     response.Content.Clear();
                     foreach (var operation in context.OperationDescription.Operation.Produces)
                     {
@@ -89,10 +89,10 @@ builder.Services.AddOpenApiDocument(
                             new OpenApiMediaType
                             {
                                 Schema = new JsonSchema
-                                         {
-                                             Type = JsonObjectType.File,
-                                             Reference = context.Document.Definitions["FileStreamHttpResult"],
-                                         }
+                                {
+                                    Type = JsonObjectType.File,
+                                    Reference = context.Document.Definitions["FileStreamHttpResult"],
+                                }
                             }
                         );
                     }
