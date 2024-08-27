@@ -1,13 +1,11 @@
 using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using OpenTelemetry.Exporter;
-using OpenTelemetry.Logs;
+using OpenTelemetry;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
@@ -23,14 +21,6 @@ public static class Extensions
     {
         builder.ConfigureOpenTelemetry(version);
 #if !SwaggerBuild
-        builder.AddSeqEndpoint(
-            "homescreen-seq",
-            settings =>
-            {
-                settings.ServerUrl = builder.Configuration.GetConnectionString("homescreen-seq");
-                settings.DisableHealthChecks = false;
-            }
-        );
         builder.Logging.AddConsole();
         builder.AddRedisOutputCache("homescreen-redis");
         builder.AddRedisDistributedCache("homescreen-redis");
@@ -73,22 +63,13 @@ public static class Extensions
             }
         );
 
-        var endpoint = builder.Configuration.GetConnectionString("homescreen-seq");
-        if (endpoint is null)
-        {
-            return builder;
-        }
-
         if (string.IsNullOrWhiteSpace(builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"]))
         {
             return builder;
         }
 
-        var otlpEndpoint = new UriBuilder(endpoint) { Path = "/ingest/otlp/" };
-
         builder.Services.AddOpenTelemetry()
-            // .UseOtlpExporter()
-            // .UseOtlpExporter(OtlpExportProtocol.HttpProtobuf, otlpEndpoint.Uri)
+            .UseOtlpExporter()
             .ConfigureResource(
                 c =>
                 {
@@ -108,16 +89,7 @@ public static class Extensions
             .WithMetrics(
                 metrics =>
                 {
-                    metrics.AddAspNetCoreInstrumentation()
-                        .AddHttpClientInstrumentation()
-                        .AddRuntimeInstrumentation()
-                        .AddOtlpExporter(
-                            options =>
-                            {
-                                options.Endpoint = new Uri(builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"]!);
-                                options.Protocol = OtlpExportProtocol.Grpc;
-                            }
-                        );
+                    metrics.AddAspNetCoreInstrumentation().AddHttpClientInstrumentation().AddRuntimeInstrumentation();
                 }
             )
             .WithTracing(
@@ -126,29 +98,7 @@ public static class Extensions
                     tracing.AddAspNetCoreInstrumentation()
                         .AddGrpcClientInstrumentation()
                         .AddHttpClientInstrumentation()
-                        .AddEntityFrameworkCoreInstrumentation()
-                        .AddOtlpExporter(
-                            options =>
-                            {
-                                otlpEndpoint.Path = "/ingest/otlp/v1/traces";
-                                options.Endpoint = otlpEndpoint.Uri;
-                                options.Protocol = OtlpExportProtocol.HttpProtobuf;
-                            }
-                        );
-                }
-            )
-            .WithLogging(
-                logging =>
-                {
-                    logging.AddOtlpExporter(
-                            options =>
-                            {
-                                otlpEndpoint.Path = "/ingest/otlp/v1/logs";
-                                options.Endpoint = otlpEndpoint.Uri;
-                                options.Protocol = OtlpExportProtocol.HttpProtobuf;
-                            }
-                        )
-                        .AddConsoleExporter();
+                        .AddEntityFrameworkCoreInstrumentation();
                 }
             );
 

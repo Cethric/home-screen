@@ -14,7 +14,7 @@
       <ResponsiveImageSource
         :key="`${imageSize.width}-${imageSize.height}`"
         :blur="false"
-        :format="MediaTransformOptionsFormat.JpegXL"
+        :format="MediaTransformOptionsFormat.JpegXl"
         :image="image"
         :image-size="imageSize"
         :load-image="loadImage"

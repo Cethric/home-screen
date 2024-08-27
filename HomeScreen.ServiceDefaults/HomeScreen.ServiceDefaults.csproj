@@ -20,7 +20,6 @@
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <FrameworkReference Include="Microsoft.AspNetCore.App"/>
-        <PackageReference Include="Aspire.Seq" Version="8.1.0"/>
         <PackageReference Include="Aspire.StackExchange.Redis.DistributedCaching" Version="8.1.0"/>
         <PackageReference Include="Aspire.StackExchange.Redis.OutputCaching" Version="8.1.0"/>
 

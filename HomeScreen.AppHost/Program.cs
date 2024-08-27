@@ -14,13 +14,6 @@ var clientId = builder.AddParameter("AzureClientID", true);
 
 var commonAddress = builder.AddParameter("CommonAddress");
 
-
-var seq = builder.AddSeq("homescreen-seq", 9090)
-    .AsHttp2Service()
-    .WithImageTag("latest")
-    .WithOtlpExporter()
-    .WithDataVolume();
-
 var redis = builder.AddRedis("homescreen-redis")
     .WithRedisCommander()
     .WithImageTag("latest")
@@ -38,13 +31,11 @@ var dashboardDb = sqlServer.AddDatabase("homescreen-dashboard");
 
 builder.AddProject<HomeScreen_Database_MediaDb_Migrations>("homescreen-media-migrations")
     .WithOtlpExporter()
-    .WithReference(seq)
     .WithReference(mediaDb);
 
 var location = builder.AddProject<HomeScreen_Service_Location>("homescreen-service-location")
     .AsHttp2Service()
     .WithOtlpExporter()
-    .WithReference(seq)
     .WithReference(redis)
     .WithEnvironment("MappingService", "Nominatim")
     .WithEnvironment("AZURE_MAPS_SUBSCRIPTION_KEY", mapsKey)
@@ -54,7 +45,6 @@ var location = builder.AddProject<HomeScreen_Service_Location>("homescreen-servi
 var media = builder.AddProject<HomeScreen_Service_Media>("homescreen-service-media")
     .AsHttp2Service()
     .WithOtlpExporter()
-    .WithReference(seq)
     .WithReference(redis)
     .WithReference(mediaDb)
     .WithReference(location)
@@ -66,13 +56,11 @@ var media = builder.AddProject<HomeScreen_Service_Media>("homescreen-service-med
 var weather = builder.AddProject<HomeScreen_Service_Weather>("homescreen-service-weather")
     .AsHttp2Service()
     .WithOtlpExporter()
-    .WithReference(seq)
     .WithReference(redis);
 
 var common = builder.AddProject<HomeScreen_Web_Common_Server>("homescreen-web-common-server")
     .AsHttp2Service()
     .WithOtlpExporter()
-    .WithReference(seq)
     .WithReference(redis)
     .WithReference(weather)
     .WithReference(media);
@@ -80,7 +68,6 @@ var common = builder.AddProject<HomeScreen_Web_Common_Server>("homescreen-web-co
 builder.AddProject<HomeScreen_Web_Slideshow_Server>("homescreen-web-slideshow-server")
     .AsHttp2Service()
     .WithOtlpExporter()
-    .WithReference(seq)
     .WithReference(redis)
     .WithReference(common)
     .WithEnvironment("CommonAddress", commonAddress);
@@ -88,7 +75,6 @@ builder.AddProject<HomeScreen_Web_Slideshow_Server>("homescreen-web-slideshow-se
 builder.AddProject<HomeScreen_Web_Dashboard_Server>("homescreen-web-dashboard-server")
     .AsHttp2Service()
     .WithOtlpExporter()
-    .WithReference(seq)
     .WithReference(redis)
     .WithReference(dashboardDb)
     .WithReference(common)
