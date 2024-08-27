@@ -11,7 +11,7 @@ namespace HomeScreen.Service.Media.Client
                 ArgumentNullException.ThrowIfNull(client);
                 ArgumentNullException.ThrowIfNull(request);
                 ArgumentNullException.ThrowIfNullOrEmpty(url);
-                
+
                 request.Version = HttpVersion.Version20;
                 request.VersionPolicy = HttpVersionPolicy.RequestVersionOrHigher;
             }
