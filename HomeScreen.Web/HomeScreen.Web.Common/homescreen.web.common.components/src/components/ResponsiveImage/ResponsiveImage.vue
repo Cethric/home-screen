@@ -2,6 +2,7 @@
   <picture v-if="loading">
     <Suspense>
       <ResponsiveImageSource
+        :key="`${imageSize.width}-${imageSize.height}`"
         :blur="false"
         :format="MediaTransformOptionsFormat.Avif"
         :image="image"
@@ -11,6 +12,7 @@
     </Suspense>
     <Suspense>
       <ResponsiveImageSource
+        :key="`${imageSize.width}-${imageSize.height}`"
         :blur="false"
         :format="MediaTransformOptionsFormat.JpegXL"
         :image="image"
@@ -20,6 +22,7 @@
     </Suspense>
     <Suspense>
       <ResponsiveImageSource
+        :key="`${imageSize.width}-${imageSize.height}`"
         :blur="false"
         :format="MediaTransformOptionsFormat.WebP"
         :image="image"
@@ -29,6 +32,7 @@
     </Suspense>
     <Suspense>
       <ResponsiveImageSource
+        :key="`${imageSize.width}-${imageSize.height}`"
         :blur="false"
         :format="MediaTransformOptionsFormat.Png"
         :image="image"
@@ -38,6 +42,7 @@
     </Suspense>
     <Suspense>
       <ResponsiveImageSource
+        :key="`${imageSize.width}-${imageSize.height}`"
         :blur="false"
         :format="MediaTransformOptionsFormat.Jpeg"
         :image="image"

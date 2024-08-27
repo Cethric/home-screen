@@ -3,7 +3,7 @@ import {
   type LoadImageCallback,
   type MediaItem,
   MediaTransformOptionsFormat,
-} from '../../../../../HomeScreen.Web.Common/homescreen.web.common.components';
+} from '@homescreen/web-common-components';
 import { inject } from 'vue';
 
 export function injectMediaApi(): IMediaClientWithStreaming {

@@ -29,7 +29,7 @@ import { computed, ref } from 'vue';
 import type {
   Image,
   LoadImageCallback,
-} from '../../../../../HomeScreen.Web.Common/homescreen.web.common.components';
+} from '@homescreen/web-common-components';
 
 const props = withDefaults(
   defineProps<{

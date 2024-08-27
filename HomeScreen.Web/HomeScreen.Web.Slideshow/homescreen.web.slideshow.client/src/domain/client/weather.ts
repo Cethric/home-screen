@@ -1,7 +1,7 @@
 import {
   type IWeatherClient,
   WeatherForecast,
-} from '../../../../../HomeScreen.Web.Common/homescreen.web.common.components';
+} from '@homescreen/web-common-components';
 import { inject } from 'vue';
 
 export const loadWeather = async (): Promise<WeatherForecast> => {

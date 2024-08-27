@@ -47,7 +47,7 @@ import {
   type Image,
   type IWeatherForecast,
   type LoadImageCallback,
-} from '../../../../../HomeScreen.Web.Common/homescreen.web.common.components';
+} from '@homescreen/web-common-components';
 import { computed } from 'vue';
 import { useDateFormat, useNow } from '@vueuse/core';
 import FullscreenMainLoader from '@/slideshows/fullscreen/FullscreenMainLoader.vue';

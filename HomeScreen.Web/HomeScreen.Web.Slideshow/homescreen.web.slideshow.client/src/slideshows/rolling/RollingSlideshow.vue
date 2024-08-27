@@ -15,8 +15,7 @@
     />
   </main>
   <FullscreenMainLoader v-else />
-  <component
-    :is="DateTimeWeatherComboAsync"
+  <DateTimeWeatherComboAsync
     :kind="DateTimeWeatherComboKinds.footer"
     :weather-forecast="weatherForecast"
   />
@@ -29,7 +28,7 @@ import {
   type Image,
   type IWeatherForecast,
   type LoadImageCallback,
-} from '../../../../../HomeScreen.Web.Common/homescreen.web.common.components';
+} from '@homescreen/web-common-components';
 import { computed } from 'vue';
 import RollingSlider from '@/slideshows/rolling/RollingSlider.vue';
 import {

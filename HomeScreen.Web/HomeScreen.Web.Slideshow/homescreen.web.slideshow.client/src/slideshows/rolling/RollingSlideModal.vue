@@ -15,8 +15,7 @@
       @show="() => emits('pause')"
     >
       <template #activator="props">
-        <component
-          :is="ResponsiveImageSuspenseAsync"
+        <ResponsiveImageSuspenseAsync
           :class="[
             'rounded-md object-contain drop-shadow-md hover:shadow-inner active:drop-shadow-lg',
             {
@@ -41,8 +40,7 @@
               v-bind="props"
             >
               <template #details="{ image }">
-                <component
-                  :is="LeafletMapAsync"
+                <LeafletMapAsync
                   v-if="image.location?.latitude && image.location?.longitude"
                   :latitude="image.location.latitude"
                   :longitude="image.location.longitude"
@@ -78,7 +76,7 @@ import {
   ModalDialog,
   PolaroidCard,
   ResponsiveImageSuspenseAsync,
-} from '../../../../../HomeScreen.Web.Common/homescreen.web.common.components';
+} from '@homescreen/web-common-components';
 import { useElementVisibility } from '@vueuse/core';
 import { ref } from 'vue';
 import LargeImage from '@/components/LargeImage.vue';

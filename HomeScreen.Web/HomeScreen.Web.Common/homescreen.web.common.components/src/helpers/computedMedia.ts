@@ -27,8 +27,8 @@ export const asyncImage = (
   const imageSrc = useMemoize(async (width: number, height: number) => {
     return await loadImage(
       imageId,
-      Math.max(width, 200),
-      Math.max(height, 200),
+      Math.max(width, 250),
+      Math.max(height, 250),
       blur ?? false,
       format,
     );

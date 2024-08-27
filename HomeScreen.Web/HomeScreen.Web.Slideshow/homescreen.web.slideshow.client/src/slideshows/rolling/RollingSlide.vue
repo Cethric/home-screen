@@ -37,7 +37,7 @@ import {
   Directions,
   type Image,
   type LoadImageCallback,
-} from '../../../../../HomeScreen.Web.Common/homescreen.web.common.components';
+} from '@homescreen/web-common-components';
 import RollingSlideModal from '@/slideshows/rolling/RollingSlideModal.vue';
 
 defineProps<{
