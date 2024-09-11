@@ -59,9 +59,9 @@ public static class DependencyInjection
         builder.Services.AddHttpClient("Nominatim");
         builder.Services.AddScoped<INominatimClient, NominatimClient>(
             sp => new NominatimClient(sp.GetRequiredService<IHttpClientFactory>().CreateClient("Nominatim"))
-                  {
-                      BaseUrl = "https://nominatim.geocoding.ai"
-                  }
+            {
+                BaseUrl = "https://nominatim.geocoding.ai"
+            }
         );
         builder.Services.AddScoped<ILocationApi, NominatimLocationApi>();
         return builder;
