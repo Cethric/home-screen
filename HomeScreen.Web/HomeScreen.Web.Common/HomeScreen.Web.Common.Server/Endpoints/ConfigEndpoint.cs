@@ -1,12 +1,9 @@
 ﻿using System.Diagnostics;
+using HomeScreen.Web.Common.Server.Entities;
+using HomeScreen.Web.Common.Server.Services;
 using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace HomeScreen.Web.Common.Server.Endpoints;
-
-public record Config
-{
-    public string MediaUrl { get; init; } = string.Empty;
-}
 
 public static class ConfigEndpoint
 {
@@ -19,9 +16,15 @@ public static class ConfigEndpoint
         group.MapGet("/", Config).WithName(nameof(Config));
     }
 
-    private static Task<Ok<Config>> Config()
+    private static async Task<Results<Ok<Config>, NotFound>> Config(IConfigApi api, CancellationToken token)
     {
         using var activity = ActivitySource.StartActivity("Config", ActivityKind.Client);
-        return Task.FromResult(TypedResults.Ok(new Config { MediaUrl = "https://media" }));
+        var result = await api.ResolveConfig(token);
+        if (result is null)
+        {
+            return TypedResults.NotFound();
+        }
+
+        return TypedResults.Ok(result);
     }
 }

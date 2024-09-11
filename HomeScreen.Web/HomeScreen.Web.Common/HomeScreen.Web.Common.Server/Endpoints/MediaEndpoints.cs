@@ -1,8 +1,10 @@
 ﻿using System.Diagnostics;
 using System.Net.Mime;
+using System.Text;
 using System.Text.Json;
 using HomeScreen.Service.Media;
 using HomeScreen.Service.Media.Client.Generated;
+using HomeScreen.Web.Common.JsonLines;
 using HomeScreen.Web.Common.Server.Entities;
 using HomeScreen.Web.Common.Server.Services;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -19,7 +21,13 @@ public static class MediaEndpoints
     {
         var group = app.MapGroup("api/media").WithTags("media").WithName("Media").WithGroupName("Media");
 
-        group.MapGet("random", RandomMedia).WithName(nameof(RandomMedia)).WithRequestTimeout(TimeSpan.FromMinutes(2));
+        group.MapGet("random", RandomMedia)
+            .WithName(nameof(RandomMedia))
+            .Produces<IEnumerable<MediaItem>>(
+                StatusCodes.Status200OK,
+                $"{MediaTypeNames.Application.JsonSequence};charset={Encoding.UTF8.WebName}"
+            )
+            .WithRequestTimeout(TimeSpan.FromMinutes(2));
         group.MapPatch("{mediaId:guid:required}/toggle", ToggleMedia).WithName(nameof(ToggleMedia));
         group.MapGet("{mediaId:guid:required}/download/{width:int:required}/{height:int:required}", DownloadMedia)
             .WithName(nameof(DownloadMedia))
@@ -37,7 +45,7 @@ public static class MediaEndpoints
             .WithName(nameof(TransformMedia));
     }
 
-    private static Task<JsonStreamingResult<MediaItem>> RandomMedia(
+    private static Task<JsonLines<MediaItem>> RandomMedia(
         uint count,
         IMediaApi service,
         CancellationToken cancellationToken
@@ -45,7 +53,7 @@ public static class MediaEndpoints
     {
         using var activity = ActivitySource.StartActivity("RandomMedia", ActivityKind.Client);
         return Task.FromResult(
-            CustomTypedResults.JsonStreaming(
+            CustomTypedResults.JsonLines(
                 service.RandomMedia(count, cancellationToken),
                 new JsonSerializerOptions(JsonSerializerDefaults.Web)
             )

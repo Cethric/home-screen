@@ -128,6 +128,11 @@ public class MediaApi(ILogger<MediaApi> logger, MediaGrpcClient client, IMediaCl
             Location = new MediaItemLocation
                        {
                            Name = entry.Location, Latitude = entry.Latitude, Longitude = entry.Longitude
-                       }
+                       },
+            AspectRatioWidth = entry.AspectRatioWidth,
+            AspectRatioHeight = entry.AspectRatioHeight,
+            BaseB = entry.BaseB,
+            BaseG = entry.BaseG,
+            BaseR = entry.BaseR
         };
 }

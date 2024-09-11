@@ -12,6 +12,7 @@ var mediaCache = builder.AddParameter("MediaCacheDir");
 var mapsKey = builder.AddParameter("AzureMapsSecret", true);
 var clientId = builder.AddParameter("AzureClientID", true);
 var sentryDsn = builder.AddParameter("SentryDSN", true);
+var clientSentryDsn = builder.AddParameter("ClientSentryDSN", true);
 
 var commonAddress = builder.AddParameter("CommonAddress");
 
@@ -68,7 +69,8 @@ var common = builder.AddProject<HomeScreen_Web_Common_Server>("homescreen-web-co
     .WithReference(redis)
     .WithReference(weather)
     .WithReference(media)
-    .WithEnvironment("SENTRY_DSN", sentryDsn);
+    .WithEnvironment("SENTRY_DSN", sentryDsn)
+    .WithEnvironment("CLIENT_SENTRY_DSN", clientSentryDsn);
 
 builder.AddProject<HomeScreen_Web_Slideshow_Server>("homescreen-web-slideshow-server")
     .AsHttp2Service()

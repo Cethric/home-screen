@@ -1,9 +1,10 @@
+using System.Net.Mime;
 using System.Text.Json.Serialization;
 using HomeScreen.Service.Media.Client.Generated;
 using HomeScreen.Service.Media.Proto.Services;
 using HomeScreen.Service.Weather.Proto.Services;
 using HomeScreen.ServiceDefaults;
-using HomeScreen.Web.Common;
+using HomeScreen.Web.Common.JsonLines;
 using HomeScreen.Web.Common.Server.Endpoints;
 using HomeScreen.Web.Common.Server.Entities;
 using HomeScreen.Web.Common.Server.Services;
@@ -13,6 +14,7 @@ using NJsonSchema.Generation;
 using NJsonSchema.Generation.TypeMappers;
 using NSwag;
 using NSwag.Generation.Processors;
+using NSwag.Generation.Processors.Contexts;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.ConfigureHttpJsonOptions(
@@ -41,47 +43,15 @@ builder.Services.AddOpenApiDocument(
             new OperationProcessor(
                 context =>
                 {
-                    if (context.MethodInfo.Name != "DownloadMedia")
+                    switch (context.MethodInfo.Name)
                     {
-                        return true;
+                        case "RandomMedia":
+                            ProcessRandomMediaMime(context);
+                            break;
+                        case "DownloadMedia":
+                            ProcessFileMime(context);
+                            break;
                     }
-
-                    context.OperationDescription.Operation.Produces.Clear();
-                    context.OperationDescription.Operation.Produces =
-                    [
-                        MediaTransformOptionsFormat.Jpeg.TransformFormatToMime(),
-                        MediaTransformOptionsFormat.JpegXl.TransformFormatToMime(),
-                        MediaTransformOptionsFormat.Png.TransformFormatToMime(),
-                        MediaTransformOptionsFormat.WebP.TransformFormatToMime(),
-                        MediaTransformOptionsFormat.Avif.TransformFormatToMime()
-                    ];
-                    context.OperationDescription.Operation.Responses.Clear();
-
-                    var response = new OpenApiResponse()
-                                   {
-                                       Schema = new JsonSchema()
-                                                {
-                                                    Type = JsonObjectType.File,
-                                                    Reference = context.Document.Definitions["FileStreamHttpResult"]
-                                                }
-                                   };
-                    response.Content.Clear();
-                    foreach (var operation in context.OperationDescription.Operation.Produces)
-                    {
-                        response.Content.Add(
-                            operation,
-                            new OpenApiMediaType
-                            {
-                                Schema = new JsonSchema
-                                         {
-                                             Type = JsonObjectType.File,
-                                             Reference = context.Document.Definitions["FileStreamHttpResult"],
-                                         }
-                            }
-                        );
-                    }
-
-                    context.OperationDescription.Operation.Responses.Add("200", response);
 
                     return true;
                 }
@@ -89,7 +59,7 @@ builder.Services.AddOpenApiDocument(
         );
     }
 );
-builder.Services.AddTransient(typeof(IJsonStreamingResultExecutor<>), typeof(JsonStreamingResultExecutor<>));
+builder.Services.AddTransient(typeof(IJsonLinesExecutor<>), typeof(JsonLinesExecutor<>));
 builder.Services.AddGrpcClient<MediaGrpcClient>(
     "homescreen-service-media",
     c => c.Address = new Uri(
@@ -130,6 +100,7 @@ builder.Services.AddScoped<IMediaClient, MediaClient>(
 );
 builder.Services.AddScoped<IMediaApi, MediaApi>();
 builder.Services.AddScoped<IWeatherApi, WeatherApi>();
+builder.Services.AddScoped<IConfigApi, ConfigApi>();
 builder.Services.AddCors();
 
 var app = builder.Build();
@@ -150,3 +121,76 @@ app.UseHttpsRedirection();
 app.Services.GetRequiredService<ILogger<Program>>()
     .LogInformation("Launching version: {Version}", GitVersionInformation.InformationalVersion);
 await app.RunAsync();
+return;
+
+static void ProcessRandomMediaMime(OperationProcessorContext context)
+{
+    context.OperationDescription.Operation.Produces.Clear();
+    context.OperationDescription.Operation.Produces = [MediaTypeNames.Application.JsonSequence];
+    context.OperationDescription.Operation.Responses.Clear();
+
+    var response = new OpenApiResponse
+                   {
+                       Schema = new JsonSchema
+                                {
+                                    Type = JsonObjectType.Object, Reference = context.Document.Definitions["MediaItem"]
+                                }
+                   };
+    response.Content.Clear();
+    foreach (var operation in context.OperationDescription.Operation.Produces)
+    {
+        response.Content.Add(
+            operation,
+            new OpenApiMediaType
+            {
+                Schema = new JsonSchema
+                         {
+                             Type = JsonObjectType.Object, Reference = context.Document.Definitions["MediaItem"]
+                         }
+            }
+        );
+    }
+
+    context.OperationDescription.Operation.Responses.Add("200", response);
+}
+
+
+static void ProcessFileMime(OperationProcessorContext context)
+{
+    context.OperationDescription.Operation.Produces.Clear();
+    context.OperationDescription.Operation.Produces =
+    [
+        MediaTransformOptionsFormat.Jpeg.TransformFormatToMime(),
+        MediaTransformOptionsFormat.JpegXl.TransformFormatToMime(),
+        MediaTransformOptionsFormat.Png.TransformFormatToMime(),
+        MediaTransformOptionsFormat.WebP.TransformFormatToMime(),
+        MediaTransformOptionsFormat.Avif.TransformFormatToMime()
+    ];
+    context.OperationDescription.Operation.Responses.Clear();
+
+    var response = new OpenApiResponse
+                   {
+                       Schema = new JsonSchema
+                                {
+                                    Type = JsonObjectType.File,
+                                    Reference = context.Document.Definitions["FileStreamHttpResult"]
+                                }
+                   };
+    response.Content.Clear();
+    foreach (var operation in context.OperationDescription.Operation.Produces)
+    {
+        response.Content.Add(
+            operation,
+            new OpenApiMediaType
+            {
+                Schema = new JsonSchema
+                         {
+                             Type = JsonObjectType.File,
+                             Reference = context.Document.Definitions["FileStreamHttpResult"]
+                         }
+            }
+        );
+    }
+
+    context.OperationDescription.Operation.Responses.Add("200", response);
+}
