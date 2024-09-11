@@ -1,6 +1,7 @@
 using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
@@ -9,6 +10,9 @@ using OpenTelemetry;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
+using Sentry.AspNetCore;
+using Sentry.OpenTelemetry;
+using Sentry.Profiling;
 
 namespace HomeScreen.ServiceDefaults;
 
@@ -53,8 +57,43 @@ public static class Extensions
         return builder;
     }
 
+    public static WebApplicationBuilder AddServiceDefaults(
+        this WebApplicationBuilder builder,
+        string version,
+        Action<SentryAspNetCoreOptions>? configureOptions = null
+    )
+    {
+        (builder as IHostApplicationBuilder).AddServiceDefaults(version);
+#if !SwaggerBuild
+        builder.WebHost.UseSentry(
+            options =>
+            {
+                options.Debug = builder.Environment.IsDevelopment();
+                options.TracesSampleRate = 1.0;
+                options.ProfilesSampleRate = 1.0;
+                options.StackTraceMode = StackTraceMode.Enhanced;
+                options.AutoSessionTracking = true;
+                options.AddIntegration(new ProfilingIntegration(TimeSpan.FromMilliseconds(500)));
+                options.UseOpenTelemetry();
+                options.AddEntityFramework();
+                configureOptions?.Invoke(options);
+            }
+        );
+#endif
+        return builder;
+    }
+
     public static IHostApplicationBuilder ConfigureOpenTelemetry(this IHostApplicationBuilder builder, string version)
     {
+        if (string.IsNullOrWhiteSpace(builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"]))
+        {
+            return builder;
+        }
+#if !SwaggerBuild
+        builder.Services.AddSentry()
+            .AddSentryOptions(options => options.InitializeSdk = builder is WebApplicationBuilder);
+#endif
+
         builder.Logging.AddOpenTelemetry(
             logging =>
             {
@@ -62,11 +101,6 @@ public static class Extensions
                 logging.IncludeScopes = true;
             }
         );
-
-        if (string.IsNullOrWhiteSpace(builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"]))
-        {
-            return builder;
-        }
 
         builder.Services.AddOpenTelemetry()
             .UseOtlpExporter()
@@ -86,6 +120,7 @@ public static class Extensions
                         );
                 }
             )
+            .WithLogging()
             .WithMetrics(
                 metrics =>
                 {
@@ -95,7 +130,13 @@ public static class Extensions
             .WithTracing(
                 tracing =>
                 {
-                    tracing.AddAspNetCoreInstrumentation()
+                    if (builder.Environment.IsDevelopment())
+                    {
+                        tracing.SetSampler(new AlwaysOnSampler());
+                    }
+
+                    tracing.AddSentry()
+                        .AddAspNetCoreInstrumentation()
                         .AddGrpcClientInstrumentation()
                         .AddHttpClientInstrumentation()
                         .AddEntityFrameworkCoreInstrumentation();
