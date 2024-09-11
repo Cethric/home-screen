@@ -23,6 +23,11 @@ public class MediaEntry
         Longitude = 0;
         LongitudeDirection = LongitudeDirection.Invalid;
         Enabled = false;
+        ImageRatioWidth = 16.0 / 9.0;
+        ImageRatioHeight = 9.0 / 16.0;
+        BaseColourR = 128;
+        BaseColourG = 128;
+        BaseColourB = 128;
     }
 
     [Required]
@@ -63,4 +68,19 @@ public class MediaEntry
     public string Notes { get; set; } = string.Empty;
 
     public bool Enabled { get; set; } = true;
+
+    [Required]
+    public double ImageRatioWidth { get; set; }
+
+    [Required]
+    public double ImageRatioHeight { get; set; }
+
+    [Required]
+    public uint BaseColourR { get; set; }
+
+    [Required]
+    public uint BaseColourG { get; set; }
+
+    [Required]
+    public uint BaseColourB { get; set; }
 }

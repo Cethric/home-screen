@@ -4,6 +4,7 @@ using HomeScreen.Database.MediaDb.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HomeScreen.Database.MediaDb.Migrations
 {
     [DbContext(typeof(MediaDbContext))]
-    partial class MediaDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240828143909_AddMediaRatioAndColour")]
+    partial class AddMediaRatioAndColour
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -28,14 +31,14 @@ namespace HomeScreen.Database.MediaDb.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<long>("BaseColourB")
-                        .HasColumnType("bigint");
+                    b.Property<float>("BaseColourB")
+                        .HasColumnType("real");
 
-                    b.Property<long>("BaseColourG")
-                        .HasColumnType("bigint");
+                    b.Property<float>("BaseColourG")
+                        .HasColumnType("real");
 
-                    b.Property<long>("BaseColourR")
-                        .HasColumnType("bigint");
+                    b.Property<float>("BaseColourR")
+                        .HasColumnType("real");
 
                     b.Property<TimeSpan>("CapturedOffset")
                         .HasColumnType("time");
@@ -46,10 +49,7 @@ namespace HomeScreen.Database.MediaDb.Migrations
                     b.Property<bool>("Enabled")
                         .HasColumnType("bit");
 
-                    b.Property<double>("ImageRatioHeight")
-                        .HasColumnType("float");
-
-                    b.Property<double>("ImageRatioWidth")
+                    b.Property<double>("ImageRatio")
                         .HasColumnType("float");
 
                     b.Property<double>("Latitude")

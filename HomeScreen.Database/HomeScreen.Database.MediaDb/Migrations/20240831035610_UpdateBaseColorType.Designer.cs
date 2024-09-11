@@ -4,6 +4,7 @@ using HomeScreen.Database.MediaDb.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HomeScreen.Database.MediaDb.Migrations
 {
     [DbContext(typeof(MediaDbContext))]
-    partial class MediaDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240831035610_UpdateBaseColorType")]
+    partial class UpdateBaseColorType
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -46,10 +49,7 @@ namespace HomeScreen.Database.MediaDb.Migrations
                     b.Property<bool>("Enabled")
                         .HasColumnType("bit");
 
-                    b.Property<double>("ImageRatioHeight")
-                        .HasColumnType("float");
-
-                    b.Property<double>("ImageRatioWidth")
+                    b.Property<double>("ImageRatio")
                         .HasColumnType("float");
 
                     b.Property<double>("Latitude")
