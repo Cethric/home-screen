@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Globalization;
 using HomeScreen.Service.Location;
 using HomeScreen.Service.Location.Proto.Services;
 
@@ -15,7 +16,10 @@ public class LocationApi(ILogger<LocationApi> logger, LocationGrpcClient client)
         CancellationToken cancellationToken = default
     )
     {
-        using var activity = ActivitySource.StartActivity("SearchForLocation", ActivityKind.Client);
+        using var activity = ActivitySource.StartActivity();
+        activity?.AddBaggage("Longitude", longitude.ToString(CultureInfo.InvariantCulture));
+        activity?.AddBaggage("Latitude", latitude.ToString(CultureInfo.InvariantCulture));
+        activity?.AddBaggage("Altitude", altitude.ToString(CultureInfo.InvariantCulture));
         logger.LogInformation("Searching for location name at {Longitude}, {Latitude}", longitude, latitude);
         var result = await client.SearchForLocationAsync(
             new SearchForLocationRequest { Longitude = longitude, Latitude = latitude, Altitude = altitude },

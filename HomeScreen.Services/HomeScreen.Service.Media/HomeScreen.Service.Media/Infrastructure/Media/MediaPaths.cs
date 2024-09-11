@@ -21,7 +21,7 @@ public class MediaPaths(ILogger<MediaPaths> logger, MediaDirectories mediaDirect
 
     public DirectoryInfo GetTransformDirectory(string fileHash)
     {
-        using var activity = ActivitySource.StartActivity("GetTransformDirectory", ActivityKind.Client);
+        using var activity = ActivitySource.StartActivity();
         logger.LogInformation("Getting transform directory for {FileHash}", fileHash);
         var hash = fileHash.GetHashCode();
         const int mask = 255;
@@ -48,7 +48,7 @@ public class MediaPaths(ILogger<MediaPaths> logger, MediaDirectories mediaDirect
 
     public FileInfo GetCachePath(MediaTransformOptions mediaTransformOptions, string fileHash)
     {
-        using var activity = ActivitySource.StartActivity("GetCachePath", ActivityKind.Client);
+        using var activity = ActivitySource.StartActivity();
         logger.LogInformation(
             "Getting cache path for {FileHash} with transform options {Width} {Height} {Blur} {Format}",
             fileHash,
@@ -78,7 +78,7 @@ public class MediaPaths(ILogger<MediaPaths> logger, MediaDirectories mediaDirect
 
     public List<FileInfo> GetRawFiles()
     {
-        using var activity = ActivitySource.StartActivity("GetRawFiles", ActivityKind.Client);
+        using var activity = ActivitySource.StartActivity();
         logger.LogInformation("Getting raw files from {SearchDirectory}", mediaDirectories.MediaSourceDir);
         var files = Directory.EnumerateFiles(mediaDirectories.MediaSourceDir, "*.*", SearchOption.TopDirectoryOnly)
             .Where(f => AllowedImageExtensions.Contains(Path.GetExtension(f).ToLowerInvariant()))

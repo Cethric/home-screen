@@ -73,9 +73,9 @@ builder.Services.AddOpenApiDocument(
                     ];
                     context.OperationDescription.Operation.Responses.Clear();
 
-                    var response = new OpenApiResponse()
+                    var response = new OpenApiResponse
                                    {
-                                       Schema = new JsonSchema()
+                                       Schema = new JsonSchema
                                                 {
                                                     Type = JsonObjectType.File,
                                                     Reference = context.Document.Definitions["FileStreamHttpResult"]
@@ -91,7 +91,7 @@ builder.Services.AddOpenApiDocument(
                                 Schema = new JsonSchema
                                          {
                                              Type = JsonObjectType.File,
-                                             Reference = context.Document.Definitions["FileStreamHttpResult"],
+                                             Reference = context.Document.Definitions["FileStreamHttpResult"]
                                          }
                             }
                         );

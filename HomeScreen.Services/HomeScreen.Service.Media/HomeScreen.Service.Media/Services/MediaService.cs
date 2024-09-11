@@ -15,7 +15,8 @@ public class MediaService(ILogger<MediaService> logger, IMediaApi mediaApi) : Me
         ServerCallContext context
     )
     {
-        using var activity = ActivitySource.StartActivity("RandomMedia", ActivityKind.Client);
+        using var activity = ActivitySource.StartActivity();
+        activity?.AddBaggage("Count", request.Count.ToString());
         logger.LogInformation("Requested random media: {Count}", request.Count);
         await foreach (var mediaEntry in mediaApi.GetRandomMedia(request.Count, context.CancellationToken))
         {
@@ -25,7 +26,8 @@ public class MediaService(ILogger<MediaService> logger, IMediaApi mediaApi) : Me
 
     public override async Task<MediaEntry> ToggleMedia(ToggleMediaRequest request, ServerCallContext context)
     {
-        using var activity = ActivitySource.StartActivity("ToggleMedia", ActivityKind.Client);
+        using var activity = ActivitySource.StartActivity();
+        activity?.AddBaggage("Id", request.Id);
         logger.LogInformation("Requested toggle media: {Id}", request.Id);
         if (!Guid.TryParse(request.Id, out var id))
         {
@@ -40,7 +42,12 @@ public class MediaService(ILogger<MediaService> logger, IMediaApi mediaApi) : Me
         ServerCallContext context
     )
     {
-        using var activity = ActivitySource.StartActivity("TransformMedia", ActivityKind.Client);
+        using var activity = ActivitySource.StartActivity();
+        activity?.AddBaggage("Id", request.Id);
+        activity?.AddBaggage("Width", request.Width.ToString());
+        activity?.AddBaggage("Height", request.Height.ToString());
+        activity?.AddBaggage("Blur", request.Blur.ToString());
+        activity?.AddBaggage("MediaFormat", request.MediaFormat.ToString());
         logger.LogInformation("Requested transform media: {Id}", request.Id);
         if (!Guid.TryParse(request.Id, out var id))
         {
@@ -54,35 +61,16 @@ public class MediaService(ILogger<MediaService> logger, IMediaApi mediaApi) : Me
                 Width = request.Width,
                 Height = request.Height,
                 Blur = request.Blur,
-                Format = TransformMediaFormatToMediaTransformOptionsFormat(request.MediaFormat)
+                Format = request.MediaFormat.TransformMediaFormatToMediaTransformOptionsFormat()
             },
             context.CancellationToken
         );
         return new TransformMediaResponse { State = TransformStateToTransformMediaState(response) };
     }
 
-    private static MediaTransformOptionsFormat TransformMediaFormatToMediaTransformOptionsFormat(
-        TransformMediaFormat format
-    )
-    {
-        using var activity = ActivitySource.StartActivity(
-            "TransformMediaFormatToMediaTransformOptionsFormat",
-            ActivityKind.Client
-        );
-        return format switch
-        {
-            TransformMediaFormat.Jpeg => MediaTransformOptionsFormat.Jpeg,
-            TransformMediaFormat.JpegXl => MediaTransformOptionsFormat.JpegXl,
-            TransformMediaFormat.Png => MediaTransformOptionsFormat.Png,
-            TransformMediaFormat.WebP => MediaTransformOptionsFormat.WebP,
-            TransformMediaFormat.Avif => MediaTransformOptionsFormat.Avif,
-            _ => throw new ArgumentOutOfRangeException(nameof(format), format, "Invalid media format requested")
-        };
-    }
-
     private static TransformMediaState TransformStateToTransformMediaState(TransformState response)
     {
-        using var activity = ActivitySource.StartActivity("TransformStateToTransformMediaState", ActivityKind.Client);
+        using var activity = ActivitySource.StartActivity();
         return response switch
         {
             TransformState.Transformed => TransformMediaState.Transformed,

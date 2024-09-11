@@ -22,7 +22,8 @@ public class MediaApi(
         [EnumeratorCancellation] CancellationToken cancellationToken = default
     )
     {
-        using var activity = ActivitySource.StartActivity("GetRandomMedia", ActivityKind.Client);
+        using var activity = ActivitySource.StartActivity();
+        activity?.AddBaggage("Count", count.ToString());
         logger.LogInformation("GetRandomMedia Start {Count}", count);
         var disabled = await context.MediaEntries.Where(entry => !entry.Enabled).ToListAsync(cancellationToken);
         var files = mediaPaths.GetRawFiles()
@@ -36,8 +37,11 @@ public class MediaApi(
 
         foreach (var file in Random.Shared.GetItems(files, (int)count))
         {
+            using var enumeratorActivity = ActivitySource.StartActivity();
+            enumeratorActivity?.AddBaggage("FileName", file.FullName);
             cancellationToken.ThrowIfCancellationRequested();
             var hash = await mediaHasher.HashMedia(file, cancellationToken);
+            enumeratorActivity?.AddBaggage("Hash", hash);
             var entry = await context.MediaEntries.Where(entry => entry.OriginalHash == hash)
                 .FirstOrDefaultAsync(cancellationToken);
             if (entry is null)
@@ -56,7 +60,7 @@ public class MediaApi(
 
     public async Task<MediaEntry> ToggleMedia(Guid mediaId, bool state, CancellationToken cancellationToken)
     {
-        using var activity = ActivitySource.StartActivity("ToggleMedia", ActivityKind.Client);
+        using var activity = ActivitySource.StartActivity();
         var mediaEntry = await context.MediaEntries.Where(x => Equals(x.MediaId, mediaId))
             .FirstOrDefaultAsync(cancellationToken);
         if (mediaEntry == null)
@@ -77,7 +81,7 @@ public class MediaApi(
         CancellationToken cancellationToken
     )
     {
-        using var activity = ActivitySource.StartActivity("TransformMedia", ActivityKind.Client);
+        using var activity = ActivitySource.StartActivity();
         logger.LogInformation("Attempting to download media for {MediaId}", mediaId);
         var mediaEntry = await context.MediaEntries.Where(x => x.MediaId == mediaId)
             .FirstOrDefaultAsync(cancellationToken);
@@ -97,7 +101,7 @@ public class MediaApi(
         CancellationToken cancellationToken
     )
     {
-        using var activity = ActivitySource.StartActivity("GetTransformedMedia", ActivityKind.Client);
+        using var activity = ActivitySource.StartActivity();
         logger.LogInformation("Attempting to download media for {MediaId}", mediaId);
         var mediaEntry = await context.MediaEntries.Where(x => x.MediaId == mediaId)
             .FirstOrDefaultAsync(cancellationToken);
@@ -121,6 +125,11 @@ public class MediaApi(
             Longitude = entry.Longitude,
             Location = entry.LocationLabel,
             Notes = entry.Notes,
-            UtcDatetime = entry.CapturedUtc.ToUnixTimeMilliseconds()
+            UtcDatetime = entry.CapturedUtc.ToUnixTimeMilliseconds(),
+            AspectRatioWidth = entry.ImageRatioWidth,
+            AspectRatioHeight = entry.ImageRatioHeight,
+            BaseB = entry.BaseColourB,
+            BaseG = entry.BaseColourG,
+            BaseR = entry.BaseColourR
         };
 }

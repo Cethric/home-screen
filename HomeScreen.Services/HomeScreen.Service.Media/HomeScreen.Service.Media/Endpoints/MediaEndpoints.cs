@@ -37,12 +37,12 @@ public static class MediaEndpoints
         CancellationToken cancellationToken
     )
     {
-        using var activity = ActivitySource.StartActivity("DownloadMedia", ActivityKind.Client);
-        activity?.AddBaggage("mediaId", mediaId.ToString());
-        activity?.AddBaggage("width", width.ToString());
-        activity?.AddBaggage("height", height.ToString());
-        activity?.AddBaggage("blur", blur.ToString());
-        activity?.AddBaggage("format", format.ToString());
+        using var activity = ActivitySource.StartActivity();
+        activity?.AddBaggage("MediaId", mediaId.ToString());
+        activity?.AddBaggage("Width", width.ToString());
+        activity?.AddBaggage("Height", height.ToString());
+        activity?.AddBaggage("Blur", blur.ToString());
+        activity?.AddBaggage("Format", format.ToString());
         var result = await mediaApi.GetTransformedMedia(
             mediaId,
             new MediaTransformOptions { Width = width, Height = height, Blur = blur, Format = format },
