@@ -97,5 +97,5 @@ public class LocationServiceUnitTest
             CancellationToken cancellationToken = default
         ) =>
             Task.FromResult(result);
-    }
+}
 }
