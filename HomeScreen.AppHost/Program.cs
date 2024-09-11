@@ -11,6 +11,7 @@ var mediaCache = builder.AddParameter("MediaCacheDir");
 
 var mapsKey = builder.AddParameter("AzureMapsSecret", true);
 var clientId = builder.AddParameter("AzureClientID", true);
+var sentryDsn = builder.AddParameter("SentryDSN", true);
 
 var commonAddress = builder.AddParameter("CommonAddress");
 
@@ -30,12 +31,14 @@ var dashboardDb = sqlServer.AddDatabase("homescreen-dashboard");
 
 builder.AddProject<HomeScreen_Database_MediaDb_Migrations>("homescreen-media-migrations")
     .WithOtlpExporter()
+    .WithEnvironment("SENTRY_DSN", sentryDsn)
     .WithReference(mediaDb);
 
 var location = builder.AddProject<HomeScreen_Service_Location>("homescreen-service-location")
     .AsHttp2Service()
     .WithOtlpExporter()
     .WithReference(redis)
+    .WithEnvironment("SENTRY_DSN", sentryDsn)
     .WithEnvironment("MappingService", "Nominatim")
     .WithEnvironment("AZURE_MAPS_SUBSCRIPTION_KEY", mapsKey)
     .WithEnvironment("AZURE_CLIENT_ID", clientId);
@@ -47,6 +50,7 @@ var media = builder.AddProject<HomeScreen_Service_Media>("homescreen-service-med
     .WithReference(redis)
     .WithReference(mediaDb)
     .WithReference(location)
+    .WithEnvironment("SENTRY_DSN", sentryDsn)
     .WithEnvironment("MediaSourceDir", mediaSource)
     .WithEnvironment("MediaCacheDir", mediaCache)
     .WithAnnotation(new ContainerMountAnnotation("cache", "/cache", ContainerMountType.Volume, false))
@@ -55,20 +59,23 @@ var media = builder.AddProject<HomeScreen_Service_Media>("homescreen-service-med
 var weather = builder.AddProject<HomeScreen_Service_Weather>("homescreen-service-weather")
     .AsHttp2Service()
     .WithOtlpExporter()
-    .WithReference(redis);
+    .WithReference(redis)
+    .WithEnvironment("SENTRY_DSN", sentryDsn);
 
 var common = builder.AddProject<HomeScreen_Web_Common_Server>("homescreen-web-common-server")
     .AsHttp2Service()
     .WithOtlpExporter()
     .WithReference(redis)
     .WithReference(weather)
-    .WithReference(media);
+    .WithReference(media)
+    .WithEnvironment("SENTRY_DSN", sentryDsn);
 
 builder.AddProject<HomeScreen_Web_Slideshow_Server>("homescreen-web-slideshow-server")
     .AsHttp2Service()
     .WithOtlpExporter()
     .WithReference(redis)
     .WithReference(common)
+    .WithEnvironment("SENTRY_DSN", sentryDsn)
     .WithEnvironment("CommonAddress", commonAddress);
 
 builder.AddProject<HomeScreen_Web_Dashboard_Server>("homescreen-web-dashboard-server")
@@ -77,6 +84,7 @@ builder.AddProject<HomeScreen_Web_Dashboard_Server>("homescreen-web-dashboard-se
     .WithReference(redis)
     .WithReference(dashboardDb)
     .WithReference(common)
+    .WithEnvironment("SENTRY_DSN", sentryDsn)
     .WithEnvironment("CommonAddress", commonAddress);
 
 var app = builder.Build();
