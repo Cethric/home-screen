@@ -1,17 +1,10 @@
 ﻿using System.Diagnostics;
 using System.Globalization;
 using Azure.Core.GeoJson;
-using Azure.Maps;
-using Azure.Maps.Search;
-using Microsoft.Extensions.Caching.Distributed;
 
-namespace HomeScreen.Service.Location.Infrastructure.Location.Azure;
+namespace HomeScreen.Service.Location.Infrastructure.Azure;
 
-public class AzureLocationApi(
-    ILogger<AzureLocationApi> logger,
-    IDistributedCache distributedCache,
-    IAzureMapsSearchApi searchApi
-) : ILocationApi
+public class AzureLocationApi(ILogger<AzureLocationApi> logger, IAzureMapsSearchApi searchApi) : ILocationApi
 {
     private static ActivitySource ActivitySource => new(nameof(AzureLocationApi));
 
@@ -33,29 +26,8 @@ public class AzureLocationApi(
             altitude
         );
 
-        var key = $"{longitude:.05f}-{latitude:.05f}-{altitude:.05f}";
-        var label = await distributedCache.GetStringAsync(key, cancellationToken);
-        if (!string.IsNullOrEmpty(label))
-        {
-            activity?.AddEvent(new ActivityEvent("Cached Location")).AddBaggage("value", label);
-            logger.LogInformation(
-                "Using cached address for {Longitude}, {Latitude}, {Altitude} - {FormattedAddress}",
-                longitude,
-                latitude,
-                altitude,
-                label
-            );
-            return label;
-        }
-
         var response = await searchApi.ReverseSearchAddressAsync(
-            new ReverseSearchOptions
-            {
-                Coordinates = new GeoPosition(longitude, latitude, altitude),
-                Language = SearchLanguage.EnglishAustralia,
-                RadiusInMeters = 20,
-                LocalizedMapView = LocalizedMapView.Auto
-            },
+            new GeoPosition(longitude, latitude, altitude),
             cancellationToken
         );
 
@@ -76,20 +48,15 @@ public class AzureLocationApi(
                 " ",
                 new HashSet<string>
                 {
-                    address.StreetName,
-                    address.MunicipalitySubdivision,
-                    address.Municipality,
-                    address.CountryTertiarySubdivision,
-                    address.CountrySecondarySubdivision,
-                    address.CountrySecondarySubdivision.Contains(address.CountrySubdivision)
-                        ? string.Empty
-                        : address.CountrySubdivision,
-                    address.Country
+                    address.Intersection,
+                    address.Locality,
+                    address.Neighborhood,
+                    string.Join(" ", address.AdminDistricts),
+                    address.CountryRegion
                 }.Where(x => !string.IsNullOrEmpty(x))
             )
             .Trim();
         logger.LogInformation("Found Address {FormattedAddress}", formatted);
-        await distributedCache.SetStringAsync(key, formatted, cancellationToken);
         activity?.AddEvent(new ActivityEvent("Found Location")).AddBaggage("value", formatted);
         return formatted;
     }

@@ -14,7 +14,7 @@
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Azure.Maps.Search" Version="1.0.0-beta.5"/>
+        <PackageReference Include="Azure.Maps.Search" Version="2.0.0-beta.2"/>
         <PackageReference Include="Grpc.AspNetCore" Version="2.65.0"/>
         <PackageReference Include="NSwag.MSBuild" Version="14.1.0">
             <PrivateAssets>all</PrivateAssets>
@@ -30,7 +30,7 @@
     <Target Name="NSwag-Pre" BeforeTargets="PreBuildEvent">
         <Exec WorkingDirectory="$(ProjectDir)"
               EnvironmentVariables="ASPNETCORE_ENVIRONMENT=Development"
-              Command="$(NSwagExe_Net80) run Infrastructure/Location/NominatimLocationService/nominatim.nswag /variables:Configuration=$(Configuration)"/>
+              Command="$(NSwagExe_Net80) run Infrastructure/NominatimLocationService/nominatim.nswag /variables:Configuration=$(Configuration)"/>
     </Target>
 
 </Project>

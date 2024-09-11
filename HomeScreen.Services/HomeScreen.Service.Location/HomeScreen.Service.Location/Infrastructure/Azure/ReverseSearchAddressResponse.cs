@@ -1,4 +1,4 @@
-﻿namespace HomeScreen.Service.Location.Infrastructure.Location.Azure;
+﻿namespace HomeScreen.Service.Location.Infrastructure.Azure;
 
 public class ReverseSearchAddressResponse
 {

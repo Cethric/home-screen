@@ -1,11 +1,11 @@
 ﻿using Azure;
 using Azure.Maps.Search;
 using HomeScreen.Service.Location.Configuration;
-using HomeScreen.Service.Location.Infrastructure.Location;
-using HomeScreen.Service.Location.Infrastructure.Location.Azure;
-using HomeScreen.Service.Location.Infrastructure.Location.NominatimLocationService;
-using HomeScreen.Service.Location.Infrastructure.Location.NominatimLocationService.Generated.Clients;
-using HomeScreen.Service.Location.Infrastructure.Location.NominatimLocationService.Generated.Entities;
+using HomeScreen.Service.Location.Infrastructure;
+using HomeScreen.Service.Location.Infrastructure.Azure;
+using HomeScreen.Service.Location.Infrastructure.NominatimLocationService;
+using HomeScreen.Service.Location.Infrastructure.NominatimLocationService.Generated.Clients;
+using HomeScreen.Service.Location.Infrastructure.NominatimLocationService.Generated.Entities;
 
 namespace HomeScreen.Service.Location;
 

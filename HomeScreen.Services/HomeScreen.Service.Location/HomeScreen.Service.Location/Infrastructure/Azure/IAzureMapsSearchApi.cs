@@ -1,11 +1,11 @@
-﻿using Azure.Maps.Search;
+﻿using Azure.Core.GeoJson;
 
-namespace HomeScreen.Service.Location.Infrastructure.Location.Azure;
+namespace HomeScreen.Service.Location.Infrastructure.Azure;
 
 public interface IAzureMapsSearchApi
 {
     Task<ReverseSearchAddressResponse?> ReverseSearchAddressAsync(
-        ReverseSearchOptions options,
+        GeoPosition coordinates,
         CancellationToken cancellationToken = default
     );
 }

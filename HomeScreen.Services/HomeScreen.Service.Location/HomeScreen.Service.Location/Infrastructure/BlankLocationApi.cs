@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 
-namespace HomeScreen.Service.Location.Infrastructure.Location;
+namespace HomeScreen.Service.Location.Infrastructure;
 
 public class BlankLocationApi(ILogger<BlankLocationApi> logger) : ILocationApi
 {

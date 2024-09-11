@@ -1,4 +1,4 @@
-﻿namespace HomeScreen.Service.Location.Infrastructure.Location;
+﻿namespace HomeScreen.Service.Location.Infrastructure;
 
 public interface ILocationApi
 {

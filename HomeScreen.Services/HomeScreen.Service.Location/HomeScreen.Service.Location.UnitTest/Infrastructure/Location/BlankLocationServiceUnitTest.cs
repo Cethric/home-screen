@@ -1,5 +1,5 @@
 ﻿using FluentAssertions;
-using HomeScreen.Service.Location.Infrastructure.Location;
+using HomeScreen.Service.Location.Infrastructure;
 using Microsoft.Extensions.Logging;
 using Moq;
 
