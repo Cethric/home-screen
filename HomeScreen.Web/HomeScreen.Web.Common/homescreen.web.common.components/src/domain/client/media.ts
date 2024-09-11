@@ -1,286 +1,287 @@
 import {
-    ApiException,
-    type IMediaClient,
-    MediaClient,
-    MediaItem,
-    SwaggerResponse,
+  ApiException,
+  type IMediaClient,
+  MediaClient,
+  MediaItem,
+  SwaggerResponse,
 } from '@/domain/generated/homescreen-common-api';
-import {inject} from 'vue';
+import { inject } from 'vue';
 
 type Fetcher = {
-    fetch(url: RequestInfo, init?: RequestInit): Promise<Response>;
+  fetch(url: RequestInfo, init?: RequestInit): Promise<Response>;
 };
 
 function hasOwn(obj: object, key: string): boolean {
-    if ('hasOwn' in Object.prototype) {
-        // @ts-ignore
-        return Object.hasOwn(obj, key);
-    }
-    return Object.prototype.hasOwnProperty.call(obj, key); // NOSONAR
+  if ('hasOwn' in Object.prototype) {
+    // @ts-ignore
+    return Object.hasOwn(obj, key);
+  }
+  return Object.prototype.hasOwnProperty.call(obj, key); // NOSONAR
 }
 
 function jsonParse(json: any, reviver?: any) {
-    json = JSON.parse(json, reviver);
+  json = JSON.parse(json, reviver);
 
-    const byid: Record<string, any> = {};
-    const refs: any = [];
+  const byid: Record<string, any> = {};
+  const refs: any = [];
 
-    function recurse(obj: any, prop?: any, parent?: any) {
-        if (typeof obj !== 'object' || !obj) return obj;
+  function recurse(obj: any, prop?: any, parent?: any) {
+    if (typeof obj !== 'object' || !obj) return obj;
 
-        if ('$ref' in obj) {
-            const ref = obj.$ref;
-            if (ref in byid) return byid[ref];
-            refs.push([parent, prop, ref]);
-            return undefined;
-        } else if ('$id' in obj) {
-            const id = obj.$id;
-            delete obj.$id;
-            if ('$values' in obj) obj = obj.$values;
-            byid[id] = obj;
-        }
-
-        if (Array.isArray(obj)) {
-            obj = obj.map((v, i) => recurse(v, i, obj));
-        } else {
-            for (const p in obj) {
-                if (hasOwn(obj, p) && obj[p] && typeof obj[p] === 'object')
-                    obj[p] = recurse(obj[p], p, obj);
-            }
-        }
-
-        return obj;
+    if ('$ref' in obj) {
+      const ref = obj.$ref;
+      if (ref in byid) return byid[ref];
+      refs.push([parent, prop, ref]);
+      return undefined;
+    } else if ('$id' in obj) {
+      const id = obj.$id;
+      delete obj.$id;
+      if ('$values' in obj) obj = obj.$values;
+      byid[id] = obj;
     }
 
-    json = recurse(json);
-
-    for (const element of refs) {
-        const ref = element;
-        ref[0][ref[1]] = byid[ref[2]];
+    if (Array.isArray(obj)) {
+      obj = obj.map((v, i) => recurse(v, i, obj));
+    } else {
+      for (const p in obj) {
+        if (hasOwn(obj, p) && obj[p] && typeof obj[p] === 'object')
+          obj[p] = recurse(obj[p], p, obj);
+      }
     }
 
-    return json;
+    return obj;
+  }
+
+  json = recurse(json);
+
+  for (const element of refs) {
+    const ref = element;
+    ref[0][ref[1]] = byid[ref[2]];
+  }
+
+  return json;
 }
 
 function throwException(
-    message: string,
-    status: number,
-    response: string,
-    headers: {
-        [key: string]: any;
-    },
-    result?: any,
+  message: string,
+  status: number,
+  response: string,
+  headers: {
+    [key: string]: any;
+  },
+  result?: any,
 ): any {
-    throw new ApiException(message, status, response, headers, result);
+  throw new ApiException(message, status, response, headers, result);
 }
 
 type MaybeAsyncIterable = { [Symbol.asyncIterator]?: unknown };
 
 export function isAsyncIterable<T extends MaybeAsyncIterable>(
-    input?: T,
+  input?: T,
 ): boolean {
-    if (input === null) {
-        return false;
-    }
-    if (input === undefined) {
-        return false;
-    }
+  if (input === null) {
+    return false;
+  }
+  if (input === undefined) {
+    return false;
+  }
 
-    return typeof input[Symbol.asyncIterator] === 'function';
+  return typeof input[Symbol.asyncIterator] === 'function';
 }
 
 export interface IMediaClientWithStreaming extends IMediaClient {
-    randomStream(
-        count: number,
-        signal?: AbortSignal,
-    ): AsyncGenerator<SwaggerResponse<MediaItem>>;
+  randomStream(
+    count: number,
+    signal?: AbortSignal,
+  ): AsyncGenerator<SwaggerResponse<MediaItem>>;
 }
 
 class MediaClientWithStreaming
-    extends MediaClient
-    implements IMediaClientWithStreaming {
-    private get url(): string {
-        // @ts-expect-error
-        return this.baseUrl;
+  extends MediaClient
+  implements IMediaClientWithStreaming
+{
+  private get url(): string {
+    // @ts-expect-error
+    return this.baseUrl;
+  }
+
+  private get client(): Fetcher {
+    // @ts-expect-error
+    return this.http;
+  }
+
+  async *randomStream(
+    count: number,
+    signal?: AbortSignal,
+  ): AsyncGenerator<SwaggerResponse<MediaItem>> {
+    let url_ = this.url + '/api/media/random?';
+    if (count === undefined || count === null)
+      throw new Error(
+        "The parameter 'count' must be defined and cannot be null.",
+      );
+    else url_ += 'count=' + encodeURIComponent('' + count) + '&';
+    url_ = url_.replace(/[?&]$/, '');
+
+    const options_: RequestInit = {
+      method: 'GET',
+      signal,
+      headers: {
+        Accept: 'application/json',
+      },
+    };
+
+    const _response = await this.client.fetch(url_, options_);
+    return yield* this.processRandomStream(_response, signal);
+  }
+
+  protected async *processRandomStream(
+    response: Response,
+    signal?: AbortSignal,
+  ): AsyncGenerator<SwaggerResponse<MediaItem>> {
+    const status = response.status;
+    const _headers: any = {};
+    if (response.headers?.forEach) {
+      response.headers.forEach((v: any, k: any) => (_headers[k] = v));
+    }
+    if (status === 200) {
+      return yield* this.processRandomStreamBody(
+        response.body,
+        status,
+        _headers,
+        signal,
+      );
+    } else if (status !== 200 && status !== 204) {
+      const _responseText1 = await response.text();
+      return throwException(
+        'An unexpected server error occurred.',
+        status,
+        _responseText1,
+        _headers,
+      );
+    }
+    return yield new SwaggerResponse(status, _headers, null as any);
+  }
+
+  private async *processRandomStreamBody(
+    body: ReadableStream<Uint8Array> | null,
+    status: number,
+    headers: Record<string, unknown>,
+    signal?: AbortSignal,
+  ): AsyncGenerator<SwaggerResponse<MediaItem>> {
+    signal?.throwIfAborted();
+    if (body === null) {
+      return yield new SwaggerResponse(status, headers, null as any);
+    }
+    // @ts-expect-error
+    const stream: ReadableStream<string> & {
+      values(options: { preventCancel: boolean }): string[];
+    } & MaybeAsyncIterable = body.pipeThrough(
+      new TextDecoderStream('UTF-8', { fatal: false, ignoreBOM: true }),
+      {
+        preventAbort: false,
+        signal,
+      },
+    );
+
+    if (isAsyncIterable(stream)) {
+      return yield* this.iterateStream(stream, status, headers, signal);
     }
 
-    private get client(): Fetcher {
-        // @ts-expect-error
-        return this.http;
+    return yield* this.whileStreamHasValues(stream, status, headers, signal);
+  }
+
+  private async *iterateStream(
+    stream: ReadableStream<string> & {
+      values(options: { preventCancel: boolean }): string[];
+    },
+    status: number,
+    headers: Record<string, unknown>,
+    signal?: AbortSignal,
+  ): AsyncGenerator<SwaggerResponse<MediaItem>> {
+    signal?.throwIfAborted();
+    console.debug('processGetRandomMediaItemsStreamBody iterate');
+    for await (const chunk of stream.values({ preventCancel: false })) {
+      signal?.throwIfAborted();
+      if (chunk === undefined || chunk === null || chunk.trim().length === 0) {
+        continue;
+      }
+
+      yield* this.processGetRandomMediaItemsChunk(
+        chunk,
+        status,
+        headers,
+        signal,
+      );
     }
+  }
 
-    async* randomStream(
-        count: number,
-        signal?: AbortSignal,
-    ): AsyncGenerator<SwaggerResponse<MediaItem>> {
-        let url_ = this.url + '/api/media/random?';
-        if (count === undefined || count === null)
-            throw new Error(
-                "The parameter 'count' must be defined and cannot be null.",
-            );
-        else url_ += 'count=' + encodeURIComponent('' + count) + '&';
-        url_ = url_.replace(/[?&]$/, '');
-
-        const options_: RequestInit = {
-            method: 'GET',
-            signal,
-            headers: {
-                Accept: 'application/json',
-            },
-        };
-
-        const _response = await this.client.fetch(url_, options_);
-        return yield* this.processRandomStream(_response, signal);
-    }
-
-    protected async* processRandomStream(
-        response: Response,
-        signal?: AbortSignal,
-    ): AsyncGenerator<SwaggerResponse<MediaItem>> {
-        const status = response.status;
-        const _headers: any = {};
-        if (response.headers?.forEach) {
-            response.headers.forEach((v: any, k: any) => (_headers[k] = v));
-        }
-        if (status === 200) {
-            return yield* this.processRandomStreamBody(
-                response.body,
-                status,
-                _headers,
-                signal,
-            );
-        } else if (status !== 200 && status !== 204) {
-            const _responseText1 = await response.text();
-            return throwException(
-                'An unexpected server error occurred.',
-                status,
-                _responseText1,
-                _headers,
-            );
-        }
-        return yield new SwaggerResponse(status, _headers, null as any);
-    }
-
-    private async* processRandomStreamBody(
-        body: ReadableStream<Uint8Array> | null,
-        status: number,
-        headers: Record<string, unknown>,
-        signal?: AbortSignal,
-    ): AsyncGenerator<SwaggerResponse<MediaItem>> {
+  private async *whileStreamHasValues(
+    stream: ReadableStream<string>,
+    status: number,
+    headers: Record<string, unknown>,
+    signal?: AbortSignal,
+  ): AsyncGenerator<SwaggerResponse<MediaItem>> {
+    console.debug('processGetRandomMediaItemsStreamBody while');
+    const reader = stream.getReader();
+    try {
+      while (true) {
         signal?.throwIfAborted();
-        if (body === null) {
-            return yield new SwaggerResponse(status, headers, null as any);
+        const { done, value } = await reader.read();
+        if (done) {
+          break;
         }
-        // @ts-expect-error
-        const stream: ReadableStream<string> & {
-            values(options: { preventCancel: boolean }): string[];
-        } & MaybeAsyncIterable = body.pipeThrough(
-            new TextDecoderStream('UTF-8', {fatal: false, ignoreBOM: true}),
-            {
-                preventAbort: false,
-                signal,
-            },
+        if (
+          value === undefined ||
+          value === null ||
+          value.trim().length === 0
+        ) {
+          continue;
+        }
+        yield* this.processGetRandomMediaItemsChunk(
+          value,
+          status,
+          headers,
+          signal,
         );
-
-        if (isAsyncIterable(stream)) {
-            return yield* this.iterateStream(stream, status, headers, signal);
-        }
-
-        return yield* this.whileStreamHasValues(stream, status, headers, signal);
+      }
+    } finally {
+      reader.releaseLock();
     }
+  }
 
-    private async* iterateStream(
-        stream: ReadableStream<string> & {
-            values(options: { preventCancel: boolean }): string[];
-        },
-        status: number,
-        headers: Record<string, unknown>,
-        signal?: AbortSignal,
-    ): AsyncGenerator<SwaggerResponse<MediaItem>> {
-        signal?.throwIfAborted();
-        console.debug('processGetRandomMediaItemsStreamBody iterate');
-        for await (const chunk of stream.values({preventCancel: false})) {
-            signal?.throwIfAborted();
-            if (chunk === undefined || chunk === null || chunk.trim().length === 0) {
-                continue;
-            }
-
-            yield* this.processGetRandomMediaItemsChunk(
-                chunk,
-                status,
-                headers,
-                signal,
-            );
-        }
+  private async *processGetRandomMediaItemsChunk(
+    value: string,
+    status: number,
+    headers: Record<string, unknown>,
+    signal?: AbortSignal,
+  ): AsyncGenerator<SwaggerResponse<MediaItem>> {
+    signal?.throwIfAborted();
+    const _mappings: { source: any; target: any }[] = [];
+    const lines = value
+      .trim()
+      .split('\n')
+      .filter(
+        (line) =>
+          line.trim().length > 0 && line.startsWith('{') && line.endsWith('}'),
+      );
+    for (const line of lines) {
+      signal?.throwIfAborted();
+      const resultData200 = jsonParse(line, this.jsonParseReviver);
+      const result200 = MediaItem.fromJS(resultData200, _mappings);
+      if (result200 === null) {
+        continue;
+      }
+      yield new SwaggerResponse(status, headers, result200);
     }
-
-    private async* whileStreamHasValues(
-        stream: ReadableStream<string>,
-        status: number,
-        headers: Record<string, unknown>,
-        signal?: AbortSignal,
-    ): AsyncGenerator<SwaggerResponse<MediaItem>> {
-        console.debug('processGetRandomMediaItemsStreamBody while');
-        const reader = stream.getReader();
-        try {
-            while (true) {
-                signal?.throwIfAborted();
-                const {done, value} = await reader.read();
-                if (done) {
-                    break;
-                }
-                if (
-                    value === undefined ||
-                    value === null ||
-                    value.trim().length === 0
-                ) {
-                    continue;
-                }
-                yield* this.processGetRandomMediaItemsChunk(
-                    value,
-                    status,
-                    headers,
-                    signal,
-                );
-            }
-        } finally {
-            reader.releaseLock();
-        }
-    }
-
-    private async* processGetRandomMediaItemsChunk(
-        value: string,
-        status: number,
-        headers: Record<string, unknown>,
-        signal?: AbortSignal,
-    ): AsyncGenerator<SwaggerResponse<MediaItem>> {
-        signal?.throwIfAborted();
-        const _mappings: { source: any; target: any }[] = [];
-        const lines = value
-            .trim()
-            .split('\n')
-            .filter(
-                (line) =>
-                    line.trim().length > 0 && line.startsWith('{') && line.endsWith('}'),
-            );
-        for (const line of lines) {
-            signal?.throwIfAborted();
-            const resultData200 = jsonParse(line, this.jsonParseReviver);
-            const result200 = MediaItem.fromJS(resultData200, _mappings);
-            if (result200 === null) {
-                continue;
-            }
-            yield new SwaggerResponse(status, headers, result200);
-        }
-    }
+  }
 }
 
 export function getMediaClient(baseUrl: string): MediaClientWithStreaming {
-    return new MediaClientWithStreaming(baseUrl);
+  return new MediaClientWithStreaming(baseUrl);
 }
 
 export const MediaApiProvider = Symbol('MediaApiProvider');
 
 export function injectMediaApi(): IMediaClientWithStreaming {
-    return inject<IMediaClientWithStreaming>(MediaApiProvider)!;
+  return inject<IMediaClientWithStreaming>(MediaApiProvider)!;
 }
