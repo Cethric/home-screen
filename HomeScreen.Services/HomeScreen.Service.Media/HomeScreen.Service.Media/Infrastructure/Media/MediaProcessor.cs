@@ -17,14 +17,26 @@ public class MediaProcessor(ILogger<MediaProcessor> logger, IMediaPaths mediaPat
         CancellationToken cancellationToken
     )
     {
-        using var activity = ActivitySource.StartActivity("ProcessMediaEntry", ActivityKind.Client);
+        using var activity = ActivitySource.StartActivity();
         try
         {
             logger.LogInformation("Attempting to process media entry {FileName} - {Hash}", file.Name, hash);
+            var @event = activity?.AddEvent(new ActivityEvent("Process Image"));
             var stream = await File.ReadAllBytesAsync(file.FullName, cancellationToken);
             using var image = new MagickImage(stream);
+            image.AutoOrient();
+            @event?.Stop();
             var profile = image.GetExifProfile();
-            var entry = new Database.MediaDb.Entities.MediaEntry(file, hash) { Enabled = true };
+            var histogram = GetBaseImageColour(image);
+            var entry = new Database.MediaDb.Entities.MediaEntry(file, hash)
+                        {
+                            Enabled = true,
+                            BaseColourB = histogram[2],
+                            BaseColourG = histogram[1],
+                            BaseColourR = histogram[0],
+                            ImageRatioWidth = image.Width / (double)image.Height,
+                            ImageRatioHeight = image.Height / (double)image.Width
+                        };
 
             if (profile != null)
             {
@@ -83,7 +95,7 @@ public class MediaProcessor(ILogger<MediaProcessor> logger, IMediaPaths mediaPat
 
     private static void ProcessDateTime(IExifProfile profile, Database.MediaDb.Entities.MediaEntry entry, FileInfo info)
     {
-        using var activity = ActivitySource.StartActivity("ProcessDateTime", ActivityKind.Client);
+        using var activity = ActivitySource.StartActivity();
         if (DateTime.TryParseExact(
                 profile.GetValue(ExifTag.DateTimeOriginal)?.Value,
                 "yyyy:MM:dd HH:mm:ss",
@@ -143,7 +155,7 @@ public class MediaProcessor(ILogger<MediaProcessor> logger, IMediaPaths mediaPat
         CancellationToken cancellationToken
     )
     {
-        using var activity = ActivitySource.StartActivity("ProcessLocation", ActivityKind.Client);
+        using var activity = ActivitySource.StartActivity();
         if (profile.GetValue(ExifTag.GPSLongitude) == null)
         {
             return;
@@ -186,7 +198,7 @@ public class MediaProcessor(ILogger<MediaProcessor> logger, IMediaPaths mediaPat
 
     private static LongitudeDirection GpsLongitudeRefToLongitudeDirection(string? lonRef)
     {
-        using var activity = ActivitySource.StartActivity("GpsLongitudeRefToLongitudeDirection", ActivityKind.Client);
+        using var activity = ActivitySource.StartActivity();
         return lonRef switch
         {
             "W" => LongitudeDirection.West,
@@ -201,7 +213,7 @@ public class MediaProcessor(ILogger<MediaProcessor> logger, IMediaPaths mediaPat
 
     private static LatitudeDirection GpsLatitudeRefToLatitudeDirection(string? latRef)
     {
-        using var activity = ActivitySource.StartActivity("GpsLatitudeRefToLatitudeDirection", ActivityKind.Client);
+        using var activity = ActivitySource.StartActivity();
         return latRef switch
         {
             "N" => LatitudeDirection.North,
@@ -212,5 +224,18 @@ public class MediaProcessor(ILogger<MediaProcessor> logger, IMediaPaths mediaPat
                 "Invalid latitude reference value provided"
             )
         };
+    }
+
+    private static byte[] GetBaseImageColour(MagickImage image)
+    {
+        using var activity = ActivitySource.StartActivity();
+        image.FilterType = FilterType.Point;
+        image.Alpha(AlphaOption.Remove);
+        image.Thumbnail(32, 32);
+        image.MedianFilter(4);
+        var histogram = image.Histogram()
+            .OrderByDescending(entry => entry.Value)
+            .FirstOrDefault(entry => !entry.Key.IsCmyk);
+        return ColorRGB.FromMagickColor(histogram.Key)?.ToMagickColor().ToByteArray() ?? [0, 0, 0, 0];
     }
 }
