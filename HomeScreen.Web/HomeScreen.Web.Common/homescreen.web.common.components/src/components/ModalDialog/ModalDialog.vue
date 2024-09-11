@@ -1,50 +1,50 @@
 <template>
   <teleport to="body">
     <dialog
-      v-if="isOpen"
-      ref="dialog"
-      class="fixed inset-0 z-50 m-0 h-dvh w-dvw border-none p-0 outline-none open:grid"
-      @close="() => emits('hide')"
+        v-if="isOpen"
+        ref="dialog"
+        class="fixed inset-0 z-50 m-0 h-dvh w-dvw border-none p-0 outline-none open:grid"
+        @close="() => emits('hide')"
     >
       <div
-        class="z-50 m-auto flex size-fit flex-col justify-center rounded-2xl bg-neutral-200/45 px-2 drop-shadow-lg backdrop-blur"
+          class="z-50 m-auto flex size-fit flex-col justify-center rounded-2xl bg-neutral-200/45 px-2 drop-shadow-lg backdrop-blur"
       >
         <header class="flex flex-row items-center justify-between">
           <div class="flex grow flex-row items-center justify-start">
-            <slot name="header-start" />
+            <slot name="header-start"/>
           </div>
           <div class="flex grow flex-row items-center justify-center">
-            <slot name="header-center" />
+            <slot name="header-center"/>
           </div>
           <div class="flex grow flex-row items-center justify-end">
-            <slot name="header-end" />
+            <slot name="header-end"/>
             <button
-              class="border-none p-2 text-2xl text-stone-800 outline-none hover:border-none hover:text-stone-900 focus:border-none active:text-stone-950"
-              @click="closeDialog"
+                class="border-none p-2 text-2xl text-stone-800 outline-none hover:border-none hover:text-stone-900 focus:border-none active:text-stone-950"
+                @click="closeDialog"
             >
-              <FontAwesomeIcon :icon="faClose" />
+              <FontAwesomeIcon :icon="faClose"/>
               <span class="sr-only">Close Dialog</span>
             </button>
           </div>
         </header>
         <main
-          class="flex max-w-modal flex-col items-center justify-center overflow-auto pt-2"
+            class="flex max-w-modal flex-col items-center justify-center overflow-auto pt-2"
         >
-          <slot name="default" @click="closeDialog" />
+          <slot name="default" @click="closeDialog"/>
         </main>
         <footer class="flex flex-row pt-2">
-          <slot name="footer" @click="closeDialog" />
+          <slot name="footer" @click="closeDialog"/>
         </footer>
       </div>
     </dialog>
   </teleport>
-  <slot name="activator" @click="openDialog" />
+  <slot name="activator" @click="openDialog"/>
 </template>
 
 <script lang="ts" setup>
-import { nextTick, ref } from 'vue';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { faClose } from '@fortawesome/free-solid-svg-icons';
+import {nextTick, ref} from 'vue';
+import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome';
+import {faClose} from '@fortawesome/free-solid-svg-icons';
 
 const emits = defineEmits<{ show: []; hide: [] }>();
 const isOpen = ref<boolean>(false);

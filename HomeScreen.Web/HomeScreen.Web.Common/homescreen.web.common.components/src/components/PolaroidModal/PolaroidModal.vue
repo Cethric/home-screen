@@ -1,19 +1,13 @@
 <template>
-  <div
-    :style="{
-      '--offset-top': item.top,
-      '--offset-left': item.left,
-      '--rotation': item.rotation,
-    }"
-    class="polaroid-modal absolute size-fit"
-  >
+  <div>
     <ModalDialog @hide="() => emits('resume')" @show="() => emits('pause')">
       <template #activator="props">
-        <PolaroidCard
-          :image="item.image"
-          :load-image="loadImage"
-          v-bind="props"
-        />
+        <PolaroidCard :image="image" v-bind="props" />
+      </template>
+      <template #header-center>
+        {{ image.dateTime.toFormat('DDDD') }}
+        &nbsp;
+        {{ image.dateTime.toFormat('TTT') }}
       </template>
       <template #default>
         <ModalDialog>
@@ -21,8 +15,7 @@
             <PolaroidCard
               :direction="Directions.horizontal"
               :flat="true"
-              :image="item.image"
-              :load-image="loadImage"
+              :image="image"
               v-bind="props"
             >
               <template #details="{ image }">
@@ -35,8 +28,13 @@
               </template>
             </PolaroidCard>
           </template>
+          <template #header-center>
+            {{ image.dateTime.toFormat('DDDD') }}
+            &nbsp;
+            {{ image.dateTime.toFormat('TTT') }}
+          </template>
           <template #default>
-            <LargeImage :image="item.image" :load-image="loadImage" />
+            <LargeImage :image="image" />
           </template>
         </ModalDialog>
       </template>
@@ -45,29 +43,17 @@
 </template>
 
 <script lang="ts" setup>
-import LargeImage from '@/components/LargeImage.vue';
-import {
-  Directions,
-  LeafletMapAsync,
-  type LoadImageCallback,
-  ModalDialog,
-  PolaroidCard,
-} from '@homescreen/web-common-components';
-import type { PolaroidImage } from '@/components/properties';
+import { Directions } from '@/components/properties';
+import { LeafletMapAsync } from '@/components/LeafletMap/LeafletMapAsync';
+import PolaroidCard from '@/components/PolaroidCard/PolaroidCard.vue';
+import ModalDialog from '@/components/ModalDialog/ModalDialog.vue';
+import LargeImage from '@/components/LargeImage/LargeImage.vue';
+import type { Image } from '@/components/ResponsivePicture/image';
 
 defineProps<{
-  item: PolaroidImage;
-  loadImage: LoadImageCallback;
+  image: Image;
 }>();
 const emits = defineEmits<{ resume: []; pause: [] }>();
 </script>
 
-<style lang="scss" scoped>
-.polaroid-modal {
-  transform: translate(
-      calc(var(--offset-left) * 1dvw),
-      calc(var(--offset-top) * 1dvh)
-    )
-    rotate(calc(var(--rotation) * 1deg));
-}
-</style>
+<style lang="scss" scoped></style>

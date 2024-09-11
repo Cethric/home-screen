@@ -53,6 +53,10 @@ export class ConfigClient implements IConfigClient {
             result200 = Config.fromJS(resultData200, _mappings);
             return new SwaggerResponse(status, _headers, result200);
             });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            return throwException("A server side error occurred.", status, _responseText, _headers);
+            });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
@@ -95,7 +99,7 @@ export class MediaClient implements IMediaClient {
             method: "GET",
             signal,
             headers: {
-                "Accept": "application/json"
+                "Accept": "application/json-seq"
             }
         };
 
@@ -457,7 +461,8 @@ export class WeatherClient implements IWeatherClient {
 }
 
 export class Config implements IConfig {
-    mediaUrl?: string;
+    mediaUrl!: string;
+    sentryDsn!: string;
 
     constructor(data?: IConfig) {
         if (data) {
@@ -471,6 +476,7 @@ export class Config implements IConfig {
     init(_data?: any, _mappings?: any) {
         if (_data) {
             this.mediaUrl = _data["mediaUrl"];
+            this.sentryDsn = _data["sentryDsn"];
         }
     }
 
@@ -482,12 +488,21 @@ export class Config implements IConfig {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["mediaUrl"] = this.mediaUrl;
+        data["sentryDsn"] = this.sentryDsn;
         return data;
+    }
+
+    clone(): Config {
+        const json = this.toJSON();
+        let result = new Config();
+        result.init(json);
+        return result;
     }
 }
 
 export interface IConfig {
-    mediaUrl?: string;
+    mediaUrl: string;
+    sentryDsn: string;
 }
 
 export class MediaItem implements IMediaItem {
@@ -496,6 +511,11 @@ export class MediaItem implements IMediaItem {
     notes?: string;
     enabled?: boolean;
     location?: MediaItemLocation;
+    aspectRatioWidth?: number;
+    aspectRatioHeight?: number;
+    baseB?: number;
+    baseG?: number;
+    baseR?: number;
 
     constructor(data?: IMediaItem) {
         if (data) {
@@ -514,6 +534,11 @@ export class MediaItem implements IMediaItem {
             this.notes = _data["notes"];
             this.enabled = _data["enabled"];
             this.location = _data["location"] ? MediaItemLocation.fromJS(_data["location"], _mappings) : <any>undefined;
+            this.aspectRatioWidth = _data["aspectRatioWidth"];
+            this.aspectRatioHeight = _data["aspectRatioHeight"];
+            this.baseB = _data["baseB"];
+            this.baseG = _data["baseG"];
+            this.baseR = _data["baseR"];
         }
     }
 
@@ -529,7 +554,19 @@ export class MediaItem implements IMediaItem {
         data["notes"] = this.notes;
         data["enabled"] = this.enabled;
         data["location"] = this.location ? this.location.toJSON() : <any>undefined;
+        data["aspectRatioWidth"] = this.aspectRatioWidth;
+        data["aspectRatioHeight"] = this.aspectRatioHeight;
+        data["baseB"] = this.baseB;
+        data["baseG"] = this.baseG;
+        data["baseR"] = this.baseR;
         return data;
+    }
+
+    clone(): MediaItem {
+        const json = this.toJSON();
+        let result = new MediaItem();
+        result.init(json);
+        return result;
     }
 }
 
@@ -539,6 +576,11 @@ export interface IMediaItem {
     notes?: string;
     enabled?: boolean;
     location?: IMediaItemLocation;
+    aspectRatioWidth?: number;
+    aspectRatioHeight?: number;
+    baseB?: number;
+    baseG?: number;
+    baseR?: number;
 }
 
 export class MediaItemLocation implements IMediaItemLocation {
@@ -574,6 +616,13 @@ export class MediaItemLocation implements IMediaItemLocation {
         data["latitude"] = this.latitude;
         data["longitude"] = this.longitude;
         return data;
+    }
+
+    clone(): MediaItemLocation {
+        const json = this.toJSON();
+        let result = new MediaItemLocation();
+        result.init(json);
+        return result;
     }
 }
 
@@ -611,6 +660,13 @@ export class NotFound implements INotFound {
         data["statusCode"] = this.statusCode;
         return data;
     }
+
+    clone(): NotFound {
+        const json = this.toJSON();
+        let result = new NotFound();
+        result.init(json);
+        return result;
+    }
 }
 
 export interface INotFound {
@@ -644,6 +700,13 @@ export class BadRequest implements IBadRequest {
         data = typeof data === 'object' ? data : {};
         data["statusCode"] = this.statusCode;
         return data;
+    }
+
+    clone(): BadRequest {
+        const json = this.toJSON();
+        let result = new BadRequest();
+        result.init(json);
+        return result;
     }
 }
 
@@ -702,6 +765,13 @@ export class AcceptedTransformMeta implements IAcceptedTransformMeta {
         data["url"] = this.url;
         return data;
     }
+
+    clone(): AcceptedTransformMeta {
+        const json = this.toJSON();
+        let result = new AcceptedTransformMeta();
+        result.init(json);
+        return result;
+    }
 }
 
 export interface IAcceptedTransformMeta {
@@ -755,6 +825,13 @@ export class WeatherForecast implements IWeatherForecast {
         data["amountOfRain"] = this.amountOfRain;
         data["weatherCode"] = this.weatherCode;
         return data;
+    }
+
+    clone(): WeatherForecast {
+        const json = this.toJSON();
+        let result = new WeatherForecast();
+        result.init(json);
+        return result;
     }
 }
 
@@ -818,6 +895,13 @@ export class HourlyForecast implements IHourlyForecast {
         data["isDay"] = this.isDay;
         data["cloudCover"] = this.cloudCover;
         return data;
+    }
+
+    clone(): HourlyForecast {
+        const json = this.toJSON();
+        let result = new HourlyForecast();
+        result.init(json);
+        return result;
     }
 }
 
@@ -896,6 +980,13 @@ export class DailyForecast implements IDailyForecast {
         data["precipitationProbabilityMax"] = this.precipitationProbabilityMax;
         data["precipitationProbabilityMin"] = this.precipitationProbabilityMin;
         return data;
+    }
+
+    clone(): DailyForecast {
+        const json = this.toJSON();
+        let result = new DailyForecast();
+        result.init(json);
+        return result;
     }
 }
 

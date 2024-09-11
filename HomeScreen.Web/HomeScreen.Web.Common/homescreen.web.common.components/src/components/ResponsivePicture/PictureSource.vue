@@ -1,27 +1,39 @@
 <template>
-  <source v-if="srcset" :srcset="srcset" :type="type" />
+  <source
+    v-if="srcset"
+    :height="height"
+    :srcset="srcset"
+    :type="type"
+    :width="width"
+  />
 </template>
 
 <script async lang="ts" setup>
-import type { Image } from '@/components/properties';
-import type {
-  ComputedMediaSize,
-  LoadImageCallback,
-} from '@/helpers/computedMedia';
+import { loadImage } from '@/helpers/computedMedia';
 import { MediaTransformOptionsFormat } from '@/domain/generated/homescreen-common-api';
+import { toValue } from 'vue';
+import {
+  type ComputedMediaSize,
+  type Image,
+} from '@/components/ResponsivePicture/image';
 
 const props = defineProps<{
   image: Image;
-  loadImage: LoadImageCallback;
   imageSize: ComputedMediaSize;
   blur: boolean;
   format: MediaTransformOptionsFormat;
 }>();
 
-const srcset = await props.loadImage(
+const { width, height } = toValue(props.imageSize);
+
+const srcset = await loadImage(
   props.image.id,
-  Math.max(props.imageSize.width, 250),
-  Math.max(props.imageSize.height, 250),
+  Math.trunc(
+    Math.max(width * window.devicePixelRatio * (props.blur ? 0.5 : 1), 100),
+  ),
+  Math.trunc(
+    Math.max(height * window.devicePixelRatio * (props.blur ? 0.5 : 1), 100),
+  ),
   props.blur,
   props.format,
 );

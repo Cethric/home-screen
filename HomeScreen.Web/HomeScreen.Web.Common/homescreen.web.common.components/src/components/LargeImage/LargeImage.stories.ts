@@ -1,13 +1,12 @@
 import type { Meta, StoryObj } from '@storybook/vue3';
-import { loadPicsumImage, picsumImages } from '@/stories/helpers';
-import LargeImage from '@/components/LargeImage.vue';
+import LargeImage from '@/components/LargeImage/LargeImage.vue';
+import { picsumImages } from '@/stories/helpers';
 
 const meta: Meta<typeof LargeImage> = {
   component: LargeImage,
   tags: ['autodocs'],
   args: {
     image: picsumImages()[0],
-    loadImage: loadPicsumImage,
   },
   argTypes: {
     image: {
@@ -27,7 +26,6 @@ const meta: Meta<typeof LargeImage> = {
         },
       },
     },
-    loadImage: { type: 'function' },
   },
 };
 export default meta;
