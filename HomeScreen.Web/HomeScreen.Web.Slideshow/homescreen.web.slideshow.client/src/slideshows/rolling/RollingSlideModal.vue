@@ -2,10 +2,10 @@
   <div
     ref="sliderModal"
     :class="[
+      'flex items-center justify-center',
       {
         'h-full w-auto grow px-4': direction === Directions.horizontal,
-        'col-span-1 row-span-1 flex items-center justify-center':
-          direction === Directions.vertical,
+        'col-span-1 row-span-1': direction === Directions.vertical,
       },
     ]"
   >
@@ -15,16 +15,11 @@
       @show="() => emits('pause')"
     >
       <template #activator="props">
-        <ResponsiveImageSuspenseAsync
-          :class="[
-            'rounded-md object-contain drop-shadow-md hover:shadow-inner active:drop-shadow-lg',
-            {
-              'h-full w-auto max-w-fit': direction === Directions.horizontal,
-            },
-          ]"
+        <ResponsivePictureAsync
           :image="image"
           :image-size="imageSize"
-          :load-image="loadImage"
+          :min-image-size="{ width: 0, height: 0 }"
+          class="rounded-md object-contain drop-shadow-md hover:shadow-inner active:drop-shadow-lg"
           v-bind="props"
         />
       </template>
@@ -36,7 +31,6 @@
               :direction="Directions.horizontal"
               :flat="true"
               :image="image"
-              :load-image="loadImage"
               v-bind="props"
             >
               <template #details="{ image }">
@@ -50,17 +44,15 @@
             </PolaroidCard>
           </template>
           <template #default>
-            <LargeImage :image="image" :load-image="loadImage" />
+            <LargeImage :image="image" />
           </template>
         </ModalDialog>
       </template>
     </ModalDialog>
     <div
       v-else
-      :style="{
-        width: `${imageSize.width}px`,
-        height: `${imageSize.height}px`,
-      }"
+      :style="styledSize"
+      class="rounded-md object-contain drop-shadow-md"
     />
   </div>
 </template>
@@ -71,20 +63,19 @@ import {
   type Direction,
   Directions,
   type Image,
+  LargeImage,
   LeafletMapAsync,
-  type LoadImageCallback,
   ModalDialog,
   PolaroidCard,
-  ResponsiveImageSuspenseAsync,
+  ResponsivePictureAsync,
+  useImageAspectSize,
 } from '@homescreen/web-common-components';
 import { useElementVisibility } from '@vueuse/core';
-import { ref } from 'vue';
-import LargeImage from '@/components/LargeImage.vue';
+import { computed, ref, toValue } from 'vue';
 
-defineProps<{
+const props = defineProps<{
   image: Image;
   direction: Direction;
-  loadImage: LoadImageCallback;
   imageSize: ComputedMediaSize;
 }>();
 
@@ -92,6 +83,28 @@ const emits = defineEmits<{ pause: []; resume: [] }>();
 
 const sliderModal = ref<HTMLElement>();
 const isVisible = useElementVisibility(sliderModal, {
-  threshold: [0.1, 0.9],
+  threshold: [1e-1],
+});
+const size = useImageAspectSize({
+  image: props.image,
+  size: props.imageSize,
+  minSize: { width: 0, height: 0 },
+});
+console.log('Aspect Size Result', size);
+const aspectSize = computed(() => {
+  const { width, height } = toValue(size);
+  return { width: `${width}px`, height: `${height}px` };
+});
+
+const styledSize = computed(() => {
+  const { width, height } = toValue(aspectSize);
+  return {
+    minWidth: width,
+    minHeight: height,
+    maxWidth: width,
+    maxHeight: height,
+    width: width,
+    height: height,
+  };
 });
 </script>

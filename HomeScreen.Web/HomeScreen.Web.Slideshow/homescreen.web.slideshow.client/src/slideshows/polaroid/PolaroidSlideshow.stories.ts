@@ -1,13 +1,12 @@
 import type { Meta, StoryObj } from '@storybook/vue3';
 import PolaroidSlideshow from '@/slideshows/polaroid/PolaroidSlideshow.vue';
-import { loadPicsumImage, picsumImages } from '@/stories/helpers';
+import { picsumImages } from '@/stories/helpers';
 
 const meta: Meta<typeof PolaroidSlideshow> = {
   component: PolaroidSlideshow,
   tags: ['autodocs'],
   args: {
     images: picsumImages().reduce((p, c) => ({ ...p, [c['id']]: c }), {}),
-    loadImage: loadPicsumImage,
     weatherForecast: { feelsLikeTemperature: 0, weatherCode: 'Sunny' },
     count: 40,
   },
@@ -52,7 +51,6 @@ const meta: Meta<typeof PolaroidSlideshow> = {
         weatherCode: { type: 'string' },
       },
     },
-    loadImage: { type: 'function' },
   },
 };
 export default meta;

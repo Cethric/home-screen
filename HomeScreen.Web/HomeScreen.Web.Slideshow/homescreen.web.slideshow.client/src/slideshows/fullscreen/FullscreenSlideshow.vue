@@ -25,9 +25,8 @@
         :key="imageId"
         class="absolute left-1/2 top-1/2 flex h-dvh w-dvw -translate-x-1/2 -translate-y-1/2 items-center justify-center p-2"
       >
-        <FullscreenModal
+        <PolaroidModal
           :image="images[imageId]"
-          :load-image="loadImage"
           @pause="() => pause()"
           @resume="() => resume()"
         />
@@ -56,11 +55,10 @@ import {
   type Direction,
   type Image,
   type IWeatherForecast,
-  type LoadImageCallback,
+  PolaroidModal,
 } from '@homescreen/web-common-components';
 import { computed, ref, watch } from 'vue';
 import { useDateFormat, useIntervalFn, useNow } from '@vueuse/core';
-import FullscreenModal from '@/slideshows/fullscreen/FullscreenModal.vue';
 import FullscreenMainLoader from '@/slideshows/fullscreen/FullscreenMainLoader.vue';
 
 const props = withDefaults(
@@ -70,7 +68,6 @@ const props = withDefaults(
     weatherForecast: IWeatherForecast;
     direction?: Direction;
     count?: number;
-    loadImage: LoadImageCallback;
     total: number;
   }>(),
   {

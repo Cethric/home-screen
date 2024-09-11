@@ -1,5 +1,3 @@
-import type { Image } from '@homescreen/web-common-components';
-
 export enum RollingDirections {
   'forward' = 'forward',
   'backward' = 'backward',
@@ -13,10 +11,3 @@ export enum DateTimeWeatherComboKinds {
 }
 
 export type DateTimeWeatherComboKind = keyof typeof DateTimeWeatherComboKinds;
-
-export interface PolaroidImage {
-  image: Image;
-  top: number;
-  left: number;
-  rotation: number;
-}

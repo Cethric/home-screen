@@ -1,11 +1,10 @@
 import {
-  type IWeatherClient,
+  injectWeatherApi,
   WeatherForecast,
 } from '@homescreen/web-common-components';
-import { inject } from 'vue';
 
 export const loadWeather = async (): Promise<WeatherForecast> => {
-  const weatherApi = inject<IWeatherClient>('weatherApi')!;
+  const weatherApi = injectWeatherApi();
   console.log(weatherApi);
   try {
     const response = await weatherApi.current(151.20732, -33.86785);

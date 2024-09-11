@@ -1,13 +1,12 @@
 import type { Meta, StoryObj } from '@storybook/vue3';
 import FullscreenSlideshow from '@/slideshows/fullscreen/FullscreenSlideshow.vue';
-import { loadPicsumImage, picsumImages } from '@/stories/helpers';
+import { picsumImages } from '@/stories/helpers';
 
 const meta: Meta<typeof FullscreenSlideshow> = {
   component: FullscreenSlideshow,
   tags: ['autodocs'],
   args: {
     images: picsumImages().reduce((p, c) => ({ ...p, [c['id']]: c }), {}),
-    loadImage: loadPicsumImage,
     weatherForecast: { feelsLikeTemperature: 0, weatherCode: 'Sunny' },
   },
   argTypes: {
@@ -50,7 +49,6 @@ const meta: Meta<typeof FullscreenSlideshow> = {
         weatherCode: { type: 'string' },
       },
     },
-    loadImage: { type: 'function' },
   },
 };
 export default meta;

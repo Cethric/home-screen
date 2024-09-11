@@ -13,28 +13,28 @@
     :style="{ transform }"
   >
     <RollingSlide
+      :key="`first-${imageSize.width}-${imageSize.height}`"
       :direction="direction"
       :image-size="imageSize"
-      :images="images"
-      :load-image="loadImage"
+      :images="images.slice(0, images.length)"
       @pause="() => pause()"
       @resume="() => resume()"
     />
 
     <RollingSlide
+      :key="`second-${imageSize.width}-${imageSize.height}`"
       :direction="direction"
       :image-size="imageSize"
       :images="images"
-      :load-image="loadImage"
       @pause="() => pause()"
       @resume="() => resume()"
     />
 
     <RollingSlide
+      :key="`third-${imageSize.width}-${imageSize.height}`"
       :direction="direction"
       :image-size="imageSize"
-      :images="images"
-      :load-image="loadImage"
+      :images="images.slice(images.length)"
       @pause="() => pause()"
       @resume="() => resume()"
     />
@@ -46,14 +46,13 @@ import {
   type Direction,
   Directions,
   type Image,
-  type LoadImageCallback,
 } from '@homescreen/web-common-components';
 import {
   type RollingDirection,
   RollingDirections,
 } from '@/components/properties';
-import { computed, ref } from 'vue';
-import { useElementSize, useRafFn } from '@vueuse/core';
+import { computed, ref, toValue } from 'vue';
+import { useElementSize, useRafFn, useWindowSize } from '@vueuse/core';
 import { reactiveTransform } from '@vueuse/motion';
 import { range } from '@/helpers/random';
 import RollingSlide from '@/slideshows/rolling/RollingSlide.vue';
@@ -62,12 +61,11 @@ const props = withDefaults(
   defineProps<{
     images: Image[];
     durationSeconds?: number;
-    direction?: Direction;
+    direction: Direction;
     rolling: RollingDirection;
-    loadImage: LoadImageCallback;
+    count: number;
   }>(),
   {
-    direction: Directions.horizontal,
     durationSeconds: 24,
   },
 );
@@ -82,20 +80,34 @@ const { state, transform } = reactiveTransform({
   translateY: 0,
 });
 
+function wrap(value: number, upperBound: number, lowerBound: number) {
+  const range = upperBound - lowerBound + 1;
+  return ((((value - lowerBound) % range) + range) % range) + lowerBound;
+}
+
+const speed = computed(() => {
+  let offset = 0;
+  switch (props.rolling) {
+    case RollingDirections.forward:
+      offset = 1;
+      break;
+    case RollingDirections.backward:
+      offset = -1;
+      break;
+  }
+
+  switch (props.direction) {
+    case Directions.horizontal:
+      return width.value * 1e-9 * offset;
+    case Directions.vertical:
+      return height.value * 2e-9 * offset;
+  }
+  return 1e-7;
+});
+
 const { pause, resume } = useRafFn(
   ({ delta }) => {
-    switch (props.rolling) {
-      case RollingDirections.forward:
-        progress.value += 0.005 * (delta * 0.001);
-        progress.value = progress.value % 2;
-        break;
-      case RollingDirections.backward:
-        progress.value -= 0.005 * (delta * 0.001);
-        if (progress.value < 0) {
-          progress.value = 2;
-        }
-        break;
-    }
+    progress.value = wrap(progress.value + speed.value * delta, 0, 1.5);
 
     switch (props.direction) {
       case Directions.horizontal:
@@ -109,14 +121,21 @@ const { pause, resume } = useRafFn(
   { fpsLimit: 24, immediate: true },
 );
 
-const imageSize = computed(() => ({
-  width: Math.floor(
-    props.direction === Directions.vertical ? width.value / 4 : width.value / 2,
-  ),
-  height: Math.floor(
-    props.direction === Directions.vertical
-      ? height.value / 4
-      : height.value / 2,
-  ),
-}));
+const windowSize = useWindowSize();
+const imageSize = computed(() => {
+  const windowWidth = toValue(windowSize.width);
+  const windowHeight = toValue(windowSize.height);
+  return {
+    width: Math.trunc(
+      props.direction === Directions.vertical
+        ? (windowWidth / props.count) * 0.95
+        : (windowHeight / props.count) * 0.95,
+    ),
+    height: Math.trunc(
+      props.direction === Directions.vertical
+        ? (windowWidth / props.count) * 0.95
+        : (windowHeight / props.count) * 0.45,
+    ),
+  };
+});
 </script>

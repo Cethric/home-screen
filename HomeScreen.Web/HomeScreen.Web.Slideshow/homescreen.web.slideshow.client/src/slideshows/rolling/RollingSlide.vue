@@ -22,7 +22,6 @@
         :direction="direction"
         :image="image"
         :image-size="imageSize"
-        :load-image="loadImage"
         @pause="() => emits('pause')"
         @resume="() => emits('resume')"
       />
@@ -36,14 +35,12 @@ import {
   type Direction,
   Directions,
   type Image,
-  type LoadImageCallback,
 } from '@homescreen/web-common-components';
 import RollingSlideModal from '@/slideshows/rolling/RollingSlideModal.vue';
 
 defineProps<{
   images: Image[];
   direction: Direction;
-  loadImage: LoadImageCallback;
   imageSize: ComputedMediaSize;
 }>();
 

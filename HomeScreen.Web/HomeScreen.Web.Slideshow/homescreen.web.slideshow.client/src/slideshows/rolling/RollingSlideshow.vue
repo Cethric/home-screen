@@ -10,7 +10,6 @@
       :direction="actualDirection"
       :duration-seconds="durationSeconds"
       :images="group.images"
-      :load-image="loadImage"
       :rolling="group.direction"
     />
   </main>
@@ -27,7 +26,6 @@ import {
   Directions,
   type Image,
   type IWeatherForecast,
-  type LoadImageCallback,
 } from '@homescreen/web-common-components';
 import { computed } from 'vue';
 import RollingSlider from '@/slideshows/rolling/RollingSlider.vue';
@@ -36,7 +34,7 @@ import {
   RollingDirections,
 } from '@/components/properties';
 import { v4 as uuid } from 'uuid';
-import { choice, range } from '@/helpers/random';
+import { choice } from '@/helpers/random';
 import FullscreenMainLoader from '@/slideshows/fullscreen/FullscreenMainLoader.vue';
 import { DateTimeWeatherComboAsync } from '@/components/DateTimeWeatherComboAsync';
 
@@ -47,7 +45,6 @@ const props = withDefaults(
     direction?: Direction;
     count?: number;
     durationSeconds?: number;
-    loadImage: LoadImageCallback;
     total: number;
   }>(),
   {
@@ -64,23 +61,19 @@ const actualDirection = computed(() =>
 );
 
 const length = computed(() => Object.keys(props.images).length);
-const hasImages = computed(() => length.value > props.total - 20);
+const size = computed(() => Math.ceil(length.value / props.count));
+const hasImages = computed(() => length.value >= props.total - 100);
 
 const images = computed(() =>
-  hasImages.value
-    ? Object.values(props.images).slice(range(0, length.value - 100), 100)
-    : [],
+  hasImages.value ? Object.values(props.images) : [],
 );
 
 const imageGroups = computed(() =>
   hasImages.value
     ? Array.from({ length: props.count }).map((_, idx) => ({
         images: images.value.slice(
-          Math.trunc((images.value.length / props.count) * idx),
-          Math.trunc(
-            (images.value.length / props.count) * idx +
-              images.value.length / props.count,
-          ),
+          idx * size.value,
+          idx * size.value + size.value,
         ),
         id: uuid(),
         direction:

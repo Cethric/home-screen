@@ -11,11 +11,10 @@
       leave-active-class="animate__animated animate__shrinkOut"
       tag="div"
     >
-      <PolaroidModal
+      <TransformedPolaroidModal
         v-for="imageId in slice"
         :key="imageId"
         :item="makeItem(images[imageId])"
-        :load-image="loadImage"
         @pause="() => pause()"
         @resume="() => resume()"
       />
@@ -30,16 +29,13 @@ import {
   type Direction,
   type Image,
   type IWeatherForecast,
-  type LoadImageCallback,
+  type PolaroidImage,
+  TransformedPolaroidModal,
 } from '@homescreen/web-common-components';
 import { useIntervalFn } from '@vueuse/core';
 import { range, rangeRNG } from '@/helpers/random';
-import {
-  DateTimeWeatherComboKinds,
-  type PolaroidImage,
-} from '@/components/properties';
+import { DateTimeWeatherComboKinds } from '@/components/properties';
 import seedrandom from 'seedrandom';
-import PolaroidModal from '@/components/PolaroidModal.vue';
 import FullscreenMainLoader from '@/slideshows/fullscreen/FullscreenMainLoader.vue';
 import { DateTimeWeatherComboAsync } from '@/components/DateTimeWeatherComboAsync';
 
@@ -50,7 +46,6 @@ const props = withDefaults(
     weatherForecast: IWeatherForecast;
     direction?: Direction;
     count?: number;
-    loadImage: LoadImageCallback;
     total: number;
   }>(),
   {

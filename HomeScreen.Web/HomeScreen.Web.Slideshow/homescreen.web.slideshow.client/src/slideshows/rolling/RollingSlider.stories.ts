@@ -2,14 +2,13 @@ import type { Meta, StoryObj } from '@storybook/vue3';
 import RollingSlider from '@/slideshows/rolling/RollingSlider.vue';
 import { Directions } from '@homescreen/web-common-components';
 import { RollingDirections } from '@/components/properties';
-import { loadPicsumImage, picsumImages } from '@/stories/helpers';
+import { picsumImages } from '@/stories/helpers';
 
 const meta: Meta<typeof RollingSlider> = {
   component: RollingSlider,
   tags: ['autodocs'],
   args: {
     images: picsumImages(),
-    loadImage: loadPicsumImage,
     rolling: RollingDirections.forward,
   },
   argTypes: {
@@ -45,7 +44,6 @@ const meta: Meta<typeof RollingSlider> = {
     rolling: {
       type: { name: 'enum', value: Object.values(RollingDirections) },
     },
-    loadImage: { type: 'function' },
   },
 };
 export default meta;

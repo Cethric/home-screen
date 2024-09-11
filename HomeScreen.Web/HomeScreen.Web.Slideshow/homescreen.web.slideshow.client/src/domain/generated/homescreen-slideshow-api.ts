@@ -6,21 +6,20 @@
 
 /* tslint:disable */
 /* eslint-disable */
-// ReSharper disable InconsistentNaming
 
-import { DateTime, Duration } from 'luxon';
+// ReSharper disable InconsistentNaming
 
 export interface IConfigClient {
   config(): Promise<SwaggerResponse<Config>>;
 }
 
 export class ConfigClient implements IConfigClient {
+  protected jsonParseReviver: ((key: string, value: any) => any) | undefined =
+    undefined;
   private http: {
     fetch(url: RequestInfo, init?: RequestInit): Promise<Response>;
   };
   private baseUrl: string;
-  protected jsonParseReviver: ((key: string, value: any) => any) | undefined =
-    undefined;
 
   constructor(
     baseUrl?: string,
@@ -55,7 +54,16 @@ export class ConfigClient implements IConfigClient {
     if (response.headers && response.headers.forEach) {
       response.headers.forEach((v: any, k: any) => (_headers[k] = v));
     }
-    if (status === 200) {
+    if (status === 404) {
+      return response.text().then((_responseText) => {
+        return throwException(
+          'A server side error occurred.',
+          status,
+          _responseText,
+          _headers,
+        );
+      });
+    } else if (status === 200) {
       return response.text().then((_responseText) => {
         let result200: any = null;
         let resultData200 =
@@ -82,7 +90,7 @@ export class ConfigClient implements IConfigClient {
 }
 
 export class Config implements IConfig {
-  commonUrl?: string;
+  commonUrl!: string;
 
   constructor(data?: IConfig) {
     if (data) {
@@ -93,17 +101,17 @@ export class Config implements IConfig {
     }
   }
 
-  init(_data?: any) {
-    if (_data) {
-      this.commonUrl = _data['commonUrl'];
-    }
-  }
-
   static fromJS(data: any): Config {
     data = typeof data === 'object' ? data : {};
     let result = new Config();
     result.init(data);
     return result;
+  }
+
+  init(_data?: any) {
+    if (_data) {
+      this.commonUrl = _data['commonUrl'];
+    }
   }
 
   toJSON(data?: any) {
@@ -114,7 +122,7 @@ export class Config implements IConfig {
 }
 
 export interface IConfig {
-  commonUrl?: string;
+  commonUrl: string;
 }
 
 export class SwaggerResponse<TResult> {
@@ -139,6 +147,7 @@ export class ApiException extends Error {
   response: string;
   headers: { [key: string]: any };
   result: any;
+  protected isApiException = true;
 
   constructor(
     message: string,
@@ -156,8 +165,6 @@ export class ApiException extends Error {
     this.result = result;
   }
 
-  protected isApiException = true;
-
   static isApiException(obj: any): obj is ApiException {
     return obj.isApiException === true;
   }
@@ -167,7 +174,9 @@ function throwException(
   message: string,
   status: number,
   response: string,
-  headers: { [key: string]: any },
+  headers: {
+    [key: string]: any;
+  },
   result?: any,
 ): any {
   throw new ApiException(message, status, response, headers, result);

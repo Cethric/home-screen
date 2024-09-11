@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/vue3';
 import RollingSlide from '@/slideshows/rolling/RollingSlide.vue';
 import { Directions } from '@homescreen/web-common-components';
-import { loadPicsumImage, picsumImages } from '@/stories/helpers';
+import { picsumImages } from '@/stories/helpers';
 
 const meta: Meta<typeof RollingSlide> = {
   component: RollingSlide,
@@ -9,7 +9,6 @@ const meta: Meta<typeof RollingSlide> = {
   args: {
     images: picsumImages(10),
     direction: Directions.horizontal,
-    loadImage: loadPicsumImage,
   },
   argTypes: {
     images: {
@@ -40,7 +39,6 @@ const meta: Meta<typeof RollingSlide> = {
       },
     },
     direction: { type: { name: 'enum', value: Object.values(Directions) } },
-    loadImage: { type: { name: 'function' } },
   },
 };
 export default meta;

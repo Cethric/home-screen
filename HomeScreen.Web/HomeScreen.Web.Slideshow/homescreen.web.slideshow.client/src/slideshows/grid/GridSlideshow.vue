@@ -20,7 +20,6 @@
       :key="offset"
       :images="images"
       :length="Math.floor(length / 2)"
-      :load-image="loadImage"
       :offset="offset"
     />
   </main>
@@ -46,7 +45,6 @@ import {
   type Direction,
   type Image,
   type IWeatherForecast,
-  type LoadImageCallback,
 } from '@homescreen/web-common-components';
 import { computed } from 'vue';
 import { useDateFormat, useNow } from '@vueuse/core';
@@ -60,7 +58,6 @@ const props = withDefaults(
     weatherForecast: IWeatherForecast;
     direction?: Direction;
     count?: number;
-    loadImage: LoadImageCallback;
     total: number;
   }>(),
   {

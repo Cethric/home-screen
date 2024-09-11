@@ -12,9 +12,8 @@
       :key="imageId"
       class="absolute left-1/2 top-1/2 flex size-full -translate-x-1/2 -translate-y-1/2 items-center justify-center p-2"
     >
-      <FullscreenModal
+      <PolaroidModal
         :image="images[imageId]"
-        :load-image="loadImage"
         @pause="() => pause()"
         @resume="() => resume()"
       />
@@ -23,19 +22,14 @@
 </template>
 
 <script lang="ts" setup>
-import FullscreenModal from '@/slideshows/fullscreen/FullscreenModal.vue';
 import { useIntervalFn } from '@vueuse/core';
 import { computed, ref } from 'vue';
-import type {
-  Image,
-  LoadImageCallback,
-} from '@homescreen/web-common-components';
+import { type Image, PolaroidModal } from '@homescreen/web-common-components';
 
 const props = withDefaults(
   defineProps<{
     images: Record<Image['id'], Image>;
     intervalSeconds?: number;
-    loadImage: LoadImageCallback;
     length: number;
     offset: number;
   }>(),

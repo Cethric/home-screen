@@ -1,12 +1,11 @@
 <template>
   <Suspense v-if="isReady">
     <component
-      :is="slideshows[activeSlideshow]"
-      :count="count[activeSlideshow]"
+      :is="currentSlideshow"
+      :count="currentCount"
       :direction="Directions.random"
       :images="imageIds"
-      :load-image="loadImageCallback"
-      :total="total[activeSlideshow]"
+      :total="currentTotal"
       :weather-forecast="forecast"
     />
 
@@ -18,69 +17,29 @@
 </template>
 
 <script lang="ts" setup>
-import { type Slideshow, Slideshows } from './properties';
+import { type Slideshow } from './properties';
 import {
   Directions,
   type Image,
+  injectMediaApi,
+  transformMediaItemToImage,
   type WeatherForecast,
 } from '@homescreen/web-common-components';
-import {
-  injectMediaApi,
-  loadImageCallback,
-  loadMedia,
-} from '@/domain/client/media';
-import {
-  computed,
-  defineAsyncComponent,
-  nextTick,
-  onBeforeUnmount,
-  onMounted,
-  ref,
-} from 'vue';
+import { loadMedia } from '@/domain/client/media';
+import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue';
 import FullscreenMainLoader from '@/slideshows/fullscreen/FullscreenMainLoader.vue';
-import { choice } from '@/helpers/random';
 import { useNProgress } from '@vueuse/integrations';
 import { useAsyncState, useIntervalFn } from '@vueuse/core';
-
-const slideshows = {
-  [Slideshows.rolling_slideshow]: defineAsyncComponent({
-    loader: () => import('@/slideshows/rolling/RollingSlideshow.vue'),
-    timeout: 10,
-    loadingComponent: FullscreenMainLoader,
-  }),
-  [Slideshows.polaroid_slideshow]: defineAsyncComponent({
-    loader: () => import('@/slideshows/polaroid/PolaroidSlideshow.vue'),
-    timeout: 10,
-    loadingComponent: FullscreenMainLoader,
-  }),
-  [Slideshows.fullscreen_slideshow]: defineAsyncComponent({
-    loader: () => import('@/slideshows/fullscreen/FullscreenSlideshow.vue'),
-    timeout: 10,
-    loadingComponent: FullscreenMainLoader,
-  }),
-  [Slideshows.grid_slideshow]: defineAsyncComponent({
-    loader: () => import('@/slideshows/grid/GridSlideshow.vue'),
-    timeout: 10,
-    loadingComponent: FullscreenMainLoader,
-  }),
-};
-const count = {
-  [Slideshows.rolling_slideshow]: choice([2, 3, 5]),
-  [Slideshows.polaroid_slideshow]: 40,
-  [Slideshows.fullscreen_slideshow]: 1,
-  [Slideshows.grid_slideshow]: 4,
-};
-const total = {
-  [Slideshows.rolling_slideshow]: 100 * count[Slideshows.rolling_slideshow],
-  [Slideshows.polaroid_slideshow]: 200,
-  [Slideshows.fullscreen_slideshow]: 50,
-  [Slideshows.grid_slideshow]: 100,
-};
+import { useCurrentSlideshow } from '@/slideshows/useCurrentSlideshow';
 
 const props = defineProps<{
   activeSlideshow: Slideshow;
   forecast: WeatherForecast;
 }>();
+
+const { currentSlideshow, currentTotal, currentCount } = useCurrentSlideshow({
+  activeSlideshow: props.activeSlideshow,
+});
 
 const images = ref<Image[]>([]);
 const imageIds = computed<Record<Image['id'], Image>>(() =>
@@ -101,7 +60,7 @@ const mediaApi = injectMediaApi();
 
 const { execute, isReady } = useAsyncState(
   async (signal?: AbortSignal) => {
-    console.log(`Loading ${total[props.activeSlideshow]} images`);
+    console.log(`Loading ${currentTotal.value} images`);
     isLoading.value = true;
     progress.value = 0.0;
 
@@ -109,46 +68,31 @@ const { execute, isReady } = useAsyncState(
       images.value = [];
     });
     let loaded = 0;
-    for await (const item of loadMedia(
-      mediaApi,
-      total[props.activeSlideshow],
-      signal,
-    )) {
+    const media = loadMedia(mediaApi, currentTotal.value, signal);
+    for await (const item of media) {
       signal?.throwIfAborted();
-      if (
-        item &&
-        item.id !== undefined &&
-        item.created !== undefined &&
-        item.enabled !== undefined
-      ) {
-        if (
-          images.value.filter((img: Image) => img.id === item.id).length > 0
-        ) {
-          console.warn('Duplicate key found, skipping', item);
-          await nextTick(() => {
+      if (item && item.id !== undefined) {
+        const duplicateIndex = images.value.findIndex(
+          (img: Image) => img.id === item.id,
+        );
+        if (duplicateIndex >= 0) {
+          if (images.value.length >= currentTotal.value) {
+            const removed = images.value.splice(duplicateIndex, 1);
+            console.log('Removed duplicate image', removed);
+          } else {
+            console.warn('Duplicate image found, skipping', item);
             ++loaded;
-            progress.value = loaded / total[props.activeSlideshow];
-          });
-          continue;
+            progress.value = loaded / currentTotal.value;
+            continue;
+          }
+        } else if (images.value.length >= currentTotal.value) {
+          const removed = images.value.pop();
+          console.log('Removed image', removed);
         }
         await nextTick(() => {
-          images.value.push({
-            id: item.id!,
-            dateTime: item.created!,
-            enabled: item.enabled!,
-            location:
-              item.location?.name &&
-              item.location?.latitude &&
-              item.location?.longitude
-                ? {
-                    name: item.location!.name,
-                    latitude: item.location!.latitude,
-                    longitude: item.location!.longitude,
-                  }
-                : undefined,
-          } satisfies Image);
+          images.value.push(transformMediaItemToImage(item));
           ++loaded;
-          progress.value = loaded / total[props.activeSlideshow];
+          progress.value = loaded / currentTotal.value;
         });
       }
     }

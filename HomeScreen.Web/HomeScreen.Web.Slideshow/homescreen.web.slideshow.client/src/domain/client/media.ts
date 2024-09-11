@@ -1,14 +1,8 @@
 import {
   type IMediaClientWithStreaming,
-  type LoadImageCallback,
+  injectMediaApi,
   type MediaItem,
-  MediaTransformOptionsFormat,
 } from '@homescreen/web-common-components';
-import { inject } from 'vue';
-
-export function injectMediaApi(): IMediaClientWithStreaming {
-  return inject<IMediaClientWithStreaming>('mediaApi')!;
-}
 
 export async function* loadMedia(
   mediaApi: IMediaClientWithStreaming,
@@ -21,32 +15,6 @@ export async function* loadMedia(
     yield response.result;
   }
 }
-
-export const loadImage = async (
-  imageId: string,
-  width: number,
-  height: number,
-  blur: boolean,
-  format: MediaTransformOptionsFormat,
-  signal?: AbortSignal,
-): Promise<string> => {
-  const mediaApi = injectMediaApi();
-  const response = await mediaApi.transform(
-    imageId,
-    width,
-    height,
-    blur,
-    format,
-    // signal,
-  );
-  return (
-    response.result.url ||
-    response.headers['location'] ||
-    response.headers['Location']
-  );
-};
-export const loadImageCallback: LoadImageCallback =
-  loadImage as LoadImageCallback;
 
 export const toggleMedia = async (
   imageId: string,
