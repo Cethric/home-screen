@@ -1,6 +1,7 @@
 using System.Text.Json.Serialization;
 using HomeScreen.ServiceDefaults;
 using HomeScreen.Web.Slideshow.Server.Endpoints;
+using HomeScreen.Web.Slideshow.Server.Services;
 using NJsonSchema.Generation;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,6 +22,7 @@ builder.Services.AddOpenApiDocument(
         document.SchemaSettings.GenerateEnumMappingDescription = true;
     }
 );
+builder.Services.AddTransient<IConfigApi, ConfigApi>();
 
 var app = builder.Build();
 app.MapDefaultEndpoints();
