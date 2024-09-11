@@ -4,7 +4,7 @@ using Projects;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
-var postgresPassword = builder.AddParameter("HomeScreenSqlPassword", true);
+var mssqlPassword = builder.AddParameter("HomeScreenSqlServerPassword", true);
 
 var mediaSource = builder.AddParameter("MediaSourceDir");
 var mediaCache = builder.AddParameter("MediaCacheDir");
@@ -15,13 +15,12 @@ var clientId = builder.AddParameter("AzureClientID", true);
 var commonAddress = builder.AddParameter("CommonAddress");
 
 var redis = builder.AddRedis("homescreen-redis")
-    .WithRedisCommander()
     .WithImageTag("latest")
     .WithOtlpExporter()
     .WithDataVolume()
     .WithPersistence();
 
-var sqlServer = builder.AddSqlServer("homescreen-sqlserver", postgresPassword)
+var sqlServer = builder.AddSqlServer("homescreen-sqlserver", mssqlPassword)
     .WithImageTag("latest")
     .WithOtlpExporter()
     .WithDataVolume();

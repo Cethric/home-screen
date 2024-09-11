@@ -18,14 +18,16 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="Aspire.Hosting.PostgreSQL" Version="8.2.0"/>
         <PackageReference Include="GitVersion.MsBuild" Version="6.0.2">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Aspire.Hosting" Version="8.1.0"/>
-        <PackageReference Include="Aspire.Hosting.AppHost" Version="8.1.0"/>
-        <PackageReference Include="Aspire.Hosting.Redis" Version="8.1.0"/>
-        <PackageReference Include="Aspire.Hosting.SqlServer" Version="8.1.0"/>
+        <PackageReference Include="Aspire.Hosting" Version="8.2.0"/>
+        <PackageReference Include="Aspire.Hosting.AppHost" Version="8.2.0"/>
+        <PackageReference Include="Aspire.Hosting.Redis" Version="8.2.0"/>
+        <PackageReference Include="Aspire.Hosting.SqlServer" Version="8.2.0"/>
+        <PackageReference Include="YamlDotNet" Version="16.1.0"/>
     </ItemGroup>
 
     <ItemGroup>
@@ -36,6 +38,12 @@
         <ProjectReference Include="..\HomeScreen.Web\HomeScreen.Web.Common\HomeScreen.Web.Common.Server\HomeScreen.Web.Common.Server.csproj"/>
         <ProjectReference Include="..\HomeScreen.Web\HomeScreen.Web.Dashboard\HomeScreen.Web.Dashboard.Server\HomeScreen.Web.Dashboard.Server.csproj"/>
         <ProjectReference Include="..\HomeScreen.Web\HomeScreen.Web.Slideshow\HomeScreen.Web.Slideshow.Server\HomeScreen.Web.Slideshow.Server.csproj"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Update="config.yaml">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
     </ItemGroup>
 
 </Project>
