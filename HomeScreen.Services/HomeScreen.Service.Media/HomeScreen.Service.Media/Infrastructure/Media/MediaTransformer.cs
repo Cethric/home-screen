@@ -14,8 +14,11 @@ public class MediaTransformer(ILogger<MediaTransformer> logger, IMediaPaths medi
         CancellationToken cancellationToken
     )
     {
-        using var activity = ActivitySource.StartActivity("GetTransformedMedia", ActivityKind.Client);
+        using var activity = ActivitySource.StartActivity();
         var transformedInfo = mediaPaths.GetCachePath(options, mediaEntry.OriginalHash);
+        activity?.AddBaggage("MediaId", mediaEntry.MediaId.ToString("D"));
+        activity?.AddBaggage("OriginalFile", mediaEntry.OriginalFile);
+        activity?.AddBaggage("TransformedName", transformedInfo.FullName);
         if (transformedInfo.Exists)
         {
             logger.LogInformation(
@@ -23,6 +26,7 @@ public class MediaTransformer(ILogger<MediaTransformer> logger, IMediaPaths medi
                 mediaEntry.OriginalFile,
                 transformedInfo.FullName
             );
+            activity?.AddEvent(new ActivityEvent("Already Transformed"));
             return transformedInfo;
         }
 
@@ -37,73 +41,86 @@ public class MediaTransformer(ILogger<MediaTransformer> logger, IMediaPaths medi
 
         if (options.Blur)
         {
-            logger.LogInformation(
-                "Blurring Image {TransformPath} to max size {Width}x{Height}",
-                transformedInfo.FullName,
-                options.Width,
-                options.Height
-            );
-            image.FilterType = options is { Width: < 150 } or { Height: < 150 }
-                ? FilterType.Point
-                : FilterType.Gaussian;
-            image.Depth = 4;
-            image.Alpha(AlphaOption.Remove);
-            image.Thumbnail(int.Max(50, options.Width / 3), int.Max(50, options.Height / 3));
-            image.MedianFilter(4);
-            image.Blur(0, 5);
-            image.Resize(options.Width, options.Height);
-            logger.LogInformation(
-                "Blurred Image {TransformPath} to size {Width}x{Height} - requested {RequestedWidth}x{RequestedHeight}",
-                transformedInfo.FullName,
-                image.Width,
-                image.Height,
-                options.Width,
-                options.Height
-            );
+            BlurImage(image, transformedInfo, options);
         }
         else
         {
-            image.FilterType = options is { Width: < 150 } or { Height: < 150 }
-                ? FilterType.Point
-                : FilterType.Lanczos2Sharp;
-
-            logger.LogInformation(
-                "Resizing Image {TransformPath} to max size {Width}x{Height}",
-                transformedInfo.FullName,
-                options.Width,
-                options.Height
-            );
-            image.InterpolativeResize(
-                int.Max(50, options.Width),
-                int.Max(50, options.Height),
-                options is { Width: < 150 } or { Height: < 150 }
-                    ? PixelInterpolateMethod.Integer
-                    : PixelInterpolateMethod.Average
-            );
-            image.Format = options.Format.TransformFormatToMagickFormat();
-            image.Depth = 24;
-            image.ColorSpace = ColorSpace.Rec709YCbCr;
-            image.ColorType = ColorType.TrueColor;
-            image.Quality = 95;
-            image.Enhance();
-            image.SetAttribute("hdr:write-gain-map", true);
-            image.SetProfile(ColorProfile.ColorMatchRGB, ColorTransformMode.HighRes);
-            logger.LogInformation(
-                "Resized Image {TransformPath} to size {Width}x{Height} - requested {RequestedWidth}x{RequestedHeight}",
-                transformedInfo.FullName,
-                image.Width,
-                image.Height,
-                options.Width,
-                options.Height
-            );
+            TransformImage(image, transformedInfo, options);
         }
 
+        await WriteImage(image, mediaEntry, transformedInfo, cancellationToken);
+        return transformedInfo;
+    }
+
+    private void BlurImage(MagickImage image, FileInfo transformedInfo, MediaTransformOptions options)
+    {
+        using var activity = ActivitySource.StartActivity();
+        logger.LogInformation(
+            "Blurring Image {TransformPath} to max size {Width}x{Height}",
+            transformedInfo.FullName,
+            options.Width,
+            options.Height
+        );
+        image.FilterType = options is { Width: < 150 } or { Height: < 150 } ? FilterType.Point : FilterType.Gaussian;
+        image.Depth = 4;
+        image.Alpha(AlphaOption.Remove);
+        image.Thumbnail(int.Max(50, options.Width / 3), int.Max(50, options.Height / 3));
+        image.MedianFilter(4);
+        image.Blur(0, 5);
+        image.Resize(options.Width, options.Height);
+        logger.LogInformation(
+            "Blurred Image {TransformPath} to size {Width}x{Height} - requested {RequestedWidth}x{RequestedHeight}",
+            transformedInfo.FullName,
+            image.Width,
+            image.Height,
+            options.Width,
+            options.Height
+        );
+    }
+
+    private void TransformImage(MagickImage image, FileInfo transformedInfo, MediaTransformOptions options)
+    {
+        using var activity = ActivitySource.StartActivity();
+        image.FilterType = options is { Width: < 150 } or { Height: < 150 } ? FilterType.Box : FilterType.CubicSpline;
+
+        logger.LogInformation(
+            "Resizing Image {TransformPath} to max size {Width}x{Height}",
+            transformedInfo.FullName,
+            options.Width,
+            options.Height
+        );
+        image.Scale(int.Max(50, options.Width), int.Max(50, options.Height));
+        image.Format = options.Format.TransformFormatToMagickFormat();
+        image.Depth = 24;
+        image.ColorSpace = ColorSpace.Rec709YCbCr;
+        image.ColorType = ColorType.TrueColor;
+        image.Quality = 95;
+        image.Enhance();
+        image.SetAttribute("hdr:write-gain-map", true);
+        image.SetProfile(ColorProfile.ColorMatchRGB, ColorTransformMode.HighRes);
+        logger.LogInformation(
+            "Resized Image {TransformPath} to size {Width}x{Height} - requested {RequestedWidth}x{RequestedHeight}",
+            transformedInfo.FullName,
+            image.Width,
+            image.Height,
+            options.Width,
+            options.Height
+        );
+    }
+
+    private async Task WriteImage(
+        MagickImage image,
+        Database.MediaDb.Entities.MediaEntry mediaEntry,
+        FileInfo transformedInfo,
+        CancellationToken cancellationToken = default
+    )
+    {
+        using var activity = ActivitySource.StartActivity();
         logger.LogInformation(
             "Image has been transformed {OriginalPath} {TransformedPath}",
             mediaEntry.OriginalFile,
             transformedInfo.FullName
         );
         await image.WriteAsync(transformedInfo, cancellationToken);
-        return transformedInfo;
     }
 }
