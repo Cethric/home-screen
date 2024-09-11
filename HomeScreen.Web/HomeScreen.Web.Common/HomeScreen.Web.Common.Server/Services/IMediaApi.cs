@@ -12,8 +12,8 @@ public interface IMediaApi
 
     Task<TransformMediaState> TransformMedia(
         Guid mediaId,
-        int width,
-        int height,
+        uint width,
+        uint height,
         bool blur,
         MediaTransformOptionsFormat format,
         CancellationToken cancellationToken = default
@@ -21,8 +21,8 @@ public interface IMediaApi
 
     Task<FileResponse> DownloadMedia(
         Guid mediaId,
-        int width,
-        int height,
+        uint width,
+        uint height,
         bool blur,
         MediaTransformOptionsFormat format,
         CancellationToken cancellationToken = default

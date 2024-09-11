@@ -42,8 +42,8 @@ message MediaEntry {
 
 message TransformMediaRequest {
   string id = 1;
-  int32 width = 2;
-  int32 height = 3;
+  uint32 width = 2;
+  uint32 height = 3;
   bool blur = 4;
   TransformMediaFormat media_format = 5;
 }

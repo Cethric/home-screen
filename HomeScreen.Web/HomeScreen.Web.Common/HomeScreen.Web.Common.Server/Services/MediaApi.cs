@@ -58,8 +58,8 @@ public class MediaApi(ILogger<MediaApi> logger, MediaGrpcClient client, IMediaCl
 
     public async Task<TransformMediaState> TransformMedia(
         Guid mediaId,
-        int width,
-        int height,
+        uint width,
+        uint height,
         bool blur,
         MediaTransformOptionsFormat format,
         CancellationToken cancellationToken = default
@@ -91,8 +91,8 @@ public class MediaApi(ILogger<MediaApi> logger, MediaGrpcClient client, IMediaCl
 
     public async Task<FileResponse> DownloadMedia(
         Guid mediaId,
-        int width,
-        int height,
+        uint width,
+        uint height,
         bool blur,
         MediaTransformOptionsFormat format,
         CancellationToken cancellationToken = default
@@ -102,8 +102,8 @@ public class MediaApi(ILogger<MediaApi> logger, MediaGrpcClient client, IMediaCl
         logger.LogInformation("Downloading media for {MediaId}", mediaId);
         var response = await mediaFileClient.MediaAsync(
             mediaId,
-            width,
-            height,
+            (int)width,
+            (int)height,
             blur,
             format,
             cancellationToken

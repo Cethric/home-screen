@@ -29,8 +29,8 @@ public static class MediaEndpoints
 
     private static async Task<Results<FileStreamHttpResult, NotFound>> DownloadMedia(
         Guid mediaId,
-        int width,
-        int height,
+        uint width,
+        uint height,
         bool blur,
         MediaTransformOptionsFormat format,
         IMediaApi mediaApi,

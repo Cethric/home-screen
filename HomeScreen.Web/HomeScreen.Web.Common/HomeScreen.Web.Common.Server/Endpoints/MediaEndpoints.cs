@@ -74,8 +74,8 @@ public static class MediaEndpoints
 
     private static async Task<Results<FileStreamHttpResult, NotFound, BadRequest>> DownloadMedia(
         Guid mediaId,
-        int width,
-        int height,
+        uint width,
+        uint height,
         bool blur,
         MediaTransformOptionsFormat format,
         IMediaApi service,
@@ -111,8 +111,8 @@ public static class MediaEndpoints
 
     private static async Task<Results<NotFound, AcceptedAtRoute<AcceptedTransformMeta>>> TransformMedia(
         Guid mediaId,
-        int width,
-        int height,
+        uint width,
+        uint height,
         bool blur,
         MediaTransformOptionsFormat format,
         IMediaApi service,
@@ -179,8 +179,8 @@ public static class MediaEndpoints
 internal class AcceptedTransformMeta
 {
     public Guid MediaId { get; set; }
-    public int Width { get; set; }
-    public int Height { get; set; }
+    public uint Width { get; set; }
+    public uint Height { get; set; }
     public bool Blur { get; set; }
     public MediaTransformOptionsFormat Format { get; set; }
     public string Url { get; set; } = string.Empty;

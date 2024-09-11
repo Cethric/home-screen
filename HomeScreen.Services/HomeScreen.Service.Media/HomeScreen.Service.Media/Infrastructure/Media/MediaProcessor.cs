@@ -3,6 +3,7 @@ using System.Globalization;
 using HomeScreen.Database.MediaDb.Entities;
 using HomeScreen.Service.Media.Infrastructure.Location;
 using ImageMagick;
+using ImageMagick.Colors;
 
 namespace HomeScreen.Service.Media.Infrastructure.Media;
 

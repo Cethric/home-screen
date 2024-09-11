@@ -64,7 +64,7 @@ public class MediaTransformer(ILogger<MediaTransformer> logger, IMediaPaths medi
         image.FilterType = options is { Width: < 150 } or { Height: < 150 } ? FilterType.Point : FilterType.Gaussian;
         image.Depth = 4;
         image.Alpha(AlphaOption.Remove);
-        image.Thumbnail(int.Max(50, options.Width / 3), int.Max(50, options.Height / 3));
+        image.Thumbnail(uint.Max(50, options.Width / 3), uint.Max(50, options.Height / 3));
         image.MedianFilter(4);
         image.Blur(0, 5);
         image.Resize(options.Width, options.Height);
@@ -89,7 +89,7 @@ public class MediaTransformer(ILogger<MediaTransformer> logger, IMediaPaths medi
             options.Width,
             options.Height
         );
-        image.Scale(int.Max(50, options.Width), int.Max(50, options.Height));
+        image.Scale(uint.Max(50, options.Width), uint.Max(50, options.Height));
         image.Format = options.Format.TransformFormatToMagickFormat();
         image.Depth = 24;
         image.ColorSpace = ColorSpace.Rec709YCbCr;
