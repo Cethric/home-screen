@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using System.Globalization;
 using HomeScreen.Database.MediaDb.Entities;
 using HomeScreen.Service.Media.Infrastructure.Location;
 using ImageMagick;
@@ -7,15 +6,19 @@ using ImageMagick.Colors;
 
 namespace HomeScreen.Service.Media.Infrastructure.Media;
 
-public class MediaProcessor(ILogger<MediaProcessor> logger, IMediaPaths mediaPaths, ILocationApi locationApi)
-    : IMediaProcessor
+public class MediaProcessor(
+    ILogger<MediaProcessor> logger,
+    IMediaPaths mediaPaths,
+    IMediaDateTimeProcessor mediaDateTimeProcessor,
+    ILocationApi locationApi
+) : IMediaProcessor
 {
     private static ActivitySource ActivitySource => new(nameof(MediaHasher));
 
     public async Task<Database.MediaDb.Entities.MediaEntry> ProcessMediaEntry(
         FileInfo file,
         string hash,
-        CancellationToken cancellationToken
+        CancellationToken cancellationToken = default
     )
     {
         using var activity = ActivitySource.StartActivity();
@@ -27,8 +30,9 @@ public class MediaProcessor(ILogger<MediaProcessor> logger, IMediaPaths mediaPat
             using var image = new MagickImage(stream);
             image.AutoOrient();
             @event?.Stop();
-            var profile = image.GetExifProfile();
             var histogram = GetBaseImageColour(image);
+            var (capturedUtc, capturedOffset) =
+                await mediaDateTimeProcessor.MediaCaptureDate(file, hash, cancellationToken);
             var entry = new Database.MediaDb.Entities.MediaEntry(file, hash)
                         {
                             Enabled = true,
@@ -36,13 +40,16 @@ public class MediaProcessor(ILogger<MediaProcessor> logger, IMediaPaths mediaPat
                             BaseColourG = histogram[1],
                             BaseColourR = histogram[0],
                             ImageRatioWidth = image.Width / (double)image.Height,
-                            ImageRatioHeight = image.Height / (double)image.Width
+                            ImageRatioHeight = image.Height / (double)image.Width,
+                            CapturedUtc = capturedUtc,
+                            CapturedOffset = capturedOffset,
                         };
 
-            if (profile != null)
+            var profile = image.GetExifProfile();
+            if (profile is not null)
             {
                 await ProcessLocation(profile, entry, cancellationToken);
-                ProcessDateTime(profile, entry, file);
+
                 entry.Notes = profile.GetValue(ExifTag.ImageDescription)?.Value ?? "";
             }
 
@@ -91,62 +98,6 @@ public class MediaProcessor(ILogger<MediaProcessor> logger, IMediaPaths mediaPat
                    {
                        Notes = $"Corrupt image provided {file.FullName}"
                    };
-        }
-    }
-
-    private static void ProcessDateTime(IExifProfile profile, Database.MediaDb.Entities.MediaEntry entry, FileInfo info)
-    {
-        using var activity = ActivitySource.StartActivity();
-        if (DateTime.TryParseExact(
-                profile.GetValue(ExifTag.DateTimeOriginal)?.Value,
-                "yyyy:MM:dd HH:mm:ss",
-                CultureInfo.InvariantCulture,
-                DateTimeStyles.AllowWhiteSpaces,
-                out var dateTimeOriginal
-            ))
-        {
-            var offset = TimeSpan.TryParse(
-                profile.GetValue(ExifTag.OffsetTimeOriginal)?.Value.Replace("+", ""),
-                new CultureInfo("en-AU"),
-                out var tryOffset
-            )
-                ? tryOffset
-                : TimeSpan.Zero;
-            entry.CapturedOffset = offset;
-            entry.CapturedUtc = new DateTimeOffset(dateTimeOriginal, offset).ToOffset(TimeSpan.Zero);
-        }
-        else if (DateTime.TryParseExact(
-                     profile.GetValue(ExifTag.DateTime)?.Value,
-                     "yyyy:MM:dd HH:mm:ss",
-                     CultureInfo.InvariantCulture,
-                     DateTimeStyles.AllowWhiteSpaces,
-                     out var dateTime
-                 ))
-        {
-            var offset = TimeSpan.TryParse(
-                profile.GetValue(ExifTag.OffsetTime)?.Value.Replace("+", ""),
-                new CultureInfo("en-AU"),
-                out var tryOffset
-            )
-                ? tryOffset
-                : TimeSpan.Zero;
-            entry.CapturedOffset = offset;
-            entry.CapturedUtc = new DateTimeOffset(dateTime, offset).ToOffset(TimeSpan.Zero);
-        }
-        else
-        {
-            if (info.LastWriteTimeUtc < info.CreationTimeUtc)
-            {
-                entry.CapturedUtc = info.LastWriteTimeUtc;
-                entry.CapturedOffset = TimeZoneInfo.FindSystemTimeZoneById("E. Australia Standard Time")
-                    .GetUtcOffset(info.LastWriteTime);
-            }
-            else
-            {
-                entry.CapturedUtc = info.CreationTimeUtc;
-                entry.CapturedOffset = TimeZoneInfo.FindSystemTimeZoneById("E. Australia Standard Time")
-                    .GetUtcOffset(info.CreationTime);
-            }
         }
     }
 

@@ -76,19 +76,41 @@ public class MediaPaths(ILogger<MediaPaths> logger, MediaDirectories mediaDirect
         return fileInfo;
     }
 
-    public List<FileInfo> GetRawFiles()
+    private async Task<IEnumerable<string>> GetFileNames(CancellationToken cancellationToken = default)
+    {
+        using var activity = ActivitySource.StartActivity();
+        logger.LogInformation("Getting file names from {SearchDirectory}", mediaDirectories.MediaSourceDir);
+        var files = await Directory
+            .EnumerateFiles(mediaDirectories.MediaSourceDir, "*.*", SearchOption.TopDirectoryOnly)
+            .ToAsyncEnumerable()
+            .WhereAwaitWithCancellation(
+                (f, cancelation) => AllowedImageExtensions.ToAsyncEnumerable()
+                    .ContainsAsync(Path.GetExtension(f).ToLowerInvariant(), cancelation)
+            )
+            .ToListAsync(cancellationToken);
+        logger.LogInformation("Found files names from {SearchDirectory}", mediaDirectories.MediaSourceDir);
+        return files;
+    }
+
+    public async Task<IEnumerable<FileInfo>> GetRawFiles(CancellationToken cancellationToken = default)
     {
         using var activity = ActivitySource.StartActivity();
         logger.LogInformation("Getting raw files from {SearchDirectory}", mediaDirectories.MediaSourceDir);
-        var files = Directory.EnumerateFiles(mediaDirectories.MediaSourceDir, "*.*", SearchOption.TopDirectoryOnly)
-            .Where(f => AllowedImageExtensions.Contains(Path.GetExtension(f).ToLowerInvariant()))
-            .Select(f => new FileInfo(f))
-            .ToList();
-        logger.LogInformation(
-            "Found {FilesCount} raw files in {SearchDirectory}",
-            files.Count,
-            mediaDirectories.MediaSourceDir
-        );
+        var fileNames = await GetFileNames(cancellationToken);
+        var files = fileNames.Select(f => new FileInfo(f));
+        logger.LogInformation("Found raw files in {SearchDirectory}", mediaDirectories.MediaSourceDir);
         return files;
+    }
+
+    public async Task<ulong> TotalMedia(CancellationToken cancellationToken = default)
+    {
+        var fileNames = await GetFileNames(cancellationToken);
+        var count = fileNames.Count();
+        if (count <= 0)
+        {
+            return 0;
+        }
+
+        return (ulong)count;
     }
 }

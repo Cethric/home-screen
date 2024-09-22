@@ -19,4 +19,12 @@ public interface IMediaApi
         MediaTransformOptions options,
         CancellationToken cancellationToken
     );
+
+    Task<ulong> GetTotalMedia(CancellationToken cancellationToken);
+
+    IAsyncEnumerable<MediaEntry> GetPaginatedMedia(
+        int requestOffset,
+        int requestLength,
+        CancellationToken cancellationToken
+    );
 }

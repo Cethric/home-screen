@@ -1,10 +1,9 @@
 ﻿using System.Diagnostics;
 using System.Security.Cryptography;
-using Microsoft.Extensions.Caching.Distributed;
 
 namespace HomeScreen.Service.Media.Infrastructure.Media;
 
-public class MediaHasher(ILogger<MediaHasher> logger, IDistributedCache distributedCache) : IMediaHasher
+public class MediaHasher(ILogger<MediaHasher> logger, IGenericCache genericCache) : IMediaHasher
 {
     private static ActivitySource ActivitySource => new(nameof(MediaHasher));
 
@@ -13,7 +12,7 @@ public class MediaHasher(ILogger<MediaHasher> logger, IDistributedCache distribu
         using var activity = ActivitySource.StartActivity();
         logger.LogInformation("Hashing file {FileName}", fileInfo.FullName);
         activity?.AddBaggage("FullName", fileInfo.FullName);
-        var hash = await distributedCache.GetStringAsync(fileInfo.FullName, cancellationToken);
+        var hash = await genericCache.ReadCache(fileInfo.FullName, cancellationToken);
         if (!string.IsNullOrEmpty(hash))
         {
             activity?.AddBaggage("Hash", hash);
@@ -39,7 +38,7 @@ public class MediaHasher(ILogger<MediaHasher> logger, IDistributedCache distribu
         logger.LogInformation("Hashing file {FileName} failed. Using random GUID", fileInfo.FullName);
         hash = Guid.NewGuid().ToString("N");
         activity?.AddBaggage("Hash", hash);
-        await distributedCache.SetStringAsync(fileInfo.FullName, hash, cancellationToken);
+        await genericCache.WriteCache(fileInfo.FullName, hash, cancellationToken);
         return hash;
     }
 
@@ -53,7 +52,7 @@ public class MediaHasher(ILogger<MediaHasher> logger, IDistributedCache distribu
         var fileHash = await hasher.ComputeHashAsync(fileStream, cancellationToken);
         var hash = BitConverter.ToString(fileHash).Replace("-", string.Empty);
         activity?.AddBaggage("Hash", hash);
-        await distributedCache.SetStringAsync(fileInfo.FullName, hash, cancellationToken);
+        await genericCache.WriteCache(fileInfo.FullName, hash, cancellationToken);
         return hash;
     }
 }

@@ -68,6 +68,30 @@ public class MediaService(ILogger<MediaService> logger, IMediaApi mediaApi) : Me
         return new TransformMediaResponse { State = TransformStateToTransformMediaState(response) };
     }
 
+    public override async Task PaginateMedia(
+        PaginateMediaRequest request,
+        IServerStreamWriter<PaginateMediaResponse> responseStream,
+        ServerCallContext context
+    )
+    {
+        using var activity = ActivitySource.StartActivity();
+        activity?.AddBaggage("Offset", request.Offset.ToString());
+        activity?.AddBaggage("Length", request.Length.ToString());
+        logger.LogInformation("Requested media pagination: {Offset}, {Length}", request.Offset, request.Length);
+        var totalMedia = await mediaApi.GetTotalMedia(context.CancellationToken);
+        await foreach (var mediaEntry in mediaApi.GetPaginatedMedia(
+                           request.Offset,
+                           request.Length,
+                           context.CancellationToken
+                       ))
+        {
+            await responseStream.WriteAsync(
+                new PaginateMediaResponse { Entry = mediaEntry, Total = totalMedia },
+                context.CancellationToken
+            );
+        }
+    }
+
     private static TransformMediaState TransformStateToTransformMediaState(TransformState response)
     {
         using var activity = ActivitySource.StartActivity();

@@ -10,6 +10,8 @@ service Media {
   rpc ToggleMedia(ToggleMediaRequest) returns (MediaEntry);
 
   rpc TransformMedia(TransformMediaRequest) returns (TransformMediaResponse);
+
+  rpc PaginateMedia(PaginateMediaRequest) returns (stream PaginateMediaResponse);
 }
 
 message MediaRequest {
@@ -50,6 +52,16 @@ message TransformMediaRequest {
 
 message TransformMediaResponse {
   TransformMediaState state = 1;
+}
+
+message PaginateMediaRequest {
+  int32 offset = 1;
+  int32 length = 2;
+}
+
+message PaginateMediaResponse {
+  uint64 total = 1;
+  MediaEntry entry = 2;
 }
 
 enum TransformMediaState {
