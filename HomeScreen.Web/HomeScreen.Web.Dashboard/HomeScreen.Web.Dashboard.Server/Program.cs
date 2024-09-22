@@ -1,5 +1,7 @@
 using HomeScreen.ServiceDefaults;
 using HomeScreen.Web.Dashboard.Server.Endpoints;
+using HomeScreen.Web.Dashboard.Server.Services;
+using NJsonSchema.Generation;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,9 +9,18 @@ var builder = WebApplication.CreateBuilder(args);
 builder.AddServiceDefaults(GitVersionInformation.InformationalVersion);
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddOpenApiDocument(
+    document =>
+    {
+        document.Description = "Home Dashboard API";
+        document.SchemaSettings.DefaultReferenceTypeNullHandling = ReferenceTypeNullHandling.NotNull;
+        document.SchemaSettings.GenerateExamples = true;
+        document.SchemaSettings.GenerateEnumMappingDescription = true;
+    }
+);
+builder.Services.AddTransient<IConfigApi, ConfigApi>();
 
 var app = builder.Build();
 app.MapDefaultEndpoints();
@@ -18,11 +29,11 @@ app.RegisterConfigEndpoints();
 app.UseDefaultFiles();
 app.UseStaticFiles();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseOpenApi(p => p.Path = "/swagger/{documentName}/swagger.yaml");
+    app.UseSwaggerUi(p => p.DocumentPath = "/swagger/{documentName}/swagger.yaml");
+    app.UseDeveloperExceptionPage();
 }
 
 app.UseHttpsRedirection();

@@ -1,0 +1,8 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body,
+#app {
+  @apply bg-gray-900 h-svh w-svw flex flex-col;
+}
