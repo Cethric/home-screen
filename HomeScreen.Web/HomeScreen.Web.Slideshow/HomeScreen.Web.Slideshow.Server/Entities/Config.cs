@@ -5,5 +5,8 @@ namespace HomeScreen.Web.Slideshow.Server.Entities;
 public record Config
 {
     [Required]
-    public string CommonUrl { get; init; } = string.Empty;
+    public required string CommonUrl { get; init; }
+
+    [Required]
+    public required string DashboardUrl { get; init; }
 }

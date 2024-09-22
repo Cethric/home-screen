@@ -13,7 +13,7 @@ import {
   MediaApiProvider,
   WeatherApiProvider,
 } from '@homescreen/web-common-components';
-import { loadConfig } from '@/domain/client/config';
+import { ConfigProvider, loadConfig } from '@/domain/client/config';
 
 (async () => {
   const response = await loadConfig();
@@ -21,7 +21,7 @@ import { loadConfig } from '@/domain/client/config';
   const commonResponse = await commonConfigApi.config();
 
   const app = createApp(App)
-    .provide('config', response)
+    .provide(ConfigProvider, response)
     .provide(MediaApiProvider, getMediaClient(response.commonUrl))
     .provide(WeatherApiProvider, getWeatherClient(response.commonUrl))
     .provide(ConfigApiProvider, commonConfigApi);

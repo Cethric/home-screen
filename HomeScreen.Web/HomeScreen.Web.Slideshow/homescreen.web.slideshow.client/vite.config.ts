@@ -53,11 +53,10 @@ const makeServerConfig = (): UserConfig['server'] => {
             '/api': {
                 target: target,
                 changeOrigin: true,
-                // rewrite: (path) => path.replace(/^\/api/, ''),
                 secure: false,
             },
         },
-        port: parseInt(process.env.PORT ?? '5173'),
+        port: 5173,
         https: {
             key: fs.readFileSync(keyFilePath),
             cert: fs.readFileSync(certFilePath),

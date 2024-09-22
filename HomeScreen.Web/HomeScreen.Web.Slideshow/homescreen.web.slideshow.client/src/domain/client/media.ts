@@ -1,20 +1,7 @@
 import {
-  type IMediaClientWithStreaming,
   injectMediaApi,
   type MediaItem,
 } from '@homescreen/web-common-components';
-
-export async function* loadMedia(
-  mediaApi: IMediaClientWithStreaming,
-  total: number,
-  signal?: AbortSignal,
-): AsyncGenerator<MediaItem> {
-  const request = mediaApi.randomStream(total, signal);
-  for await (const response of request) {
-    signal?.throwIfAborted();
-    yield response.result;
-  }
-}
 
 export const toggleMedia = async (
   imageId: string,
