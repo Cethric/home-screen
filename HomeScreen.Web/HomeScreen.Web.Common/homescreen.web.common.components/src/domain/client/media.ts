@@ -100,7 +100,7 @@ export interface IMediaClientWithStreaming extends IMediaClient {
     offset: number,
     length: number,
     signal?: AbortSignal,
-  ): AsyncGenerator<SwaggerResponse<MediaItem>>;
+  ): AsyncGenerator<SwaggerResponse<PaginatedMediaItem>>;
 }
 
 class MediaClientWithStreaming

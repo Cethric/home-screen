@@ -1,0 +1,31 @@
+﻿{
+  "name": "@homescreen/eslint-config",
+  "version": "0.1.0",
+  "private": true,
+  "type": "commonjs",
+  "main": "index.cjs",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Cethric/home-screen.git"
+  },
+  "packageManager": "pnpm@9.11.0",
+  "engines": {
+    "node": ">=20",
+    "pnpm": ">=9"
+  },
+  "dependencies": {
+    "@rushstack/eslint-patch": "^1.10.4",
+    "@vue/eslint-config-typescript": "^13.0.0",
+    "@vue/eslint-config-prettier": "^9.0.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-storybook": "^0.9.0--canary.165.991522a.0",
+    "eslint-plugin-tailwindcss": "^3.17.4",
+    "eslint-plugin-vue": "^9.28.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.1"
+  },
+  "peerDependencies": {
+    "eslint": "^8.57.1"
+  }
+}

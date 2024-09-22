@@ -1,7 +1,5 @@
 <template>
-  <header
-    class="sticky left-0 right-0 top-0 shrink-0 grow-0 bg-amber-800 px-4 py-2"
-  >
+  <header class="sticky inset-x-0 top-0 shrink-0 grow-0 bg-amber-800 px-4 py-2">
     <nav class="bg-amber-800">
       <ul class="flex list-none flex-row gap-2">
         <NavLink

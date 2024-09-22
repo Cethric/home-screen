@@ -1,0 +1,24 @@
+﻿{
+  "name": "@homescreen/prettier-config",
+  "version": "0.1.0",
+  "private": true,
+  "main": "index.json",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Cethric/home-screen.git"
+  },
+  "packageManager": "pnpm@9.11.0",
+  "engines": {
+    "node": ">=20",
+    "pnpm": ">=9"
+  },
+  "dependencies": {
+    "prettier-plugin-tailwindcss": "^0.6.6"
+  },
+  "devDependencies": {
+    "prettier": "^3.3.3"
+  },
+  "peerDependencies": {
+    "prettier": "^3.3.3"
+  }
+}

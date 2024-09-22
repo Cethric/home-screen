@@ -1,7 +1,7 @@
 <template>
   <div
     ref="element"
-    class="gallery flex flex-row flex-wrap items-center justify-center gap-2 overflow-y-auto overflow-x-clip"
+    class="flex flex-row flex-wrap items-center justify-center gap-2 overflow-y-auto overflow-x-clip"
   >
     <GalleryImage v-for="image in images" :key="image.id" :image="image" />
   </div>
@@ -26,7 +26,7 @@ const { isLoading, progress } = useNProgress(0, {
   speed: 0,
 });
 
-const currentTotal = ref<number>(10);
+const currentTotal = ref<number>(1);
 const element = ref<HTMLDivElement | null>(null);
 
 useInfiniteScroll(
@@ -40,11 +40,13 @@ useInfiniteScroll(
 
     let loaded = 0;
     for await (const item of media) {
-      const transformed = transformMediaItemToImage(item.result.mediaItem);
-      console.log('Loaded image', item.result.mediaItem, transformed);
-      images.value.push(transformed);
-      progress.value = ++loaded / 20;
-      currentTotal.value = item.result.totalPages;
+      if (item.result.mediaItem) {
+        const transformed = transformMediaItemToImage(item.result.mediaItem);
+        console.log('Loaded image', item.result.mediaItem, transformed);
+        images.value.push(transformed);
+        progress.value = ++loaded / 20;
+      }
+      currentTotal.value = item.result.totalPages ?? 0;
     }
 
     progress.value = 1;
@@ -57,5 +59,3 @@ useInfiniteScroll(
   },
 );
 </script>
-
-<style lang="scss" scoped></style>

@@ -1,6 +1,8 @@
+import config from '@homescreen/postcss-config';
+
 export default {
-    plugins: {
-        tailwindcss: {},
-        autoprefixer: {},
-    },
+  ...config,
+  plugins: {
+    ...config.plugins,
+  },
 };

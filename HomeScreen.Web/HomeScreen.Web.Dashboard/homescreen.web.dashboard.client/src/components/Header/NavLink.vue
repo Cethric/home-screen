@@ -3,7 +3,7 @@
     <a
       v-if="isExternalLink"
       :class="inactiveClass"
-      :href="to"
+      :href="to as string"
       rel="opener external noreferrer nofollow"
       target="_self"
       v-bind="$attrs"

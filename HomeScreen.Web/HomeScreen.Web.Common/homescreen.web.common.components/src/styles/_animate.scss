@@ -33,7 +33,8 @@ $rotate-deg: calc(var(--rotation) * 1deg);
 
   90% {
     opacity: 100;
-    transform: translate($offset-dvw, $offset-dvh) rotate(calc($rotate-deg / 2)) scale(1.03);
+    transform: translate($offset-dvw, $offset-dvh) rotate(calc($rotate-deg / 2))
+      scale(1.03);
   }
 }
 
@@ -46,7 +47,8 @@ $rotate-deg: calc(var(--rotation) * 1deg);
 
   100% {
     opacity: 0;
-    transform: translate($offset-dvw, $offset-dvh) rotate($rotate-deg) scale(0.85);
+    transform: translate($offset-dvw, $offset-dvh) rotate($rotate-deg)
+      scale(0.85);
     animation-timing-function: ease;
   }
 }
