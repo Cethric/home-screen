@@ -1,6 +1,6 @@
 ﻿Push-Location -Path $PSScriptRoot/../
 
-version = $( dotnet tool run dotnet-gitversion /output json /showvariable FullSemVer )
+$version = $( dotnet tool run dotnet-gitversion /output json /showvariable FullSemVer )
 
 Read-Host "Confirm Destroy"
 

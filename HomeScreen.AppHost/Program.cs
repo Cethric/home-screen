@@ -15,6 +15,8 @@ var sentryDsn = builder.AddParameter("SentryDSN", true);
 var clientSentryDsn = builder.AddParameter("ClientSentryDSN", true);
 
 var commonAddress = builder.AddParameter("CommonAddress");
+var dashboardAddress = builder.AddParameter("DashboardAddress");
+var slideshowAddress = builder.AddParameter("SlideshowAddress");
 
 var redis = builder.AddRedis("homescreen-redis")
     .WithImageTag("latest")
@@ -72,22 +74,27 @@ var common = builder.AddProject<HomeScreen_Web_Common_Server>("homescreen-web-co
     .WithEnvironment("SENTRY_DSN", sentryDsn)
     .WithEnvironment("CLIENT_SENTRY_DSN", clientSentryDsn);
 
-builder.AddProject<HomeScreen_Web_Slideshow_Server>("homescreen-web-slideshow-server")
-    .AsHttp2Service()
-    .WithOtlpExporter()
-    .WithReference(redis)
-    .WithReference(common)
-    .WithEnvironment("SENTRY_DSN", sentryDsn)
-    .WithEnvironment("CommonAddress", commonAddress);
-
-builder.AddProject<HomeScreen_Web_Dashboard_Server>("homescreen-web-dashboard-server")
+var dashboard = builder.AddProject<HomeScreen_Web_Dashboard_Server>("homescreen-web-dashboard-server")
     .AsHttp2Service()
     .WithOtlpExporter()
     .WithReference(redis)
     .WithReference(dashboardDb)
     .WithReference(common)
     .WithEnvironment("SENTRY_DSN", sentryDsn)
-    .WithEnvironment("CommonAddress", commonAddress);
+    .WithEnvironment("CommonAddress", commonAddress)
+    .WithEnvironment("SlideshowAddress", slideshowAddress);
+
+var slideshow = builder.AddProject<HomeScreen_Web_Slideshow_Server>("homescreen-web-slideshow-server")
+    .AsHttp2Service()
+    .WithOtlpExporter()
+    .WithReference(redis)
+    .WithReference(common)
+    .WithEnvironment("SENTRY_DSN", sentryDsn)
+    .WithEnvironment("CommonAddress", commonAddress)
+    .WithEnvironment("DashboardAddress", dashboardAddress);
+
+slideshow.WithReference(dashboard);
+dashboard.WithReference(slideshow);
 
 var app = builder.Build();
 app.Services.GetRequiredService<ILogger<Program>>()
