@@ -11,8 +11,6 @@ public class ConfigApi(IConfiguration configuration) : IConfigApi
     {
         using var activity = ActivitySource.StartActivity(nameof(ResolveConfig), ActivityKind.Client);
 
-        return Task.FromResult<Config?>(
-            new Config { MediaUrl = "", SentryDsn = configuration["CLIENT_SENTRY_DSN"] ?? string.Empty, }
-        );
+        return Task.FromResult<Config?>(new Config { SentryDsn = configuration["CLIENT_SENTRY_DSN"] ?? string.Empty });
     }
 }

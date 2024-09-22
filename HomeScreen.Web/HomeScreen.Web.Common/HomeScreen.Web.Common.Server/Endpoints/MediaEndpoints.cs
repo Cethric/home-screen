@@ -28,6 +28,13 @@ public static class MediaEndpoints
                 $"{MediaTypeNames.Application.JsonSequence};charset={Encoding.UTF8.WebName}"
             )
             .WithRequestTimeout(TimeSpan.FromMinutes(2));
+        group.MapGet("paginate", PaginateMedia)
+            .WithName(nameof(PaginateMedia))
+            .Produces<IEnumerable<PaginatedMediaItem>>(
+                StatusCodes.Status200OK,
+                $"{MediaTypeNames.Application.JsonSequence};charset={Encoding.UTF8.WebName}"
+            )
+            .WithRequestTimeout(TimeSpan.FromMinutes(2));
         group.MapPatch("{mediaId:guid:required}/toggle", ToggleMedia).WithName(nameof(ToggleMedia));
         group.MapGet("{mediaId:guid:required}/download/{width:int:required}/{height:int:required}", DownloadMedia)
             .WithName(nameof(DownloadMedia))
@@ -55,6 +62,17 @@ public static class MediaEndpoints
         return Task.FromResult(
             CustomTypedResults.JsonLines(
                 service.RandomMedia(count, cancellationToken),
+                new JsonSerializerOptions(JsonSerializerDefaults.Web)
+            )
+        );
+    }
+
+    private static Task<JsonLines<PaginatedMediaItem>> PaginateMedia(int offset, int length, IMediaApi service, CancellationToken cancellationToken)
+    {
+        using var activity = ActivitySource.StartActivity("PaginateMedia", ActivityKind.Client);
+        return Task.FromResult(
+            CustomTypedResults.JsonLines(
+                service.PaginateMedia(offset, length, cancellationToken),
                 new JsonSerializerOptions(JsonSerializerDefaults.Web)
             )
         );

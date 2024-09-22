@@ -2,7 +2,15 @@
   <div>
     <ModalDialog @hide="() => emits('resume')" @show="() => emits('pause')">
       <template #activator="props">
-        <PolaroidCard :image="image" v-bind="props" />
+        <PolaroidCard :image="image" v-bind="props">
+          <template #details="{ image }">
+            <p class="text-center">
+              {{ image.dateTime.toFormat('DDDD') }}
+              &nbsp;
+              {{ image.dateTime.toFormat('TTT') }}
+            </p>
+          </template>
+        </PolaroidCard>
       </template>
       <template #header-center>
         {{ image.dateTime.toFormat('DDDD') }}
@@ -55,5 +63,3 @@ defineProps<{
 }>();
 const emits = defineEmits<{ resume: []; pause: [] }>();
 </script>
-
-<style lang="scss" scoped></style>

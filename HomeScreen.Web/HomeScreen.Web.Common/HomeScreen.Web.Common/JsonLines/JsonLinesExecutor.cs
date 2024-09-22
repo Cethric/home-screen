@@ -35,7 +35,7 @@ public class JsonLinesExecutor<TValue>(ILogger<JsonLinesExecutor<TValue>> logger
 
         await foreach (var value in jsonLines.Data)
         {
-            await this.ProgressLine(httpContext, value, response, jsonLines.JsonSerializerOptions);
+            await ProgressLine(httpContext, value, response, jsonLines.JsonSerializerOptions);
         }
 
         logger.LogDebug("Executed JsonLines");

@@ -17,7 +17,7 @@ public class MediaApi(ILogger<MediaApi> logger, MediaGrpcClient client, IMediaCl
         [EnumeratorCancellation] CancellationToken cancellationToken = default
     )
     {
-        using var activity = ActivitySource.StartActivity("RandomMedia", ActivityKind.Client);
+        using var activity = ActivitySource.StartActivity();
         logger.LogInformation("RandomMedia start");
 
         using var response = client.RandomMedia(
@@ -41,6 +41,37 @@ public class MediaApi(ILogger<MediaApi> logger, MediaGrpcClient client, IMediaCl
         }
 
         logger.LogInformation("RandomMedia end - processed all random media items");
+    }
+
+    public async IAsyncEnumerable<PaginatedMediaItem> PaginateMedia(
+        int offset,
+        int length,
+        [EnumeratorCancellation] CancellationToken cancellationToken = default
+    )
+    {
+        using var activity = ActivitySource.StartActivity();
+        logger.LogInformation("PaginateMedia start");
+        using var response = client.PaginateMedia(
+            new PaginateMediaRequest { Offset = offset, Length = length },
+            new CallOptions().WithDeadline(DateTimeOffset.UtcNow.AddMinutes(10).UtcDateTime)
+                .WithCancellationToken(cancellationToken)
+                .WithWaitForReady()
+        );
+        if (response is null)
+        {
+            logger.LogInformation("PaginateMedia end - no media items");
+            yield break;
+        }
+
+        while (await response.ResponseStream.MoveNext(cancellationToken))
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            var entry = response.ResponseStream.Current;
+            logger.LogInformation("PaginateMedia progress");
+            yield return TransformPaginatedMedia(entry);
+        }
+
+        logger.LogInformation("PaginateMedia end - processed all media items");
     }
 
     public async Task<MediaItem?> ToggleMedia(Guid mediaId, bool enabled, CancellationToken cancellationToken = default)
@@ -135,4 +166,7 @@ public class MediaApi(ILogger<MediaApi> logger, MediaGrpcClient client, IMediaCl
             BaseG = entry.BaseG,
             BaseR = entry.BaseR
         };
+
+    private static PaginatedMediaItem TransformPaginatedMedia(PaginateMediaResponse entry) =>
+        new() { MediaItem = TransformMedia(entry.Entry), TotalPages = entry.Total };
 }
