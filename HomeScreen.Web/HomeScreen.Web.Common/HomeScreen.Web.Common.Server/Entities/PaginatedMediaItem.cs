@@ -3,5 +3,5 @@
 public class PaginatedMediaItem
 {
     public required MediaItem MediaItem { get; set; }
-    public required ulong TotalPages { get; set; }
+public required ulong TotalPages { get; set; }
 }
