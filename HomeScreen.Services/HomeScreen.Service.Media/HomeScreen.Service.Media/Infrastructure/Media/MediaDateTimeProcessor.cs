@@ -28,7 +28,7 @@ public class MediaDateTimeProcessor(ILogger<MediaDateTimeProcessor> logger, IGen
             return (cache.DateTime, cache.Offset);
         }
 
-        logger.LogInformation("Determining media date for {FileName}", file.FullName);
+        logger.LogDebug("Determining media date for {FileName}", file.FullName);
         try
         {
             var metadata = ImageMetadataReader.ReadMetadata(file.FullName);
@@ -48,7 +48,7 @@ public class MediaDateTimeProcessor(ILogger<MediaDateTimeProcessor> logger, IGen
                 new CacheEntry { DateTime = dateTimeOffset, Offset = offsetSpan },
                 cancellationToken
             );
-            logger.LogInformation("Using media capture date {FileName}", file.FullName);
+            logger.LogDebug("Using media capture date {FileName}", file.FullName);
             return (dateTimeOffset, offsetSpan);
         }
         catch (IOException ex)
@@ -60,7 +60,7 @@ public class MediaDateTimeProcessor(ILogger<MediaDateTimeProcessor> logger, IGen
             logger.LogError(ex, "Unable to process file - AccessException {FileName}", file.FullName);
         }
 
-        logger.LogInformation("Using media file date {FileName}", file.FullName);
+        logger.LogDebug("Using media file date {FileName}", file.FullName);
         return await ProcessFileTime(file, hash, cancellationToken);
     }
 

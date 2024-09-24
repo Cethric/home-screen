@@ -22,7 +22,7 @@ public class MediaPaths(ILogger<MediaPaths> logger, MediaDirectories mediaDirect
     public DirectoryInfo GetTransformDirectory(string fileHash)
     {
         using var activity = ActivitySource.StartActivity();
-        logger.LogInformation("Getting transform directory for {FileHash}", fileHash);
+        logger.LogDebug("Getting transform directory for {FileHash}", fileHash);
         var hash = fileHash.GetHashCode();
         const int mask = 255;
         var first = hash & mask;
@@ -38,7 +38,7 @@ public class MediaPaths(ILogger<MediaPaths> logger, MediaDirectories mediaDirect
             )
         );
         directory.Create();
-        logger.LogInformation(
+        logger.LogDebug(
             "Transform directory for {FileHash} is created at {Directory}",
             fileHash,
             directory.FullName
@@ -49,7 +49,7 @@ public class MediaPaths(ILogger<MediaPaths> logger, MediaDirectories mediaDirect
     public FileInfo GetCachePath(MediaTransformOptions mediaTransformOptions, string fileHash)
     {
         using var activity = ActivitySource.StartActivity();
-        logger.LogInformation(
+        logger.LogDebug(
             "Getting cache path for {FileHash} with transform options {Width} {Height} {Blur} {Format}",
             fileHash,
             mediaTransformOptions.Width,
@@ -64,7 +64,7 @@ public class MediaPaths(ILogger<MediaPaths> logger, MediaDirectories mediaDirect
                 $"transformed-{mediaTransformOptions.Width}-{mediaTransformOptions.Height}-{mediaTransformOptions.Blur}.{mediaTransformOptions.Format}"
             )
         );
-        logger.LogInformation(
+        logger.LogDebug(
             "Retrieved cache path for {FileHash} with transform options {Width} {Height} {Blur} {Format}. {FileName}",
             fileHash,
             mediaTransformOptions.Width,
@@ -79,7 +79,7 @@ public class MediaPaths(ILogger<MediaPaths> logger, MediaDirectories mediaDirect
     private async Task<IEnumerable<string>> GetFileNames(CancellationToken cancellationToken = default)
     {
         using var activity = ActivitySource.StartActivity();
-        logger.LogInformation("Getting file names from {SearchDirectory}", mediaDirectories.MediaSourceDir);
+        logger.LogDebug("Getting file names from {SearchDirectory}", mediaDirectories.MediaSourceDir);
         var files = await Directory
             .EnumerateFiles(mediaDirectories.MediaSourceDir, "*.*", SearchOption.TopDirectoryOnly)
             .ToAsyncEnumerable()
@@ -88,22 +88,23 @@ public class MediaPaths(ILogger<MediaPaths> logger, MediaDirectories mediaDirect
                     .ContainsAsync(Path.GetExtension(f).ToLowerInvariant(), cancelation)
             )
             .ToListAsync(cancellationToken);
-        logger.LogInformation("Found files names from {SearchDirectory}", mediaDirectories.MediaSourceDir);
+        logger.LogDebug("Found files names from {SearchDirectory}", mediaDirectories.MediaSourceDir);
         return files;
     }
 
     public async Task<IEnumerable<FileInfo>> GetRawFiles(CancellationToken cancellationToken = default)
     {
         using var activity = ActivitySource.StartActivity();
-        logger.LogInformation("Getting raw files from {SearchDirectory}", mediaDirectories.MediaSourceDir);
+        logger.LogDebug("Getting raw files from {SearchDirectory}", mediaDirectories.MediaSourceDir);
         var fileNames = await GetFileNames(cancellationToken);
         var files = fileNames.Select(f => new FileInfo(f));
-        logger.LogInformation("Found raw files in {SearchDirectory}", mediaDirectories.MediaSourceDir);
+        logger.LogDebug("Found raw files in {SearchDirectory}", mediaDirectories.MediaSourceDir);
         return files;
     }
 
     public async Task<ulong> TotalMedia(CancellationToken cancellationToken = default)
     {
+        using var activity = ActivitySource.StartActivity();
         var fileNames = await GetFileNames(cancellationToken);
         var count = fileNames.Count();
         if (count <= 0)

@@ -28,7 +28,7 @@
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Grpc.AspNetCore" Version="2.65.0"/>
+        <PackageReference Include="Grpc.AspNetCore" Version="2.66.0" />
         <PackageReference Include="Magick.NET.Core" Version="14.0.0"/>
         <PackageReference Include="Magick.NET-Q16-HDRI-AnyCPU" Version="14.0.0"/>
         <PackageReference Include="MetadataExtractor" Version="2.8.1" />

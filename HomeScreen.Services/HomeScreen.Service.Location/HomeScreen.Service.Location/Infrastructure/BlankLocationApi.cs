@@ -14,7 +14,7 @@ public class BlankLocationApi(ILogger<BlankLocationApi> logger) : ILocationApi
     )
     {
         using var activity = ActivitySource.StartActivity();
-        logger.LogInformation(
+        logger.LogWarning(
             "Using blank location for address at {Longitude}, {Latitude}, {Altitude}",
             longitude,
             latitude,

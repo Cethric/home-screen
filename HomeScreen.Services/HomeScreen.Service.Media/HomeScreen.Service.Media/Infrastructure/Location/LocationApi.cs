@@ -20,17 +20,12 @@ public class LocationApi(ILogger<LocationApi> logger, LocationGrpcClient client)
         activity?.AddBaggage("Longitude", longitude.ToString(CultureInfo.InvariantCulture));
         activity?.AddBaggage("Latitude", latitude.ToString(CultureInfo.InvariantCulture));
         activity?.AddBaggage("Altitude", altitude.ToString(CultureInfo.InvariantCulture));
-        logger.LogInformation("Searching for location name at {Longitude}, {Latitude}", longitude, latitude);
+        logger.LogDebug("Searching for location name at {Longitude}, {Latitude}", longitude, latitude);
         var result = await client.SearchForLocationAsync(
             new SearchForLocationRequest { Longitude = longitude, Latitude = latitude, Altitude = altitude },
             cancellationToken: cancellationToken
         );
-        logger.LogInformation(
-            "Found location {Longitude}, {Latitude} => {Location}",
-            longitude,
-            latitude,
-            result.Location
-        );
+        logger.LogTrace("Found location {Longitude}, {Latitude} => {Location}", longitude, latitude, result.Location);
         return result.Location;
     }
 }

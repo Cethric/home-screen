@@ -25,7 +25,7 @@ public class MediaApi(
     {
         using var activity = ActivitySource.StartActivity();
         activity?.AddBaggage("Count", count.ToString());
-        logger.LogInformation("GetRandomMedia Start {Count}", count);
+        logger.LogDebug("GetRandomMedia Start {Count}", count);
         var disabled = await context.MediaEntries.Where(entry => !entry.Enabled).ToListAsync(cancellationToken);
         var rawFiles = await mediaPaths.GetRawFiles(cancellationToken);
         var files = await rawFiles.ToAsyncEnumerable()
@@ -43,17 +43,16 @@ public class MediaApi(
             .ToArrayAsync(cancellationToken);
         if (files.Length == 0)
         {
-            logger.LogInformation("GetRandomMedia End {Count}", count);
+            logger.LogDebug("GetRandomMedia End {Count}", count);
             yield break;
         }
 
         await foreach (var entry in EnumerateMedia(Random.Shared.GetItems(files, (int)count), cancellationToken))
         {
-            using var enumeratorActivity = ActivitySource.StartActivity();
             yield return entry;
         }
 
-        logger.LogInformation("GetRandomMedia End {Count}", count);
+        logger.LogDebug("GetRandomMedia End {Count}", count);
     }
 
     public async Task<MediaEntry> ToggleMedia(Guid mediaId, bool state, CancellationToken cancellationToken)
@@ -80,16 +79,16 @@ public class MediaApi(
     )
     {
         using var activity = ActivitySource.StartActivity();
-        logger.LogInformation("Attempting to download media for {MediaId}", mediaId);
+        logger.LogDebug("Attempting to transform media for {MediaId}", mediaId);
         var mediaEntry = await context.MediaEntries.Where(x => x.MediaId == mediaId)
             .FirstOrDefaultAsync(cancellationToken);
         if (mediaEntry == null)
         {
-            logger.LogInformation("No media found {MediaId} while try to transform media", mediaId);
+            logger.LogDebug("No media found {MediaId} while try to transform media", mediaId);
             return TransformState.NotFound;
         }
 
-        logger.LogInformation("Attempting to get transformed media for {MediaId}", mediaId);
+        logger.LogDebug("Transformed media for {MediaId}", mediaId);
         return TransformState.Transformed;
     }
 
@@ -100,28 +99,21 @@ public class MediaApi(
     )
     {
         using var activity = ActivitySource.StartActivity();
-        logger.LogInformation("Attempting to download media for {MediaId}", mediaId);
+        logger.LogDebug("Attempting to download media for {MediaId}", mediaId);
         var mediaEntry = await context.MediaEntries.Where(x => x.MediaId == mediaId)
             .FirstOrDefaultAsync(cancellationToken);
         if (mediaEntry == null)
         {
-            logger.LogInformation("No media found {MediaId} while try to transform media", mediaId);
+            logger.LogDebug("No media found {MediaId} while try to transform media", mediaId);
             return null;
         }
 
-        logger.LogInformation("Attempting to get transformed media for {MediaId}", mediaId);
+        logger.LogDebug("Attempting to get transformed media for {MediaId}", mediaId);
         return (await mediaTransformer.GetTransformedMedia(mediaEntry, options, cancellationToken),
                 mediaEntry.CapturedUtc.ToOffset(mediaEntry.CapturedOffset));
     }
 
-    public async Task<ulong> GetTotalMedia(CancellationToken cancellationToken)
-    {
-        using var activity = ActivitySource.StartActivity();
-        cancellationToken.ThrowIfCancellationRequested();
-        return await mediaPaths.TotalMedia(cancellationToken);
-    }
-
-    public async IAsyncEnumerable<MediaEntry> GetPaginatedMedia(
+    public async IAsyncEnumerable<(MediaEntry, ulong)> GetPaginatedMedia(
         int requestOffset,
         int requestLength,
         [EnumeratorCancellation] CancellationToken cancellationToken
@@ -130,16 +122,24 @@ public class MediaApi(
         using var activity = ActivitySource.StartActivity();
         activity?.AddBaggage("Offset", requestOffset.ToString());
         activity?.AddBaggage("Length", requestLength.ToString());
-        logger.LogInformation("GetPaginatedMedia Start {Offset}, {Length}", requestOffset, requestLength);
+        logger.LogDebug("GetPaginatedMedia Start {Offset}, {Length}", requestOffset, requestLength);
         cancellationToken.ThrowIfCancellationRequested();
-        var rawFiles = await mediaPaths.GetRawFiles(cancellationToken);
+        var rawFiles = await (await mediaPaths.GetRawFiles(cancellationToken)).ToAsyncEnumerable()
+            .ToListAsync(cancellationToken);
+        var total = rawFiles.Count;
+        if (total == 0)
+        {
+            logger.LogDebug("GetPaginatedMedia End {Offset}, {Length}", requestOffset, requestLength);
+            yield break;
+        }
+
         var files = await rawFiles.ToAsyncEnumerable()
-            .SelectAwait(
-                async file =>
+            .SelectAwaitWithCancellation(
+                async (file, cancellation) =>
                 {
-                    var hash = await mediaHasher.HashMedia(file, cancellationToken);
+                    var hash = await mediaHasher.HashMedia(file, cancellation);
                     var (dateTimeOffset, offset) =
-                        await mediaDateTimeProcessor.MediaCaptureDate(file, hash, cancellationToken);
+                        await mediaDateTimeProcessor.MediaCaptureDate(file, hash, cancellation);
                     var unix = dateTimeOffset.ToOffset(offset).ToUnixTimeMilliseconds();
                     return (file, hash, unix);
                 }
@@ -151,17 +151,16 @@ public class MediaApi(
             .ToListAsync(cancellationToken);
         if (files.Count == 0)
         {
-            logger.LogInformation("GetPaginatedMedia End {Offset}, {Length}", requestOffset, requestLength);
+            logger.LogDebug("GetPaginatedMedia End {Offset}, {Length}", requestOffset, requestLength);
             yield break;
         }
 
         await foreach (var entry in EnumerateMedia(files, cancellationToken))
         {
-            using var @event = activity?.AddEvent(new ActivityEvent("Paginated Media Tick"));
-            yield return entry;
+            yield return (entry, (ulong)rawFiles.Count);
         }
 
-        logger.LogInformation("GetPaginatedMedia End {Offset}, {Length}", requestOffset, requestLength);
+        logger.LogDebug("GetPaginatedMedia End {Offset}, {Length}", requestOffset, requestLength);
     }
 
     private async IAsyncEnumerable<MediaEntry> EnumerateMedia(
@@ -170,12 +169,12 @@ public class MediaApi(
     )
     {
         using var activity = ActivitySource.StartActivity();
-        logger.LogInformation("EnumerateMedia Start");
+        logger.LogDebug("EnumerateMedia Start");
         cancellationToken.ThrowIfCancellationRequested();
 
         if (mediaEntries.Count == 0)
         {
-            logger.LogInformation("EnumerateMedia End");
+            logger.LogDebug("EnumerateMedia End");
             yield break;
         }
 
@@ -194,13 +193,13 @@ public class MediaApi(
             }
 
             await context.SaveChangesAsync(cancellationToken);
-            logger.LogInformation("EnumerateMedia Progress {FileName}", file.Name);
+            logger.LogTrace("EnumerateMedia Progress {FileName}", file.Name);
             yield return TransformMediaEntry(entry);
         }
 
         await context.SaveChangesAsync(cancellationToken);
 
-        logger.LogInformation("EnumerateMedia End");
+        logger.LogDebug("EnumerateMedia End");
     }
 
     private static MediaEntry TransformMediaEntry(Database.MediaDb.Entities.MediaEntry entry) =>

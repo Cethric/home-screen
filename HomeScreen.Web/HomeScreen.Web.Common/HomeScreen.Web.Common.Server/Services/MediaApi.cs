@@ -18,7 +18,7 @@ public class MediaApi(ILogger<MediaApi> logger, MediaGrpcClient client, IMediaCl
     )
     {
         using var activity = ActivitySource.StartActivity();
-        logger.LogInformation("RandomMedia start");
+        logger.LogDebug("RandomMedia start");
 
         using var response = client.RandomMedia(
             new MediaRequest { Count = count },
@@ -28,7 +28,7 @@ public class MediaApi(ILogger<MediaApi> logger, MediaGrpcClient client, IMediaCl
         );
         if (response is null)
         {
-            logger.LogInformation("RandomMedia end - no random media items");
+            logger.LogDebug("RandomMedia end - no random media items");
             yield break;
         }
 
@@ -36,11 +36,11 @@ public class MediaApi(ILogger<MediaApi> logger, MediaGrpcClient client, IMediaCl
         {
             cancellationToken.ThrowIfCancellationRequested();
             var entry = response.ResponseStream.Current;
-            logger.LogInformation("RandomMedia progress");
+            logger.LogTrace("RandomMedia progress");
             yield return TransformMedia(entry);
         }
 
-        logger.LogInformation("RandomMedia end - processed all random media items");
+        logger.LogDebug("RandomMedia end - processed all random media items");
     }
 
     public async IAsyncEnumerable<PaginatedMediaItem> PaginateMedia(
@@ -50,7 +50,7 @@ public class MediaApi(ILogger<MediaApi> logger, MediaGrpcClient client, IMediaCl
     )
     {
         using var activity = ActivitySource.StartActivity();
-        logger.LogInformation("PaginateMedia start");
+        logger.LogDebug("PaginateMedia start");
         using var response = client.PaginateMedia(
             new PaginateMediaRequest { Offset = offset, Length = length },
             new CallOptions().WithDeadline(DateTimeOffset.UtcNow.AddMinutes(10).UtcDateTime)
@@ -59,7 +59,7 @@ public class MediaApi(ILogger<MediaApi> logger, MediaGrpcClient client, IMediaCl
         );
         if (response is null)
         {
-            logger.LogInformation("PaginateMedia end - no media items");
+            logger.LogDebug("PaginateMedia end - no media items");
             yield break;
         }
 
@@ -67,23 +67,23 @@ public class MediaApi(ILogger<MediaApi> logger, MediaGrpcClient client, IMediaCl
         {
             cancellationToken.ThrowIfCancellationRequested();
             var entry = response.ResponseStream.Current;
-            logger.LogInformation("PaginateMedia progress");
+            logger.LogTrace("PaginateMedia progress");
             yield return TransformPaginatedMedia(entry);
         }
 
-        logger.LogInformation("PaginateMedia end - processed all media items");
+        logger.LogDebug("PaginateMedia end - processed all media items");
     }
 
     public async Task<MediaItem?> ToggleMedia(Guid mediaId, bool enabled, CancellationToken cancellationToken = default)
     {
         using var activity = ActivitySource.StartActivity("ToggleMedia", ActivityKind.Client);
-        logger.LogInformation("ToggleMedia start");
+        logger.LogDebug("ToggleMedia start");
         var response = await client.ToggleMediaAsync(
             new ToggleMediaRequest { Id = mediaId.ToString("D"), Enabled = enabled },
             new CallOptions().WithDeadline(DateTimeOffset.UtcNow.AddMinutes(5).UtcDateTime)
                 .WithCancellationToken(cancellationToken)
         );
-        logger.LogInformation("ToggleMedia end");
+        logger.LogDebug("ToggleMedia end");
         return response != null ? TransformMedia(response) : null;
     }
 
@@ -130,7 +130,7 @@ public class MediaApi(ILogger<MediaApi> logger, MediaGrpcClient client, IMediaCl
     )
     {
         using var activity = ActivitySource.StartActivity("DownloadMedia", ActivityKind.Client);
-        logger.LogInformation("Downloading media for {MediaId}", mediaId);
+        logger.LogDebug("Downloading media for {MediaId}", mediaId);
         var response = await mediaFileClient.MediaAsync(
             mediaId,
             (int)width,
@@ -139,7 +139,7 @@ public class MediaApi(ILogger<MediaApi> logger, MediaGrpcClient client, IMediaCl
             format,
             cancellationToken
         );
-        logger.LogInformation("Downloaded media for {MediaId} - {StatusCode}", mediaId, response.StatusCode);
+        logger.LogDebug("Downloaded media for {MediaId} - {StatusCode}", mediaId, response.StatusCode);
 
         if (response.StatusCode != StatusCodes.Status200OK)
         {

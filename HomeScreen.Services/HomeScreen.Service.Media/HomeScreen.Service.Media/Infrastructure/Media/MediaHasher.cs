@@ -10,13 +10,13 @@ public class MediaHasher(ILogger<MediaHasher> logger, IGenericCache genericCache
     public async Task<string> HashMedia(FileInfo fileInfo, CancellationToken cancellationToken = default)
     {
         using var activity = ActivitySource.StartActivity();
-        logger.LogInformation("Hashing file {FileName}", fileInfo.FullName);
+        logger.LogDebug("Hashing file {FileName}", fileInfo.FullName);
         activity?.AddBaggage("FullName", fileInfo.FullName);
         var hash = await genericCache.ReadCache(fileInfo.FullName, cancellationToken);
         if (!string.IsNullOrEmpty(hash))
         {
             activity?.AddBaggage("Hash", hash);
-            logger.LogInformation("Found cached hash for file {FileName} -  {Hash}", fileInfo.FullName, hash);
+            logger.LogDebug("Found cached hash for file {FileName} -  {Hash}", fileInfo.FullName, hash);
             return hash;
         }
 
@@ -35,7 +35,7 @@ public class MediaHasher(ILogger<MediaHasher> logger, IGenericCache genericCache
             logger.LogWarning(ex, "Unable to hash file {FileName}", fileInfo.FullName);
         }
 
-        logger.LogInformation("Hashing file {FileName} failed. Using random GUID", fileInfo.FullName);
+        logger.LogDebug("Hashing file {FileName} failed. Using random GUID", fileInfo.FullName);
         hash = Guid.NewGuid().ToString("N");
         activity?.AddBaggage("Hash", hash);
         await genericCache.WriteCache(fileInfo.FullName, hash, cancellationToken);

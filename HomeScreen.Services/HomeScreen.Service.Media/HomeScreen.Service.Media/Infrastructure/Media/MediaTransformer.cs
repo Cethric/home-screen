@@ -21,7 +21,7 @@ public class MediaTransformer(ILogger<MediaTransformer> logger, IMediaPaths medi
         activity?.AddBaggage("TransformedName", transformedInfo.FullName);
         if (transformedInfo.Exists)
         {
-            logger.LogInformation(
+            logger.LogTrace(
                 "{OriginalPath} has already been transformed at {TransformedPath}",
                 mediaEntry.OriginalFile,
                 transformedInfo.FullName
@@ -30,7 +30,7 @@ public class MediaTransformer(ILogger<MediaTransformer> logger, IMediaPaths medi
             return transformedInfo;
         }
 
-        logger.LogInformation(
+        logger.LogDebug(
             "Image {OriginalPath} has no cached transform, attempting to transform it {TransformedPath}",
             mediaEntry.OriginalFile,
             transformedInfo.FullName
@@ -55,7 +55,7 @@ public class MediaTransformer(ILogger<MediaTransformer> logger, IMediaPaths medi
     private void BlurImage(MagickImage image, FileInfo transformedInfo, MediaTransformOptions options)
     {
         using var activity = ActivitySource.StartActivity();
-        logger.LogInformation(
+        logger.LogTrace(
             "Blurring Image {TransformPath} to max size {Width}x{Height}",
             transformedInfo.FullName,
             options.Width,
@@ -68,7 +68,7 @@ public class MediaTransformer(ILogger<MediaTransformer> logger, IMediaPaths medi
         image.MedianFilter(4);
         image.Blur(0, 5);
         image.Resize(options.Width, options.Height);
-        logger.LogInformation(
+        logger.LogTrace(
             "Blurred Image {TransformPath} to size {Width}x{Height} - requested {RequestedWidth}x{RequestedHeight}",
             transformedInfo.FullName,
             image.Width,
@@ -83,7 +83,7 @@ public class MediaTransformer(ILogger<MediaTransformer> logger, IMediaPaths medi
         using var activity = ActivitySource.StartActivity();
         image.FilterType = options is { Width: < 150 } or { Height: < 150 } ? FilterType.Box : FilterType.CubicSpline;
 
-        logger.LogInformation(
+        logger.LogTrace(
             "Resizing Image {TransformPath} to max size {Width}x{Height}",
             transformedInfo.FullName,
             options.Width,
@@ -98,7 +98,7 @@ public class MediaTransformer(ILogger<MediaTransformer> logger, IMediaPaths medi
         image.Enhance();
         image.SetAttribute("hdr:write-gain-map", true);
         image.SetProfile(ColorProfile.ColorMatchRGB, ColorTransformMode.HighRes);
-        logger.LogInformation(
+        logger.LogTrace(
             "Resized Image {TransformPath} to size {Width}x{Height} - requested {RequestedWidth}x{RequestedHeight}",
             transformedInfo.FullName,
             image.Width,
@@ -116,7 +116,7 @@ public class MediaTransformer(ILogger<MediaTransformer> logger, IMediaPaths medi
     )
     {
         using var activity = ActivitySource.StartActivity();
-        logger.LogInformation(
+        logger.LogDebug(
             "Image has been transformed {OriginalPath} {TransformedPath}",
             mediaEntry.OriginalFile,
             transformedInfo.FullName

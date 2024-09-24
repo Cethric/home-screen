@@ -19,7 +19,7 @@ public class WeatherApi(ILogger<WeatherApi> logger, WeatherGrpcClient client) : 
     )
     {
         using var activity = ActivitySource.StartActivity("GetCurrentForecast", ActivityKind.Client);
-        logger.LogInformation("Request current weather forecast");
+        logger.LogDebug("Request current weather forecast");
         var result = await client.CurrentForecastAsync(
             new ForecastRequest { Longitude = longitude, Latitude = latitude },
             new CallOptions().WithDeadline(DateTimeOffset.UtcNow.AddMinutes(2).UtcDateTime)
@@ -48,7 +48,7 @@ public class WeatherApi(ILogger<WeatherApi> logger, WeatherGrpcClient client) : 
     )
     {
         using var activity = ActivitySource.StartActivity("GetHourlyForecast", ActivityKind.Client);
-        logger.LogInformation("Request hourly weather forecast");
+        logger.LogDebug("Request hourly weather forecast");
         var result = await client.HourlyForecastAsync(
             new ForecastRequest { Longitude = longitude, Latitude = latitude },
             new CallOptions().WithDeadline(DateTimeOffset.UtcNow.AddMinutes(2).UtcDateTime)
@@ -77,7 +77,7 @@ public class WeatherApi(ILogger<WeatherApi> logger, WeatherGrpcClient client) : 
     )
     {
         using var activity = ActivitySource.StartActivity("GetDailyForecast", ActivityKind.Client);
-        logger.LogInformation("Request daily weather forecast");
+        logger.LogDebug("Request daily weather forecast");
         var result = await client.DailyForecastAsync(
             new ForecastRequest { Longitude = longitude, Latitude = latitude },
             new CallOptions().WithDeadline(DateTimeOffset.UtcNow.AddMinutes(2).UtcDateTime)

@@ -20,9 +20,7 @@ public interface IMediaApi
         CancellationToken cancellationToken
     );
 
-    Task<ulong> GetTotalMedia(CancellationToken cancellationToken);
-
-    IAsyncEnumerable<MediaEntry> GetPaginatedMedia(
+    IAsyncEnumerable<(MediaEntry, ulong)> GetPaginatedMedia(
         int requestOffset,
         int requestLength,
         CancellationToken cancellationToken

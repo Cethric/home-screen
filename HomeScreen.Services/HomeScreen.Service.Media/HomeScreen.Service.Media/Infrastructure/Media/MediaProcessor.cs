@@ -24,7 +24,7 @@ public class MediaProcessor(
         using var activity = ActivitySource.StartActivity();
         try
         {
-            logger.LogInformation("Attempting to process media entry {FileName} - {Hash}", file.Name, hash);
+            logger.LogDebug("Attempting to process media entry {FileName} - {Hash}", file.Name, hash);
             var @event = activity?.AddEvent(new ActivityEvent("Process Image"));
             var stream = await File.ReadAllBytesAsync(file.FullName, cancellationToken);
             using var image = new MagickImage(stream);
@@ -61,7 +61,7 @@ public class MediaProcessor(
                 return entry;
             }
 
-            logger.LogInformation(
+            logger.LogDebug(
                 "Writing Original File {OriginalFile} {CachedFile}",
                 file.FullName,
                 originalInfo.FullName
