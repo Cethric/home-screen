@@ -38,11 +38,7 @@ public class MediaPaths(ILogger<MediaPaths> logger, MediaDirectories mediaDirect
             )
         );
         directory.Create();
-        logger.LogDebug(
-            "Transform directory for {FileHash} is created at {Directory}",
-            fileHash,
-            directory.FullName
-        );
+        logger.LogDebug("Transform directory for {FileHash} is created at {Directory}", fileHash, directory.FullName);
         return directory;
     }
 
@@ -76,22 +72,6 @@ public class MediaPaths(ILogger<MediaPaths> logger, MediaDirectories mediaDirect
         return fileInfo;
     }
 
-    private async Task<IEnumerable<string>> GetFileNames(CancellationToken cancellationToken = default)
-    {
-        using var activity = ActivitySource.StartActivity();
-        logger.LogDebug("Getting file names from {SearchDirectory}", mediaDirectories.MediaSourceDir);
-        var files = await Directory
-            .EnumerateFiles(mediaDirectories.MediaSourceDir, "*.*", SearchOption.TopDirectoryOnly)
-            .ToAsyncEnumerable()
-            .WhereAwaitWithCancellation(
-                (f, cancelation) => AllowedImageExtensions.ToAsyncEnumerable()
-                    .ContainsAsync(Path.GetExtension(f).ToLowerInvariant(), cancelation)
-            )
-            .ToListAsync(cancellationToken);
-        logger.LogDebug("Found files names from {SearchDirectory}", mediaDirectories.MediaSourceDir);
-        return files;
-    }
-
     public async Task<IEnumerable<FileInfo>> GetRawFiles(CancellationToken cancellationToken = default)
     {
         using var activity = ActivitySource.StartActivity();
@@ -113,5 +93,21 @@ public class MediaPaths(ILogger<MediaPaths> logger, MediaDirectories mediaDirect
         }
 
         return (ulong)count;
+    }
+
+    private async Task<IEnumerable<string>> GetFileNames(CancellationToken cancellationToken = default)
+    {
+        using var activity = ActivitySource.StartActivity();
+        logger.LogDebug("Getting file names from {SearchDirectory}", mediaDirectories.MediaSourceDir);
+        var files = await Directory
+            .EnumerateFiles(mediaDirectories.MediaSourceDir, "*.*", SearchOption.TopDirectoryOnly)
+            .ToAsyncEnumerable()
+            .WhereAwaitWithCancellation(
+                (f, cancelation) => AllowedImageExtensions.ToAsyncEnumerable()
+                    .ContainsAsync(Path.GetExtension(f).ToLowerInvariant(), cancelation)
+            )
+            .ToListAsync(cancellationToken);
+        logger.LogDebug("Found files names from {SearchDirectory}", mediaDirectories.MediaSourceDir);
+        return files;
     }
 }

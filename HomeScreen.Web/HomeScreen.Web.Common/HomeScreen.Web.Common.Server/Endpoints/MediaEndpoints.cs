@@ -67,7 +67,12 @@ public static class MediaEndpoints
         );
     }
 
-    private static Task<JsonLines<PaginatedMediaItem>> PaginateMedia(int offset, int length, IMediaApi service, CancellationToken cancellationToken)
+    private static Task<JsonLines<PaginatedMediaItem>> PaginateMedia(
+        int offset,
+        int length,
+        IMediaApi service,
+        CancellationToken cancellationToken
+    )
     {
         using var activity = ActivitySource.StartActivity("PaginateMedia", ActivityKind.Client);
         return Task.FromResult(

@@ -15,7 +15,7 @@ public class ConfigApi(IWebHostEnvironment environment, IConfiguration configura
         var dashboardUrl = GetDashboardUrl();
         return string.IsNullOrEmpty(commonUrl)
             ? Task.FromResult<Config?>(null)
-            : Task.FromResult<Config?>(new Config { CommonUrl = commonUrl, DashboardUrl = dashboardUrl});
+            : Task.FromResult<Config?>(new Config { CommonUrl = commonUrl, DashboardUrl = dashboardUrl });
     }
 
     private string GetCommonUrl()
@@ -31,6 +31,7 @@ public class ConfigApi(IWebHostEnvironment environment, IConfiguration configura
                        ?.Value) ??
                string.Empty;
     }
+
     private string GetDashboardUrl()
     {
         using var activity = ActivitySource.StartActivity();

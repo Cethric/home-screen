@@ -2,5 +2,9 @@
 
 public interface IMediaDateTimeProcessor
 {
-    Task<(DateTimeOffset, TimeSpan)> MediaCaptureDate(FileInfo file, string hash, CancellationToken cancellationToken = default);
+    Task<(DateTimeOffset, TimeSpan)> MediaCaptureDate(
+        FileInfo file,
+        string hash,
+        CancellationToken cancellationToken = default
+    );
 }

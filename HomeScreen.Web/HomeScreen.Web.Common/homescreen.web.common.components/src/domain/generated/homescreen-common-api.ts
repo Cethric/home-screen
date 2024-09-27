@@ -8,1182 +8,1480 @@
 /* eslint-disable */
 // ReSharper disable InconsistentNaming
 
-import { DateTime, Duration } from "luxon";
+import { DateTime } from 'luxon';
 
 export interface IConfigClient {
-
-    config(): Promise<SwaggerResponse<Config>>;
+  config(): Promise<SwaggerResponse<Config>>;
 }
 
 export class ConfigClient implements IConfigClient {
-    private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
-    private baseUrl: string;
-    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+  protected jsonParseReviver: ((key: string, value: any) => any) | undefined =
+    undefined;
+  private http: {
+    fetch(url: RequestInfo, init?: RequestInit): Promise<Response>;
+  };
+  private baseUrl: string;
 
-    constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
-        this.http = http ? http : window as any;
-        this.baseUrl = baseUrl ?? "";
+  constructor(
+    baseUrl?: string,
+    http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> },
+  ) {
+    this.http = http ? http : (window as any);
+    this.baseUrl = baseUrl ?? '';
+  }
+
+  config(signal?: AbortSignal): Promise<SwaggerResponse<Config>> {
+    let url_ = this.baseUrl + '/api/config';
+    url_ = url_.replace(/[?&]$/, '');
+
+    let options_: RequestInit = {
+      method: 'GET',
+      signal,
+      headers: {
+        Accept: 'application/json',
+      },
+    };
+
+    return this.http.fetch(url_, options_).then((_response: Response) => {
+      return this.processConfig(_response);
+    });
+  }
+
+  protected processConfig(
+    response: Response,
+  ): Promise<SwaggerResponse<Config>> {
+    const status = response.status;
+    let _headers: any = {};
+    if (response.headers && response.headers.forEach) {
+      response.headers.forEach((v: any, k: any) => (_headers[k] = v));
     }
-
-    config(signal?: AbortSignal): Promise<SwaggerResponse<Config>> {
-        let url_ = this.baseUrl + "/api/config";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_: RequestInit = {
-            method: "GET",
-            signal,
-            headers: {
-                "Accept": "application/json"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processConfig(_response);
-        });
+    let _mappings: { source: any; target: any }[] = [];
+    if (status === 200) {
+      return response.text().then((_responseText) => {
+        let result200: any = null;
+        let resultData200 =
+          _responseText === ''
+            ? null
+            : jsonParse(_responseText, this.jsonParseReviver);
+        result200 = Config.fromJS(resultData200, _mappings);
+        return new SwaggerResponse(status, _headers, result200);
+      });
+    } else if (status === 404) {
+      return response.text().then((_responseText) => {
+        return throwException(
+          'A server side error occurred.',
+          status,
+          _responseText,
+          _headers,
+        );
+      });
+    } else if (status !== 200 && status !== 204) {
+      return response.text().then((_responseText) => {
+        return throwException(
+          'An unexpected server error occurred.',
+          status,
+          _responseText,
+          _headers,
+        );
+      });
     }
-
-    protected processConfig(response: Response): Promise<SwaggerResponse<Config>> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        let _mappings: { source: any, target: any }[] = [];
-        if (status === 200) {
-            return response.text().then((_responseText) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : jsonParse(_responseText, this.jsonParseReviver);
-            result200 = Config.fromJS(resultData200, _mappings);
-            return new SwaggerResponse(status, _headers, result200);
-            });
-        } else if (status === 404) {
-            return response.text().then((_responseText) => {
-            return throwException("A server side error occurred.", status, _responseText, _headers);
-            });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<SwaggerResponse<Config>>(new SwaggerResponse(status, _headers, null as any));
-    }
+    return Promise.resolve<SwaggerResponse<Config>>(
+      new SwaggerResponse(status, _headers, null as any),
+    );
+  }
 }
 
 export interface IMediaClient {
+  random(count: number): Promise<SwaggerResponse<MediaItem>>;
 
-    random(count: number): Promise<SwaggerResponse<MediaItem>>;
+  paginate(
+    offset: number,
+    length: number,
+  ): Promise<SwaggerResponse<PaginatedMediaItem[]>>;
 
-    paginate(offset: number, length: number): Promise<SwaggerResponse<PaginatedMediaItem[]>>;
+  toggle(
+    mediaId: string,
+    enabled: boolean,
+  ): Promise<SwaggerResponse<MediaItem>>;
 
-    toggle(mediaId: string, enabled: boolean): Promise<SwaggerResponse<MediaItem>>;
+  download(
+    mediaId: string,
+    width: number,
+    height: number,
+    blur: boolean,
+    format: MediaTransformOptionsFormat,
+  ): Promise<SwaggerResponse<FileResponse>>;
 
-    download(mediaId: string, width: number, height: number, blur: boolean, format: MediaTransformOptionsFormat): Promise<SwaggerResponse<FileResponse>>;
-
-    transform(mediaId: string, width: number, height: number, blur: boolean, format: MediaTransformOptionsFormat): Promise<SwaggerResponse<AcceptedTransformMeta>>;
+  transform(
+    mediaId: string,
+    width: number,
+    height: number,
+    blur: boolean,
+    format: MediaTransformOptionsFormat,
+  ): Promise<SwaggerResponse<AcceptedTransformMeta>>;
 }
 
 export class MediaClient implements IMediaClient {
-    private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
-    private baseUrl: string;
-    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+  protected jsonParseReviver: ((key: string, value: any) => any) | undefined =
+    undefined;
+  private http: {
+    fetch(url: RequestInfo, init?: RequestInit): Promise<Response>;
+  };
+  private baseUrl: string;
 
-    constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
-        this.http = http ? http : window as any;
-        this.baseUrl = baseUrl ?? "";
+  constructor(
+    baseUrl?: string,
+    http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> },
+  ) {
+    this.http = http ? http : (window as any);
+    this.baseUrl = baseUrl ?? '';
+  }
+
+  random(
+    count: number,
+    signal?: AbortSignal,
+  ): Promise<SwaggerResponse<MediaItem>> {
+    let url_ = this.baseUrl + '/api/media/random?';
+    if (count === undefined || count === null)
+      throw new Error(
+        "The parameter 'count' must be defined and cannot be null.",
+      );
+    else url_ += 'count=' + encodeURIComponent('' + count) + '&';
+    url_ = url_.replace(/[?&]$/, '');
+
+    let options_: RequestInit = {
+      method: 'GET',
+      signal,
+      headers: {
+        Accept: 'application/json-seq',
+      },
+    };
+
+    return this.http.fetch(url_, options_).then((_response: Response) => {
+      return this.processRandom(_response);
+    });
+  }
+
+  paginate(
+    offset: number,
+    length: number,
+    signal?: AbortSignal,
+  ): Promise<SwaggerResponse<PaginatedMediaItem[]>> {
+    let url_ = this.baseUrl + '/api/media/paginate?';
+    if (offset === undefined || offset === null)
+      throw new Error(
+        "The parameter 'offset' must be defined and cannot be null.",
+      );
+    else url_ += 'offset=' + encodeURIComponent('' + offset) + '&';
+    if (length === undefined || length === null)
+      throw new Error(
+        "The parameter 'length' must be defined and cannot be null.",
+      );
+    else url_ += 'length=' + encodeURIComponent('' + length) + '&';
+    url_ = url_.replace(/[?&]$/, '');
+
+    let options_: RequestInit = {
+      method: 'GET',
+      signal,
+      headers: {
+        Accept: 'application/json',
+      },
+    };
+
+    return this.http.fetch(url_, options_).then((_response: Response) => {
+      return this.processPaginate(_response);
+    });
+  }
+
+  toggle(
+    mediaId: string,
+    enabled: boolean,
+    signal?: AbortSignal,
+  ): Promise<SwaggerResponse<MediaItem>> {
+    let url_ = this.baseUrl + '/api/media/{mediaId}/toggle?';
+    if (mediaId === undefined || mediaId === null)
+      throw new Error("The parameter 'mediaId' must be defined.");
+    url_ = url_.replace('{mediaId}', encodeURIComponent('' + mediaId));
+    if (enabled === undefined || enabled === null)
+      throw new Error(
+        "The parameter 'enabled' must be defined and cannot be null.",
+      );
+    else url_ += 'enabled=' + encodeURIComponent('' + enabled) + '&';
+    url_ = url_.replace(/[?&]$/, '');
+
+    let options_: RequestInit = {
+      method: 'PATCH',
+      signal,
+      headers: {
+        Accept: 'application/json',
+      },
+    };
+
+    return this.http.fetch(url_, options_).then((_response: Response) => {
+      return this.processToggle(_response);
+    });
+  }
+
+  download(
+    mediaId: string,
+    width: number,
+    height: number,
+    blur: boolean,
+    format: MediaTransformOptionsFormat,
+    signal?: AbortSignal,
+  ): Promise<SwaggerResponse<FileResponse>> {
+    let url_ = this.baseUrl + '/api/media/{mediaId}/download/{width}/{height}?';
+    if (mediaId === undefined || mediaId === null)
+      throw new Error("The parameter 'mediaId' must be defined.");
+    url_ = url_.replace('{mediaId}', encodeURIComponent('' + mediaId));
+    if (width === undefined || width === null)
+      throw new Error("The parameter 'width' must be defined.");
+    url_ = url_.replace('{width}', encodeURIComponent('' + width));
+    if (height === undefined || height === null)
+      throw new Error("The parameter 'height' must be defined.");
+    url_ = url_.replace('{height}', encodeURIComponent('' + height));
+    if (blur === undefined || blur === null)
+      throw new Error(
+        "The parameter 'blur' must be defined and cannot be null.",
+      );
+    else url_ += 'blur=' + encodeURIComponent('' + blur) + '&';
+    if (format === undefined || format === null)
+      throw new Error(
+        "The parameter 'format' must be defined and cannot be null.",
+      );
+    else url_ += 'format=' + encodeURIComponent('' + format) + '&';
+    url_ = url_.replace(/[?&]$/, '');
+
+    let options_: RequestInit = {
+      method: 'GET',
+      signal,
+      headers: {
+        Accept: 'image/jpeg',
+      },
+    };
+
+    return this.http.fetch(url_, options_).then((_response: Response) => {
+      return this.processDownload(_response);
+    });
+  }
+
+  transform(
+    mediaId: string,
+    width: number,
+    height: number,
+    blur: boolean,
+    format: MediaTransformOptionsFormat,
+    signal?: AbortSignal,
+  ): Promise<SwaggerResponse<AcceptedTransformMeta>> {
+    let url_ =
+      this.baseUrl + '/api/media/{mediaId}/transform/{width}/{height}?';
+    if (mediaId === undefined || mediaId === null)
+      throw new Error("The parameter 'mediaId' must be defined.");
+    url_ = url_.replace('{mediaId}', encodeURIComponent('' + mediaId));
+    if (width === undefined || width === null)
+      throw new Error("The parameter 'width' must be defined.");
+    url_ = url_.replace('{width}', encodeURIComponent('' + width));
+    if (height === undefined || height === null)
+      throw new Error("The parameter 'height' must be defined.");
+    url_ = url_.replace('{height}', encodeURIComponent('' + height));
+    if (blur === undefined || blur === null)
+      throw new Error(
+        "The parameter 'blur' must be defined and cannot be null.",
+      );
+    else url_ += 'blur=' + encodeURIComponent('' + blur) + '&';
+    if (format === undefined || format === null)
+      throw new Error(
+        "The parameter 'format' must be defined and cannot be null.",
+      );
+    else url_ += 'format=' + encodeURIComponent('' + format) + '&';
+    url_ = url_.replace(/[?&]$/, '');
+
+    let options_: RequestInit = {
+      method: 'GET',
+      signal,
+      headers: {
+        Accept: 'application/json',
+      },
+    };
+
+    return this.http.fetch(url_, options_).then((_response: Response) => {
+      return this.processTransform(_response);
+    });
+  }
+
+  protected processRandom(
+    response: Response,
+  ): Promise<SwaggerResponse<MediaItem>> {
+    const status = response.status;
+    let _headers: any = {};
+    if (response.headers && response.headers.forEach) {
+      response.headers.forEach((v: any, k: any) => (_headers[k] = v));
     }
-
-    random(count: number, signal?: AbortSignal): Promise<SwaggerResponse<MediaItem>> {
-        let url_ = this.baseUrl + "/api/media/random?";
-        if (count === undefined || count === null)
-            throw new Error("The parameter 'count' must be defined and cannot be null.");
-        else
-            url_ += "count=" + encodeURIComponent("" + count) + "&";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_: RequestInit = {
-            method: "GET",
-            signal,
-            headers: {
-                "Accept": "application/json-seq"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processRandom(_response);
-        });
+    let _mappings: { source: any; target: any }[] = [];
+    if (status === 200) {
+      return response.text().then((_responseText) => {
+        let result200: any = null;
+        let resultData200 =
+          _responseText === ''
+            ? null
+            : jsonParse(_responseText, this.jsonParseReviver);
+        result200 = MediaItem.fromJS(resultData200, _mappings);
+        return new SwaggerResponse(status, _headers, result200);
+      });
+    } else if (status !== 200 && status !== 204) {
+      return response.text().then((_responseText) => {
+        return throwException(
+          'An unexpected server error occurred.',
+          status,
+          _responseText,
+          _headers,
+        );
+      });
     }
+    return Promise.resolve<SwaggerResponse<MediaItem>>(
+      new SwaggerResponse(status, _headers, null as any),
+    );
+  }
 
-    protected processRandom(response: Response): Promise<SwaggerResponse<MediaItem>> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        let _mappings: { source: any, target: any }[] = [];
-        if (status === 200) {
-            return response.text().then((_responseText) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : jsonParse(_responseText, this.jsonParseReviver);
-            result200 = MediaItem.fromJS(resultData200, _mappings);
-            return new SwaggerResponse(status, _headers, result200);
-            });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
+  protected processPaginate(
+    response: Response,
+  ): Promise<SwaggerResponse<PaginatedMediaItem[]>> {
+    const status = response.status;
+    let _headers: any = {};
+    if (response.headers && response.headers.forEach) {
+      response.headers.forEach((v: any, k: any) => (_headers[k] = v));
+    }
+    let _mappings: { source: any; target: any }[] = [];
+    if (status === 200) {
+      return response.text().then((_responseText) => {
+        let result200: any = null;
+        let resultData200 =
+          _responseText === ''
+            ? null
+            : jsonParse(_responseText, this.jsonParseReviver);
+        if (Array.isArray(resultData200)) {
+          result200 = [] as any;
+          for (let item of resultData200)
+            result200!.push(PaginatedMediaItem.fromJS(item, _mappings));
+        } else {
+          result200 = <any>null;
         }
-        return Promise.resolve<SwaggerResponse<MediaItem>>(new SwaggerResponse(status, _headers, null as any));
+        return new SwaggerResponse(status, _headers, result200);
+      });
+    } else if (status !== 200 && status !== 204) {
+      return response.text().then((_responseText) => {
+        return throwException(
+          'An unexpected server error occurred.',
+          status,
+          _responseText,
+          _headers,
+        );
+      });
     }
+    return Promise.resolve<SwaggerResponse<PaginatedMediaItem[]>>(
+      new SwaggerResponse(status, _headers, null as any),
+    );
+  }
 
-    paginate(offset: number, length: number, signal?: AbortSignal): Promise<SwaggerResponse<PaginatedMediaItem[]>> {
-        let url_ = this.baseUrl + "/api/media/paginate?";
-        if (offset === undefined || offset === null)
-            throw new Error("The parameter 'offset' must be defined and cannot be null.");
-        else
-            url_ += "offset=" + encodeURIComponent("" + offset) + "&";
-        if (length === undefined || length === null)
-            throw new Error("The parameter 'length' must be defined and cannot be null.");
-        else
-            url_ += "length=" + encodeURIComponent("" + length) + "&";
-        url_ = url_.replace(/[?&]$/, "");
+  protected processToggle(
+    response: Response,
+  ): Promise<SwaggerResponse<MediaItem>> {
+    const status = response.status;
+    let _headers: any = {};
+    if (response.headers && response.headers.forEach) {
+      response.headers.forEach((v: any, k: any) => (_headers[k] = v));
+    }
+    let _mappings: { source: any; target: any }[] = [];
+    if (status === 200) {
+      return response.text().then((_responseText) => {
+        let result200: any = null;
+        let resultData200 =
+          _responseText === ''
+            ? null
+            : jsonParse(_responseText, this.jsonParseReviver);
+        result200 = MediaItem.fromJS(resultData200, _mappings);
+        return new SwaggerResponse(status, _headers, result200);
+      });
+    } else if (status === 404) {
+      return response.text().then((_responseText) => {
+        return throwException(
+          'A server side error occurred.',
+          status,
+          _responseText,
+          _headers,
+        );
+      });
+    } else if (status !== 200 && status !== 204) {
+      return response.text().then((_responseText) => {
+        return throwException(
+          'An unexpected server error occurred.',
+          status,
+          _responseText,
+          _headers,
+        );
+      });
+    }
+    return Promise.resolve<SwaggerResponse<MediaItem>>(
+      new SwaggerResponse(status, _headers, null as any),
+    );
+  }
 
-        let options_: RequestInit = {
-            method: "GET",
-            signal,
-            headers: {
-                "Accept": "application/json"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processPaginate(_response);
+  protected processDownload(
+    response: Response,
+  ): Promise<SwaggerResponse<FileResponse>> {
+    const status = response.status;
+    let _headers: any = {};
+    if (response.headers && response.headers.forEach) {
+      response.headers.forEach((v: any, k: any) => (_headers[k] = v));
+    }
+    if (status === 200 || status === 206) {
+      const contentDisposition = response.headers
+        ? response.headers.get('content-disposition')
+        : undefined;
+      let fileNameMatch = contentDisposition
+        ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(
+            contentDisposition,
+          )
+        : undefined;
+      let fileName =
+        fileNameMatch && fileNameMatch.length > 1
+          ? fileNameMatch[3] || fileNameMatch[2]
+          : undefined;
+      if (fileName) {
+        fileName = decodeURIComponent(fileName);
+      } else {
+        fileNameMatch = contentDisposition
+          ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition)
+          : undefined;
+        fileName =
+          fileNameMatch && fileNameMatch.length > 1
+            ? fileNameMatch[1]
+            : undefined;
+      }
+      return response.blob().then((blob) => {
+        return new SwaggerResponse(status, _headers, {
+          fileName: fileName,
+          data: blob,
+          status: status,
+          headers: _headers,
         });
+      });
+    } else if (status !== 200 && status !== 204) {
+      return response.text().then((_responseText) => {
+        return throwException(
+          'An unexpected server error occurred.',
+          status,
+          _responseText,
+          _headers,
+        );
+      });
     }
+    return Promise.resolve<SwaggerResponse<FileResponse>>(
+      new SwaggerResponse(status, _headers, null as any),
+    );
+  }
 
-    protected processPaginate(response: Response): Promise<SwaggerResponse<PaginatedMediaItem[]>> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        let _mappings: { source: any, target: any }[] = [];
-        if (status === 200) {
-            return response.text().then((_responseText) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : jsonParse(_responseText, this.jsonParseReviver);
-            if (Array.isArray(resultData200)) {
-                result200 = [] as any;
-                for (let item of resultData200)
-                    result200!.push(PaginatedMediaItem.fromJS(item, _mappings));
-            }
-            else {
-                result200 = <any>null;
-            }
-            return new SwaggerResponse(status, _headers, result200);
-            });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<SwaggerResponse<PaginatedMediaItem[]>>(new SwaggerResponse(status, _headers, null as any));
+  protected processTransform(
+    response: Response,
+  ): Promise<SwaggerResponse<AcceptedTransformMeta>> {
+    const status = response.status;
+    let _headers: any = {};
+    if (response.headers && response.headers.forEach) {
+      response.headers.forEach((v: any, k: any) => (_headers[k] = v));
     }
-
-    toggle(mediaId: string, enabled: boolean, signal?: AbortSignal): Promise<SwaggerResponse<MediaItem>> {
-        let url_ = this.baseUrl + "/api/media/{mediaId}/toggle?";
-        if (mediaId === undefined || mediaId === null)
-            throw new Error("The parameter 'mediaId' must be defined.");
-        url_ = url_.replace("{mediaId}", encodeURIComponent("" + mediaId));
-        if (enabled === undefined || enabled === null)
-            throw new Error("The parameter 'enabled' must be defined and cannot be null.");
-        else
-            url_ += "enabled=" + encodeURIComponent("" + enabled) + "&";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_: RequestInit = {
-            method: "PATCH",
-            signal,
-            headers: {
-                "Accept": "application/json"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processToggle(_response);
-        });
+    let _mappings: { source: any; target: any }[] = [];
+    if (status === 404) {
+      return response.text().then((_responseText) => {
+        return throwException(
+          'A server side error occurred.',
+          status,
+          _responseText,
+          _headers,
+        );
+      });
+    } else if (status === 202) {
+      return response.text().then((_responseText) => {
+        let result202: any = null;
+        let resultData202 =
+          _responseText === ''
+            ? null
+            : jsonParse(_responseText, this.jsonParseReviver);
+        result202 = AcceptedTransformMeta.fromJS(resultData202, _mappings);
+        return new SwaggerResponse(status, _headers, result202);
+      });
+    } else if (status !== 200 && status !== 204) {
+      return response.text().then((_responseText) => {
+        return throwException(
+          'An unexpected server error occurred.',
+          status,
+          _responseText,
+          _headers,
+        );
+      });
     }
-
-    protected processToggle(response: Response): Promise<SwaggerResponse<MediaItem>> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        let _mappings: { source: any, target: any }[] = [];
-        if (status === 200) {
-            return response.text().then((_responseText) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : jsonParse(_responseText, this.jsonParseReviver);
-            result200 = MediaItem.fromJS(resultData200, _mappings);
-            return new SwaggerResponse(status, _headers, result200);
-            });
-        } else if (status === 404) {
-            return response.text().then((_responseText) => {
-            return throwException("A server side error occurred.", status, _responseText, _headers);
-            });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<SwaggerResponse<MediaItem>>(new SwaggerResponse(status, _headers, null as any));
-    }
-
-    download(mediaId: string, width: number, height: number, blur: boolean, format: MediaTransformOptionsFormat, signal?: AbortSignal): Promise<SwaggerResponse<FileResponse>> {
-        let url_ = this.baseUrl + "/api/media/{mediaId}/download/{width}/{height}?";
-        if (mediaId === undefined || mediaId === null)
-            throw new Error("The parameter 'mediaId' must be defined.");
-        url_ = url_.replace("{mediaId}", encodeURIComponent("" + mediaId));
-        if (width === undefined || width === null)
-            throw new Error("The parameter 'width' must be defined.");
-        url_ = url_.replace("{width}", encodeURIComponent("" + width));
-        if (height === undefined || height === null)
-            throw new Error("The parameter 'height' must be defined.");
-        url_ = url_.replace("{height}", encodeURIComponent("" + height));
-        if (blur === undefined || blur === null)
-            throw new Error("The parameter 'blur' must be defined and cannot be null.");
-        else
-            url_ += "blur=" + encodeURIComponent("" + blur) + "&";
-        if (format === undefined || format === null)
-            throw new Error("The parameter 'format' must be defined and cannot be null.");
-        else
-            url_ += "format=" + encodeURIComponent("" + format) + "&";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_: RequestInit = {
-            method: "GET",
-            signal,
-            headers: {
-                "Accept": "image/jpeg"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processDownload(_response);
-        });
-    }
-
-    protected processDownload(response: Response): Promise<SwaggerResponse<FileResponse>> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200 || status === 206) {
-            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
-            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
-            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
-            if (fileName) {
-                fileName = decodeURIComponent(fileName);
-            } else {
-                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
-                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
-            }
-            return response.blob().then(blob => { return new SwaggerResponse(status, _headers, { fileName: fileName, data: blob, status: status, headers: _headers }); });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<SwaggerResponse<FileResponse>>(new SwaggerResponse(status, _headers, null as any));
-    }
-
-    transform(mediaId: string, width: number, height: number, blur: boolean, format: MediaTransformOptionsFormat, signal?: AbortSignal): Promise<SwaggerResponse<AcceptedTransformMeta>> {
-        let url_ = this.baseUrl + "/api/media/{mediaId}/transform/{width}/{height}?";
-        if (mediaId === undefined || mediaId === null)
-            throw new Error("The parameter 'mediaId' must be defined.");
-        url_ = url_.replace("{mediaId}", encodeURIComponent("" + mediaId));
-        if (width === undefined || width === null)
-            throw new Error("The parameter 'width' must be defined.");
-        url_ = url_.replace("{width}", encodeURIComponent("" + width));
-        if (height === undefined || height === null)
-            throw new Error("The parameter 'height' must be defined.");
-        url_ = url_.replace("{height}", encodeURIComponent("" + height));
-        if (blur === undefined || blur === null)
-            throw new Error("The parameter 'blur' must be defined and cannot be null.");
-        else
-            url_ += "blur=" + encodeURIComponent("" + blur) + "&";
-        if (format === undefined || format === null)
-            throw new Error("The parameter 'format' must be defined and cannot be null.");
-        else
-            url_ += "format=" + encodeURIComponent("" + format) + "&";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_: RequestInit = {
-            method: "GET",
-            signal,
-            headers: {
-                "Accept": "application/json"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processTransform(_response);
-        });
-    }
-
-    protected processTransform(response: Response): Promise<SwaggerResponse<AcceptedTransformMeta>> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        let _mappings: { source: any, target: any }[] = [];
-        if (status === 404) {
-            return response.text().then((_responseText) => {
-            return throwException("A server side error occurred.", status, _responseText, _headers);
-            });
-        } else if (status === 202) {
-            return response.text().then((_responseText) => {
-            let result202: any = null;
-            let resultData202 = _responseText === "" ? null : jsonParse(_responseText, this.jsonParseReviver);
-            result202 = AcceptedTransformMeta.fromJS(resultData202, _mappings);
-            return new SwaggerResponse(status, _headers, result202);
-            });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<SwaggerResponse<AcceptedTransformMeta>>(new SwaggerResponse(status, _headers, null as any));
-    }
+    return Promise.resolve<SwaggerResponse<AcceptedTransformMeta>>(
+      new SwaggerResponse(status, _headers, null as any),
+    );
+  }
 }
 
 export interface IWeatherClient {
+  current(
+    longitude: number,
+    latitude: number,
+  ): Promise<SwaggerResponse<WeatherForecast>>;
 
-    current(longitude: number, latitude: number): Promise<SwaggerResponse<WeatherForecast>>;
+  hourly(
+    longitude: number,
+    latitude: number,
+  ): Promise<SwaggerResponse<HourlyForecast[]>>;
 
-    hourly(longitude: number, latitude: number): Promise<SwaggerResponse<HourlyForecast[]>>;
-
-    daily(longitude: number, latitude: number): Promise<SwaggerResponse<DailyForecast[]>>;
+  daily(
+    longitude: number,
+    latitude: number,
+  ): Promise<SwaggerResponse<DailyForecast[]>>;
 }
 
 export class WeatherClient implements IWeatherClient {
-    private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
-    private baseUrl: string;
-    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+  protected jsonParseReviver: ((key: string, value: any) => any) | undefined =
+    undefined;
+  private http: {
+    fetch(url: RequestInfo, init?: RequestInit): Promise<Response>;
+  };
+  private baseUrl: string;
 
-    constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
-        this.http = http ? http : window as any;
-        this.baseUrl = baseUrl ?? "";
+  constructor(
+    baseUrl?: string,
+    http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> },
+  ) {
+    this.http = http ? http : (window as any);
+    this.baseUrl = baseUrl ?? '';
+  }
+
+  current(
+    longitude: number,
+    latitude: number,
+    signal?: AbortSignal,
+  ): Promise<SwaggerResponse<WeatherForecast>> {
+    let url_ = this.baseUrl + '/api/weather/{longitude}/{latitude}/current';
+    if (longitude === undefined || longitude === null)
+      throw new Error("The parameter 'longitude' must be defined.");
+    url_ = url_.replace('{longitude}', encodeURIComponent('' + longitude));
+    if (latitude === undefined || latitude === null)
+      throw new Error("The parameter 'latitude' must be defined.");
+    url_ = url_.replace('{latitude}', encodeURIComponent('' + latitude));
+    url_ = url_.replace(/[?&]$/, '');
+
+    let options_: RequestInit = {
+      method: 'GET',
+      signal,
+      headers: {
+        Accept: 'application/json',
+      },
+    };
+
+    return this.http.fetch(url_, options_).then((_response: Response) => {
+      return this.processCurrent(_response);
+    });
+  }
+
+  hourly(
+    longitude: number,
+    latitude: number,
+    signal?: AbortSignal,
+  ): Promise<SwaggerResponse<HourlyForecast[]>> {
+    let url_ = this.baseUrl + '/api/weather/{longitude}/{latitude}/hourly';
+    if (longitude === undefined || longitude === null)
+      throw new Error("The parameter 'longitude' must be defined.");
+    url_ = url_.replace('{longitude}', encodeURIComponent('' + longitude));
+    if (latitude === undefined || latitude === null)
+      throw new Error("The parameter 'latitude' must be defined.");
+    url_ = url_.replace('{latitude}', encodeURIComponent('' + latitude));
+    url_ = url_.replace(/[?&]$/, '');
+
+    let options_: RequestInit = {
+      method: 'GET',
+      signal,
+      headers: {
+        Accept: 'application/json',
+      },
+    };
+
+    return this.http.fetch(url_, options_).then((_response: Response) => {
+      return this.processHourly(_response);
+    });
+  }
+
+  daily(
+    longitude: number,
+    latitude: number,
+    signal?: AbortSignal,
+  ): Promise<SwaggerResponse<DailyForecast[]>> {
+    let url_ = this.baseUrl + '/api/weather/{longitude}/{latitude}/daily';
+    if (longitude === undefined || longitude === null)
+      throw new Error("The parameter 'longitude' must be defined.");
+    url_ = url_.replace('{longitude}', encodeURIComponent('' + longitude));
+    if (latitude === undefined || latitude === null)
+      throw new Error("The parameter 'latitude' must be defined.");
+    url_ = url_.replace('{latitude}', encodeURIComponent('' + latitude));
+    url_ = url_.replace(/[?&]$/, '');
+
+    let options_: RequestInit = {
+      method: 'GET',
+      signal,
+      headers: {
+        Accept: 'application/json',
+      },
+    };
+
+    return this.http.fetch(url_, options_).then((_response: Response) => {
+      return this.processDaily(_response);
+    });
+  }
+
+  protected processCurrent(
+    response: Response,
+  ): Promise<SwaggerResponse<WeatherForecast>> {
+    const status = response.status;
+    let _headers: any = {};
+    if (response.headers && response.headers.forEach) {
+      response.headers.forEach((v: any, k: any) => (_headers[k] = v));
     }
-
-    current(longitude: number, latitude: number, signal?: AbortSignal): Promise<SwaggerResponse<WeatherForecast>> {
-        let url_ = this.baseUrl + "/api/weather/{longitude}/{latitude}/current";
-        if (longitude === undefined || longitude === null)
-            throw new Error("The parameter 'longitude' must be defined.");
-        url_ = url_.replace("{longitude}", encodeURIComponent("" + longitude));
-        if (latitude === undefined || latitude === null)
-            throw new Error("The parameter 'latitude' must be defined.");
-        url_ = url_.replace("{latitude}", encodeURIComponent("" + latitude));
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_: RequestInit = {
-            method: "GET",
-            signal,
-            headers: {
-                "Accept": "application/json"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processCurrent(_response);
-        });
+    let _mappings: { source: any; target: any }[] = [];
+    if (status === 200) {
+      return response.text().then((_responseText) => {
+        let result200: any = null;
+        let resultData200 =
+          _responseText === ''
+            ? null
+            : jsonParse(_responseText, this.jsonParseReviver);
+        result200 = WeatherForecast.fromJS(resultData200, _mappings);
+        return new SwaggerResponse(status, _headers, result200);
+      });
+    } else if (status === 404) {
+      return response.text().then((_responseText) => {
+        return throwException(
+          'A server side error occurred.',
+          status,
+          _responseText,
+          _headers,
+        );
+      });
+    } else if (status !== 200 && status !== 204) {
+      return response.text().then((_responseText) => {
+        return throwException(
+          'An unexpected server error occurred.',
+          status,
+          _responseText,
+          _headers,
+        );
+      });
     }
+    return Promise.resolve<SwaggerResponse<WeatherForecast>>(
+      new SwaggerResponse(status, _headers, null as any),
+    );
+  }
 
-    protected processCurrent(response: Response): Promise<SwaggerResponse<WeatherForecast>> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        let _mappings: { source: any, target: any }[] = [];
-        if (status === 200) {
-            return response.text().then((_responseText) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : jsonParse(_responseText, this.jsonParseReviver);
-            result200 = WeatherForecast.fromJS(resultData200, _mappings);
-            return new SwaggerResponse(status, _headers, result200);
-            });
-        } else if (status === 404) {
-            return response.text().then((_responseText) => {
-            return throwException("A server side error occurred.", status, _responseText, _headers);
-            });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
+  protected processHourly(
+    response: Response,
+  ): Promise<SwaggerResponse<HourlyForecast[]>> {
+    const status = response.status;
+    let _headers: any = {};
+    if (response.headers && response.headers.forEach) {
+      response.headers.forEach((v: any, k: any) => (_headers[k] = v));
+    }
+    let _mappings: { source: any; target: any }[] = [];
+    if (status === 200) {
+      return response.text().then((_responseText) => {
+        let result200: any = null;
+        let resultData200 =
+          _responseText === ''
+            ? null
+            : jsonParse(_responseText, this.jsonParseReviver);
+        if (Array.isArray(resultData200)) {
+          result200 = [] as any;
+          for (let item of resultData200)
+            result200!.push(HourlyForecast.fromJS(item, _mappings));
+        } else {
+          result200 = <any>null;
         }
-        return Promise.resolve<SwaggerResponse<WeatherForecast>>(new SwaggerResponse(status, _headers, null as any));
+        return new SwaggerResponse(status, _headers, result200);
+      });
+    } else if (status === 404) {
+      return response.text().then((_responseText) => {
+        return throwException(
+          'A server side error occurred.',
+          status,
+          _responseText,
+          _headers,
+        );
+      });
+    } else if (status !== 200 && status !== 204) {
+      return response.text().then((_responseText) => {
+        return throwException(
+          'An unexpected server error occurred.',
+          status,
+          _responseText,
+          _headers,
+        );
+      });
     }
+    return Promise.resolve<SwaggerResponse<HourlyForecast[]>>(
+      new SwaggerResponse(status, _headers, null as any),
+    );
+  }
 
-    hourly(longitude: number, latitude: number, signal?: AbortSignal): Promise<SwaggerResponse<HourlyForecast[]>> {
-        let url_ = this.baseUrl + "/api/weather/{longitude}/{latitude}/hourly";
-        if (longitude === undefined || longitude === null)
-            throw new Error("The parameter 'longitude' must be defined.");
-        url_ = url_.replace("{longitude}", encodeURIComponent("" + longitude));
-        if (latitude === undefined || latitude === null)
-            throw new Error("The parameter 'latitude' must be defined.");
-        url_ = url_.replace("{latitude}", encodeURIComponent("" + latitude));
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_: RequestInit = {
-            method: "GET",
-            signal,
-            headers: {
-                "Accept": "application/json"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processHourly(_response);
-        });
+  protected processDaily(
+    response: Response,
+  ): Promise<SwaggerResponse<DailyForecast[]>> {
+    const status = response.status;
+    let _headers: any = {};
+    if (response.headers && response.headers.forEach) {
+      response.headers.forEach((v: any, k: any) => (_headers[k] = v));
     }
-
-    protected processHourly(response: Response): Promise<SwaggerResponse<HourlyForecast[]>> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        let _mappings: { source: any, target: any }[] = [];
-        if (status === 200) {
-            return response.text().then((_responseText) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : jsonParse(_responseText, this.jsonParseReviver);
-            if (Array.isArray(resultData200)) {
-                result200 = [] as any;
-                for (let item of resultData200)
-                    result200!.push(HourlyForecast.fromJS(item, _mappings));
-            }
-            else {
-                result200 = <any>null;
-            }
-            return new SwaggerResponse(status, _headers, result200);
-            });
-        } else if (status === 404) {
-            return response.text().then((_responseText) => {
-            return throwException("A server side error occurred.", status, _responseText, _headers);
-            });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
+    let _mappings: { source: any; target: any }[] = [];
+    if (status === 200) {
+      return response.text().then((_responseText) => {
+        let result200: any = null;
+        let resultData200 =
+          _responseText === ''
+            ? null
+            : jsonParse(_responseText, this.jsonParseReviver);
+        if (Array.isArray(resultData200)) {
+          result200 = [] as any;
+          for (let item of resultData200)
+            result200!.push(DailyForecast.fromJS(item, _mappings));
+        } else {
+          result200 = <any>null;
         }
-        return Promise.resolve<SwaggerResponse<HourlyForecast[]>>(new SwaggerResponse(status, _headers, null as any));
+        return new SwaggerResponse(status, _headers, result200);
+      });
+    } else if (status === 404) {
+      return response.text().then((_responseText) => {
+        return throwException(
+          'A server side error occurred.',
+          status,
+          _responseText,
+          _headers,
+        );
+      });
+    } else if (status !== 200 && status !== 204) {
+      return response.text().then((_responseText) => {
+        return throwException(
+          'An unexpected server error occurred.',
+          status,
+          _responseText,
+          _headers,
+        );
+      });
     }
-
-    daily(longitude: number, latitude: number, signal?: AbortSignal): Promise<SwaggerResponse<DailyForecast[]>> {
-        let url_ = this.baseUrl + "/api/weather/{longitude}/{latitude}/daily";
-        if (longitude === undefined || longitude === null)
-            throw new Error("The parameter 'longitude' must be defined.");
-        url_ = url_.replace("{longitude}", encodeURIComponent("" + longitude));
-        if (latitude === undefined || latitude === null)
-            throw new Error("The parameter 'latitude' must be defined.");
-        url_ = url_.replace("{latitude}", encodeURIComponent("" + latitude));
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_: RequestInit = {
-            method: "GET",
-            signal,
-            headers: {
-                "Accept": "application/json"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processDaily(_response);
-        });
-    }
-
-    protected processDaily(response: Response): Promise<SwaggerResponse<DailyForecast[]>> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        let _mappings: { source: any, target: any }[] = [];
-        if (status === 200) {
-            return response.text().then((_responseText) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : jsonParse(_responseText, this.jsonParseReviver);
-            if (Array.isArray(resultData200)) {
-                result200 = [] as any;
-                for (let item of resultData200)
-                    result200!.push(DailyForecast.fromJS(item, _mappings));
-            }
-            else {
-                result200 = <any>null;
-            }
-            return new SwaggerResponse(status, _headers, result200);
-            });
-        } else if (status === 404) {
-            return response.text().then((_responseText) => {
-            return throwException("A server side error occurred.", status, _responseText, _headers);
-            });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<SwaggerResponse<DailyForecast[]>>(new SwaggerResponse(status, _headers, null as any));
-    }
+    return Promise.resolve<SwaggerResponse<DailyForecast[]>>(
+      new SwaggerResponse(status, _headers, null as any),
+    );
+  }
 }
 
 export class Config implements IConfig {
-    sentryDsn!: string;
+  sentryDsn!: string;
 
-    constructor(data?: IConfig) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+  constructor(data?: IConfig) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
     }
+  }
 
-    init(_data?: any, _mappings?: any) {
-        if (_data) {
-            this.sentryDsn = _data["sentryDsn"];
-        }
-    }
+  static fromJS(data: any, _mappings?: any): Config | null {
+    data = typeof data === 'object' ? data : {};
+    return createInstance<Config>(data, _mappings, Config);
+  }
 
-    static fromJS(data: any, _mappings?: any): Config | null {
-        data = typeof data === 'object' ? data : {};
-        return createInstance<Config>(data, _mappings, Config);
+  init(_data?: any, _mappings?: any) {
+    if (_data) {
+      this.sentryDsn = _data['sentryDsn'];
     }
+  }
 
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["sentryDsn"] = this.sentryDsn;
-        return data;
-    }
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {};
+    data['sentryDsn'] = this.sentryDsn;
+    return data;
+  }
 
-    clone(): Config {
-        const json = this.toJSON();
-        let result = new Config();
-        result.init(json);
-        return result;
-    }
+  clone(): Config {
+    const json = this.toJSON();
+    let result = new Config();
+    result.init(json);
+    return result;
+  }
 }
 
 export interface IConfig {
-    sentryDsn: string;
+  sentryDsn: string;
 }
 
 export class MediaItem implements IMediaItem {
-    id?: string;
-    created?: DateTime;
-    notes?: string;
-    enabled?: boolean;
-    location?: MediaItemLocation;
-    aspectRatioWidth?: number;
-    aspectRatioHeight?: number;
-    baseB?: number;
-    baseG?: number;
-    baseR?: number;
+  id?: string;
+  created?: DateTime;
+  notes?: string;
+  enabled?: boolean;
+  location?: MediaItemLocation;
+  aspectRatioWidth?: number;
+  aspectRatioHeight?: number;
+  baseB?: number;
+  baseG?: number;
+  baseR?: number;
 
-    constructor(data?: IMediaItem) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-            this.location = data.location && !(<any>data.location).toJSON ? new MediaItemLocation(data.location) : <MediaItemLocation>this.location;
-        }
+  constructor(data?: IMediaItem) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
+      this.location =
+        data.location && !(<any>data.location).toJSON
+          ? new MediaItemLocation(data.location)
+          : <MediaItemLocation>this.location;
     }
+  }
 
-    init(_data?: any, _mappings?: any) {
-        if (_data) {
-            this.id = _data["id"];
-            this.created = _data["created"] ? DateTime.fromISO(_data["created"].toString()) : <any>undefined;
-            this.notes = _data["notes"];
-            this.enabled = _data["enabled"];
-            this.location = _data["location"] ? MediaItemLocation.fromJS(_data["location"], _mappings) : <any>undefined;
-            this.aspectRatioWidth = _data["aspectRatioWidth"];
-            this.aspectRatioHeight = _data["aspectRatioHeight"];
-            this.baseB = _data["baseB"];
-            this.baseG = _data["baseG"];
-            this.baseR = _data["baseR"];
-        }
-    }
+  static fromJS(data: any, _mappings?: any): MediaItem | null {
+    data = typeof data === 'object' ? data : {};
+    return createInstance<MediaItem>(data, _mappings, MediaItem);
+  }
 
-    static fromJS(data: any, _mappings?: any): MediaItem | null {
-        data = typeof data === 'object' ? data : {};
-        return createInstance<MediaItem>(data, _mappings, MediaItem);
+  init(_data?: any, _mappings?: any) {
+    if (_data) {
+      this.id = _data['id'];
+      this.created = _data['created']
+        ? DateTime.fromISO(_data['created'].toString())
+        : <any>undefined;
+      this.notes = _data['notes'];
+      this.enabled = _data['enabled'];
+      this.location = _data['location']
+        ? MediaItemLocation.fromJS(_data['location'], _mappings)
+        : <any>undefined;
+      this.aspectRatioWidth = _data['aspectRatioWidth'];
+      this.aspectRatioHeight = _data['aspectRatioHeight'];
+      this.baseB = _data['baseB'];
+      this.baseG = _data['baseG'];
+      this.baseR = _data['baseR'];
     }
+  }
 
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
-        data["created"] = this.created ? this.created.toString() : <any>undefined;
-        data["notes"] = this.notes;
-        data["enabled"] = this.enabled;
-        data["location"] = this.location ? this.location.toJSON() : <any>undefined;
-        data["aspectRatioWidth"] = this.aspectRatioWidth;
-        data["aspectRatioHeight"] = this.aspectRatioHeight;
-        data["baseB"] = this.baseB;
-        data["baseG"] = this.baseG;
-        data["baseR"] = this.baseR;
-        return data;
-    }
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {};
+    data['id'] = this.id;
+    data['created'] = this.created ? this.created.toString() : <any>undefined;
+    data['notes'] = this.notes;
+    data['enabled'] = this.enabled;
+    data['location'] = this.location ? this.location.toJSON() : <any>undefined;
+    data['aspectRatioWidth'] = this.aspectRatioWidth;
+    data['aspectRatioHeight'] = this.aspectRatioHeight;
+    data['baseB'] = this.baseB;
+    data['baseG'] = this.baseG;
+    data['baseR'] = this.baseR;
+    return data;
+  }
 
-    clone(): MediaItem {
-        const json = this.toJSON();
-        let result = new MediaItem();
-        result.init(json);
-        return result;
-    }
+  clone(): MediaItem {
+    const json = this.toJSON();
+    let result = new MediaItem();
+    result.init(json);
+    return result;
+  }
 }
 
 export interface IMediaItem {
-    id?: string;
-    created?: DateTime;
-    notes?: string;
-    enabled?: boolean;
-    location?: IMediaItemLocation;
-    aspectRatioWidth?: number;
-    aspectRatioHeight?: number;
-    baseB?: number;
-    baseG?: number;
-    baseR?: number;
+  id?: string;
+  created?: DateTime;
+  notes?: string;
+  enabled?: boolean;
+  location?: IMediaItemLocation;
+  aspectRatioWidth?: number;
+  aspectRatioHeight?: number;
+  baseB?: number;
+  baseG?: number;
+  baseR?: number;
 }
 
 export class MediaItemLocation implements IMediaItemLocation {
-    name?: string;
-    latitude?: number;
-    longitude?: number;
+  name?: string;
+  latitude?: number;
+  longitude?: number;
 
-    constructor(data?: IMediaItemLocation) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+  constructor(data?: IMediaItemLocation) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
     }
+  }
 
-    init(_data?: any, _mappings?: any) {
-        if (_data) {
-            this.name = _data["name"];
-            this.latitude = _data["latitude"];
-            this.longitude = _data["longitude"];
-        }
-    }
+  static fromJS(data: any, _mappings?: any): MediaItemLocation | null {
+    data = typeof data === 'object' ? data : {};
+    return createInstance<MediaItemLocation>(
+      data,
+      _mappings,
+      MediaItemLocation,
+    );
+  }
 
-    static fromJS(data: any, _mappings?: any): MediaItemLocation | null {
-        data = typeof data === 'object' ? data : {};
-        return createInstance<MediaItemLocation>(data, _mappings, MediaItemLocation);
+  init(_data?: any, _mappings?: any) {
+    if (_data) {
+      this.name = _data['name'];
+      this.latitude = _data['latitude'];
+      this.longitude = _data['longitude'];
     }
+  }
 
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["name"] = this.name;
-        data["latitude"] = this.latitude;
-        data["longitude"] = this.longitude;
-        return data;
-    }
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {};
+    data['name'] = this.name;
+    data['latitude'] = this.latitude;
+    data['longitude'] = this.longitude;
+    return data;
+  }
 
-    clone(): MediaItemLocation {
-        const json = this.toJSON();
-        let result = new MediaItemLocation();
-        result.init(json);
-        return result;
-    }
+  clone(): MediaItemLocation {
+    const json = this.toJSON();
+    let result = new MediaItemLocation();
+    result.init(json);
+    return result;
+  }
 }
 
 export interface IMediaItemLocation {
-    name?: string;
-    latitude?: number;
-    longitude?: number;
+  name?: string;
+  latitude?: number;
+  longitude?: number;
 }
 
 export class PaginatedMediaItem implements IPaginatedMediaItem {
-    mediaItem?: MediaItem;
-    totalPages!: number;
+  mediaItem?: MediaItem;
+  totalPages!: number;
 
-    constructor(data?: IPaginatedMediaItem) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-            this.mediaItem = data.mediaItem && !(<any>data.mediaItem).toJSON ? new MediaItem(data.mediaItem) : <MediaItem>this.mediaItem;
-        }
+  constructor(data?: IPaginatedMediaItem) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
+      this.mediaItem =
+        data.mediaItem && !(<any>data.mediaItem).toJSON
+          ? new MediaItem(data.mediaItem)
+          : <MediaItem>this.mediaItem;
     }
+  }
 
-    init(_data?: any, _mappings?: any) {
-        if (_data) {
-            this.mediaItem = _data["mediaItem"] ? MediaItem.fromJS(_data["mediaItem"], _mappings) : <any>undefined;
-            this.totalPages = _data["totalPages"];
-        }
-    }
+  static fromJS(data: any, _mappings?: any): PaginatedMediaItem | null {
+    data = typeof data === 'object' ? data : {};
+    return createInstance<PaginatedMediaItem>(
+      data,
+      _mappings,
+      PaginatedMediaItem,
+    );
+  }
 
-    static fromJS(data: any, _mappings?: any): PaginatedMediaItem | null {
-        data = typeof data === 'object' ? data : {};
-        return createInstance<PaginatedMediaItem>(data, _mappings, PaginatedMediaItem);
+  init(_data?: any, _mappings?: any) {
+    if (_data) {
+      this.mediaItem = _data['mediaItem']
+        ? MediaItem.fromJS(_data['mediaItem'], _mappings)
+        : <any>undefined;
+      this.totalPages = _data['totalPages'];
     }
+  }
 
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["mediaItem"] = this.mediaItem ? this.mediaItem.toJSON() : <any>undefined;
-        data["totalPages"] = this.totalPages;
-        return data;
-    }
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {};
+    data['mediaItem'] = this.mediaItem
+      ? this.mediaItem.toJSON()
+      : <any>undefined;
+    data['totalPages'] = this.totalPages;
+    return data;
+  }
 
-    clone(): PaginatedMediaItem {
-        const json = this.toJSON();
-        let result = new PaginatedMediaItem();
-        result.init(json);
-        return result;
-    }
+  clone(): PaginatedMediaItem {
+    const json = this.toJSON();
+    let result = new PaginatedMediaItem();
+    result.init(json);
+    return result;
+  }
 }
 
 export interface IPaginatedMediaItem {
-    mediaItem?: IMediaItem;
-    totalPages: number;
+  mediaItem?: IMediaItem;
+  totalPages: number;
 }
 
 export class NotFound implements INotFound {
-    statusCode?: number;
+  statusCode?: number;
 
-    constructor(data?: INotFound) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+  constructor(data?: INotFound) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
     }
+  }
 
-    init(_data?: any, _mappings?: any) {
-        if (_data) {
-            this.statusCode = _data["statusCode"];
-        }
-    }
+  static fromJS(data: any, _mappings?: any): NotFound | null {
+    data = typeof data === 'object' ? data : {};
+    return createInstance<NotFound>(data, _mappings, NotFound);
+  }
 
-    static fromJS(data: any, _mappings?: any): NotFound | null {
-        data = typeof data === 'object' ? data : {};
-        return createInstance<NotFound>(data, _mappings, NotFound);
+  init(_data?: any, _mappings?: any) {
+    if (_data) {
+      this.statusCode = _data['statusCode'];
     }
+  }
 
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["statusCode"] = this.statusCode;
-        return data;
-    }
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {};
+    data['statusCode'] = this.statusCode;
+    return data;
+  }
 
-    clone(): NotFound {
-        const json = this.toJSON();
-        let result = new NotFound();
-        result.init(json);
-        return result;
-    }
+  clone(): NotFound {
+    const json = this.toJSON();
+    let result = new NotFound();
+    result.init(json);
+    return result;
+  }
 }
 
 export interface INotFound {
-    statusCode?: number;
+  statusCode?: number;
 }
 
 export class BadRequest implements IBadRequest {
-    statusCode?: number;
+  statusCode?: number;
 
-    constructor(data?: IBadRequest) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+  constructor(data?: IBadRequest) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
     }
+  }
 
-    init(_data?: any, _mappings?: any) {
-        if (_data) {
-            this.statusCode = _data["statusCode"];
-        }
-    }
+  static fromJS(data: any, _mappings?: any): BadRequest | null {
+    data = typeof data === 'object' ? data : {};
+    return createInstance<BadRequest>(data, _mappings, BadRequest);
+  }
 
-    static fromJS(data: any, _mappings?: any): BadRequest | null {
-        data = typeof data === 'object' ? data : {};
-        return createInstance<BadRequest>(data, _mappings, BadRequest);
+  init(_data?: any, _mappings?: any) {
+    if (_data) {
+      this.statusCode = _data['statusCode'];
     }
+  }
 
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["statusCode"] = this.statusCode;
-        return data;
-    }
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {};
+    data['statusCode'] = this.statusCode;
+    return data;
+  }
 
-    clone(): BadRequest {
-        const json = this.toJSON();
-        let result = new BadRequest();
-        result.init(json);
-        return result;
-    }
+  clone(): BadRequest {
+    const json = this.toJSON();
+    let result = new BadRequest();
+    result.init(json);
+    return result;
+  }
 }
 
 export interface IBadRequest {
-    statusCode?: number;
+  statusCode?: number;
 }
 
 export enum MediaTransformOptionsFormat {
-    Jpeg = "Jpeg",
-    JpegXl = "JpegXl",
-    Png = "Png",
-    WebP = "WebP",
-    Avif = "Avif",
+  Jpeg = 'Jpeg',
+  JpegXl = 'JpegXl',
+  Png = 'Png',
+  WebP = 'WebP',
+  Avif = 'Avif',
 }
 
 export class AcceptedTransformMeta implements IAcceptedTransformMeta {
-    mediaId?: string;
-    width?: number;
-    height?: number;
-    blur?: boolean;
-    format?: MediaTransformOptionsFormat;
-    url?: string;
+  mediaId?: string;
+  width?: number;
+  height?: number;
+  blur?: boolean;
+  format?: MediaTransformOptionsFormat;
+  url?: string;
 
-    constructor(data?: IAcceptedTransformMeta) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+  constructor(data?: IAcceptedTransformMeta) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
     }
+  }
 
-    init(_data?: any, _mappings?: any) {
-        if (_data) {
-            this.mediaId = _data["mediaId"];
-            this.width = _data["width"];
-            this.height = _data["height"];
-            this.blur = _data["blur"];
-            this.format = _data["format"];
-            this.url = _data["url"];
-        }
-    }
+  static fromJS(data: any, _mappings?: any): AcceptedTransformMeta | null {
+    data = typeof data === 'object' ? data : {};
+    return createInstance<AcceptedTransformMeta>(
+      data,
+      _mappings,
+      AcceptedTransformMeta,
+    );
+  }
 
-    static fromJS(data: any, _mappings?: any): AcceptedTransformMeta | null {
-        data = typeof data === 'object' ? data : {};
-        return createInstance<AcceptedTransformMeta>(data, _mappings, AcceptedTransformMeta);
+  init(_data?: any, _mappings?: any) {
+    if (_data) {
+      this.mediaId = _data['mediaId'];
+      this.width = _data['width'];
+      this.height = _data['height'];
+      this.blur = _data['blur'];
+      this.format = _data['format'];
+      this.url = _data['url'];
     }
+  }
 
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["mediaId"] = this.mediaId;
-        data["width"] = this.width;
-        data["height"] = this.height;
-        data["blur"] = this.blur;
-        data["format"] = this.format;
-        data["url"] = this.url;
-        return data;
-    }
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {};
+    data['mediaId'] = this.mediaId;
+    data['width'] = this.width;
+    data['height'] = this.height;
+    data['blur'] = this.blur;
+    data['format'] = this.format;
+    data['url'] = this.url;
+    return data;
+  }
 
-    clone(): AcceptedTransformMeta {
-        const json = this.toJSON();
-        let result = new AcceptedTransformMeta();
-        result.init(json);
-        return result;
-    }
+  clone(): AcceptedTransformMeta {
+    const json = this.toJSON();
+    let result = new AcceptedTransformMeta();
+    result.init(json);
+    return result;
+  }
 }
 
 export interface IAcceptedTransformMeta {
-    mediaId?: string;
-    width?: number;
-    height?: number;
-    blur?: boolean;
-    format?: MediaTransformOptionsFormat;
-    url?: string;
+  mediaId?: string;
+  width?: number;
+  height?: number;
+  blur?: boolean;
+  format?: MediaTransformOptionsFormat;
+  url?: string;
 }
 
 export class WeatherForecast implements IWeatherForecast {
-    feelsLikeTemperature?: number;
-    maxTemperature?: number;
-    minTemperature?: number;
-    chanceOfRain?: number;
-    amountOfRain?: number;
-    weatherCode?: string;
+  feelsLikeTemperature?: number;
+  maxTemperature?: number;
+  minTemperature?: number;
+  chanceOfRain?: number;
+  amountOfRain?: number;
+  weatherCode?: string;
 
-    constructor(data?: IWeatherForecast) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+  constructor(data?: IWeatherForecast) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
     }
+  }
 
-    init(_data?: any, _mappings?: any) {
-        if (_data) {
-            this.feelsLikeTemperature = _data["feelsLikeTemperature"];
-            this.maxTemperature = _data["maxTemperature"];
-            this.minTemperature = _data["minTemperature"];
-            this.chanceOfRain = _data["chanceOfRain"];
-            this.amountOfRain = _data["amountOfRain"];
-            this.weatherCode = _data["weatherCode"];
-        }
-    }
+  static fromJS(data: any, _mappings?: any): WeatherForecast | null {
+    data = typeof data === 'object' ? data : {};
+    return createInstance<WeatherForecast>(data, _mappings, WeatherForecast);
+  }
 
-    static fromJS(data: any, _mappings?: any): WeatherForecast | null {
-        data = typeof data === 'object' ? data : {};
-        return createInstance<WeatherForecast>(data, _mappings, WeatherForecast);
+  init(_data?: any, _mappings?: any) {
+    if (_data) {
+      this.feelsLikeTemperature = _data['feelsLikeTemperature'];
+      this.maxTemperature = _data['maxTemperature'];
+      this.minTemperature = _data['minTemperature'];
+      this.chanceOfRain = _data['chanceOfRain'];
+      this.amountOfRain = _data['amountOfRain'];
+      this.weatherCode = _data['weatherCode'];
     }
+  }
 
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["feelsLikeTemperature"] = this.feelsLikeTemperature;
-        data["maxTemperature"] = this.maxTemperature;
-        data["minTemperature"] = this.minTemperature;
-        data["chanceOfRain"] = this.chanceOfRain;
-        data["amountOfRain"] = this.amountOfRain;
-        data["weatherCode"] = this.weatherCode;
-        return data;
-    }
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {};
+    data['feelsLikeTemperature'] = this.feelsLikeTemperature;
+    data['maxTemperature'] = this.maxTemperature;
+    data['minTemperature'] = this.minTemperature;
+    data['chanceOfRain'] = this.chanceOfRain;
+    data['amountOfRain'] = this.amountOfRain;
+    data['weatherCode'] = this.weatherCode;
+    return data;
+  }
 
-    clone(): WeatherForecast {
-        const json = this.toJSON();
-        let result = new WeatherForecast();
-        result.init(json);
-        return result;
-    }
+  clone(): WeatherForecast {
+    const json = this.toJSON();
+    let result = new WeatherForecast();
+    result.init(json);
+    return result;
+  }
 }
 
 export interface IWeatherForecast {
-    feelsLikeTemperature?: number;
-    maxTemperature?: number;
-    minTemperature?: number;
-    chanceOfRain?: number;
-    amountOfRain?: number;
-    weatherCode?: string;
+  feelsLikeTemperature?: number;
+  maxTemperature?: number;
+  minTemperature?: number;
+  chanceOfRain?: number;
+  amountOfRain?: number;
+  weatherCode?: string;
 }
 
 export class HourlyForecast implements IHourlyForecast {
-    time?: DateTime;
-    apparentTemperature?: number;
-    precipitation?: number;
-    precipitationProbability?: number;
-    windDirection?: number;
-    windSpeed?: number;
-    windGusts?: number;
-    isDay?: boolean;
-    cloudCover?: number;
+  time?: DateTime;
+  apparentTemperature?: number;
+  precipitation?: number;
+  precipitationProbability?: number;
+  windDirection?: number;
+  windSpeed?: number;
+  windGusts?: number;
+  isDay?: boolean;
+  cloudCover?: number;
 
-    constructor(data?: IHourlyForecast) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+  constructor(data?: IHourlyForecast) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
     }
+  }
 
-    init(_data?: any, _mappings?: any) {
-        if (_data) {
-            this.time = _data["time"] ? DateTime.fromISO(_data["time"].toString()) : <any>undefined;
-            this.apparentTemperature = _data["apparentTemperature"];
-            this.precipitation = _data["precipitation"];
-            this.precipitationProbability = _data["precipitationProbability"];
-            this.windDirection = _data["windDirection"];
-            this.windSpeed = _data["windSpeed"];
-            this.windGusts = _data["windGusts"];
-            this.isDay = _data["isDay"];
-            this.cloudCover = _data["cloudCover"];
-        }
-    }
+  static fromJS(data: any, _mappings?: any): HourlyForecast | null {
+    data = typeof data === 'object' ? data : {};
+    return createInstance<HourlyForecast>(data, _mappings, HourlyForecast);
+  }
 
-    static fromJS(data: any, _mappings?: any): HourlyForecast | null {
-        data = typeof data === 'object' ? data : {};
-        return createInstance<HourlyForecast>(data, _mappings, HourlyForecast);
+  init(_data?: any, _mappings?: any) {
+    if (_data) {
+      this.time = _data['time']
+        ? DateTime.fromISO(_data['time'].toString())
+        : <any>undefined;
+      this.apparentTemperature = _data['apparentTemperature'];
+      this.precipitation = _data['precipitation'];
+      this.precipitationProbability = _data['precipitationProbability'];
+      this.windDirection = _data['windDirection'];
+      this.windSpeed = _data['windSpeed'];
+      this.windGusts = _data['windGusts'];
+      this.isDay = _data['isDay'];
+      this.cloudCover = _data['cloudCover'];
     }
+  }
 
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["time"] = this.time ? this.time.toString() : <any>undefined;
-        data["apparentTemperature"] = this.apparentTemperature;
-        data["precipitation"] = this.precipitation;
-        data["precipitationProbability"] = this.precipitationProbability;
-        data["windDirection"] = this.windDirection;
-        data["windSpeed"] = this.windSpeed;
-        data["windGusts"] = this.windGusts;
-        data["isDay"] = this.isDay;
-        data["cloudCover"] = this.cloudCover;
-        return data;
-    }
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {};
+    data['time'] = this.time ? this.time.toString() : <any>undefined;
+    data['apparentTemperature'] = this.apparentTemperature;
+    data['precipitation'] = this.precipitation;
+    data['precipitationProbability'] = this.precipitationProbability;
+    data['windDirection'] = this.windDirection;
+    data['windSpeed'] = this.windSpeed;
+    data['windGusts'] = this.windGusts;
+    data['isDay'] = this.isDay;
+    data['cloudCover'] = this.cloudCover;
+    return data;
+  }
 
-    clone(): HourlyForecast {
-        const json = this.toJSON();
-        let result = new HourlyForecast();
-        result.init(json);
-        return result;
-    }
+  clone(): HourlyForecast {
+    const json = this.toJSON();
+    let result = new HourlyForecast();
+    result.init(json);
+    return result;
+  }
 }
 
 export interface IHourlyForecast {
-    time?: DateTime;
-    apparentTemperature?: number;
-    precipitation?: number;
-    precipitationProbability?: number;
-    windDirection?: number;
-    windSpeed?: number;
-    windGusts?: number;
-    isDay?: boolean;
-    cloudCover?: number;
+  time?: DateTime;
+  apparentTemperature?: number;
+  precipitation?: number;
+  precipitationProbability?: number;
+  windDirection?: number;
+  windSpeed?: number;
+  windGusts?: number;
+  isDay?: boolean;
+  cloudCover?: number;
 }
 
 export class DailyForecast implements IDailyForecast {
-    time?: DateTime;
-    apparentTemperatureMin?: number;
-    apparentTemperatureMax?: number;
-    daylightDuration?: number;
-    sunrise?: DateTime;
-    sunset?: DateTime;
-    uvIndexClearSkyMax?: number;
-    uvIndexMax?: number;
-    weatherCode?: WmoWeatherCode;
-    weatherCodeLabel?: string;
-    precipitationSum?: number;
-    precipitationProbabilityMax?: number;
-    precipitationProbabilityMin?: number;
+  time?: DateTime;
+  apparentTemperatureMin?: number;
+  apparentTemperatureMax?: number;
+  daylightDuration?: number;
+  sunrise?: DateTime;
+  sunset?: DateTime;
+  uvIndexClearSkyMax?: number;
+  uvIndexMax?: number;
+  weatherCode?: WmoWeatherCode;
+  weatherCodeLabel?: string;
+  precipitationSum?: number;
+  precipitationProbabilityMax?: number;
+  precipitationProbabilityMin?: number;
 
-    constructor(data?: IDailyForecast) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+  constructor(data?: IDailyForecast) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
     }
+  }
 
-    init(_data?: any, _mappings?: any) {
-        if (_data) {
-            this.time = _data["time"] ? DateTime.fromISO(_data["time"].toString()) : <any>undefined;
-            this.apparentTemperatureMin = _data["apparentTemperatureMin"];
-            this.apparentTemperatureMax = _data["apparentTemperatureMax"];
-            this.daylightDuration = _data["daylightDuration"];
-            this.sunrise = _data["sunrise"] ? DateTime.fromISO(_data["sunrise"].toString()) : <any>undefined;
-            this.sunset = _data["sunset"] ? DateTime.fromISO(_data["sunset"].toString()) : <any>undefined;
-            this.uvIndexClearSkyMax = _data["uvIndexClearSkyMax"];
-            this.uvIndexMax = _data["uvIndexMax"];
-            this.weatherCode = _data["weatherCode"];
-            this.weatherCodeLabel = _data["weatherCodeLabel"];
-            this.precipitationSum = _data["precipitationSum"];
-            this.precipitationProbabilityMax = _data["precipitationProbabilityMax"];
-            this.precipitationProbabilityMin = _data["precipitationProbabilityMin"];
-        }
-    }
+  static fromJS(data: any, _mappings?: any): DailyForecast | null {
+    data = typeof data === 'object' ? data : {};
+    return createInstance<DailyForecast>(data, _mappings, DailyForecast);
+  }
 
-    static fromJS(data: any, _mappings?: any): DailyForecast | null {
-        data = typeof data === 'object' ? data : {};
-        return createInstance<DailyForecast>(data, _mappings, DailyForecast);
+  init(_data?: any, _mappings?: any) {
+    if (_data) {
+      this.time = _data['time']
+        ? DateTime.fromISO(_data['time'].toString())
+        : <any>undefined;
+      this.apparentTemperatureMin = _data['apparentTemperatureMin'];
+      this.apparentTemperatureMax = _data['apparentTemperatureMax'];
+      this.daylightDuration = _data['daylightDuration'];
+      this.sunrise = _data['sunrise']
+        ? DateTime.fromISO(_data['sunrise'].toString())
+        : <any>undefined;
+      this.sunset = _data['sunset']
+        ? DateTime.fromISO(_data['sunset'].toString())
+        : <any>undefined;
+      this.uvIndexClearSkyMax = _data['uvIndexClearSkyMax'];
+      this.uvIndexMax = _data['uvIndexMax'];
+      this.weatherCode = _data['weatherCode'];
+      this.weatherCodeLabel = _data['weatherCodeLabel'];
+      this.precipitationSum = _data['precipitationSum'];
+      this.precipitationProbabilityMax = _data['precipitationProbabilityMax'];
+      this.precipitationProbabilityMin = _data['precipitationProbabilityMin'];
     }
+  }
 
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["time"] = this.time ? this.time.toFormat('yyyy-MM-dd') : <any>undefined;
-        data["apparentTemperatureMin"] = this.apparentTemperatureMin;
-        data["apparentTemperatureMax"] = this.apparentTemperatureMax;
-        data["daylightDuration"] = this.daylightDuration;
-        data["sunrise"] = this.sunrise ? this.sunrise.toString() : <any>undefined;
-        data["sunset"] = this.sunset ? this.sunset.toString() : <any>undefined;
-        data["uvIndexClearSkyMax"] = this.uvIndexClearSkyMax;
-        data["uvIndexMax"] = this.uvIndexMax;
-        data["weatherCode"] = this.weatherCode;
-        data["weatherCodeLabel"] = this.weatherCodeLabel;
-        data["precipitationSum"] = this.precipitationSum;
-        data["precipitationProbabilityMax"] = this.precipitationProbabilityMax;
-        data["precipitationProbabilityMin"] = this.precipitationProbabilityMin;
-        return data;
-    }
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {};
+    data['time'] = this.time
+      ? this.time.toFormat('yyyy-MM-dd')
+      : <any>undefined;
+    data['apparentTemperatureMin'] = this.apparentTemperatureMin;
+    data['apparentTemperatureMax'] = this.apparentTemperatureMax;
+    data['daylightDuration'] = this.daylightDuration;
+    data['sunrise'] = this.sunrise ? this.sunrise.toString() : <any>undefined;
+    data['sunset'] = this.sunset ? this.sunset.toString() : <any>undefined;
+    data['uvIndexClearSkyMax'] = this.uvIndexClearSkyMax;
+    data['uvIndexMax'] = this.uvIndexMax;
+    data['weatherCode'] = this.weatherCode;
+    data['weatherCodeLabel'] = this.weatherCodeLabel;
+    data['precipitationSum'] = this.precipitationSum;
+    data['precipitationProbabilityMax'] = this.precipitationProbabilityMax;
+    data['precipitationProbabilityMin'] = this.precipitationProbabilityMin;
+    return data;
+  }
 
-    clone(): DailyForecast {
-        const json = this.toJSON();
-        let result = new DailyForecast();
-        result.init(json);
-        return result;
-    }
+  clone(): DailyForecast {
+    const json = this.toJSON();
+    let result = new DailyForecast();
+    result.init(json);
+    return result;
+  }
 }
 
 export interface IDailyForecast {
-    time?: DateTime;
-    apparentTemperatureMin?: number;
-    apparentTemperatureMax?: number;
-    daylightDuration?: number;
-    sunrise?: DateTime;
-    sunset?: DateTime;
-    uvIndexClearSkyMax?: number;
-    uvIndexMax?: number;
-    weatherCode?: WmoWeatherCode;
-    weatherCodeLabel?: string;
-    precipitationSum?: number;
-    precipitationProbabilityMax?: number;
-    precipitationProbabilityMin?: number;
+  time?: DateTime;
+  apparentTemperatureMin?: number;
+  apparentTemperatureMax?: number;
+  daylightDuration?: number;
+  sunrise?: DateTime;
+  sunset?: DateTime;
+  uvIndexClearSkyMax?: number;
+  uvIndexMax?: number;
+  weatherCode?: WmoWeatherCode;
+  weatherCodeLabel?: string;
+  precipitationSum?: number;
+  precipitationProbabilityMax?: number;
+  precipitationProbabilityMin?: number;
 }
 
 export enum WmoWeatherCode {
-    Clear = "Clear",
-    MostlyClear = "MostlyClear",
-    PartlyClear = "PartlyClear",
-    Overcast = "Overcast",
-    Fog = "Fog",
-    RimeFog = "RimeFog",
-    LightDrizzle = "LightDrizzle",
-    MediumDrizzle = "MediumDrizzle",
-    HeavyDrizzle = "HeavyDrizzle",
-    LightFreezingDrizzle = "LightFreezingDrizzle",
-    HeavyFreezingDrizzle = "HeavyFreezingDrizzle",
-    LightRain = "LightRain",
-    MediumRain = "MediumRain",
-    HeavyRain = "HeavyRain",
-    LightFreezingRain = "LightFreezingRain",
-    HeavyFreezingRain = "HeavyFreezingRain",
-    LightSnow = "LightSnow",
-    MediumSnow = "MediumSnow",
-    HeavySnow = "HeavySnow",
-    GrainySnow = "GrainySnow",
-    LightRainShower = "LightRainShower",
-    MediumRainShower = "MediumRainShower",
-    HeavyRainShower = "HeavyRainShower",
-    LightSnowShower = "LightSnowShower",
-    HeavySnowShower = "HeavySnowShower",
-    Thunderstorm = "Thunderstorm",
-    ThunderstormWithSomeRain = "ThunderstormWithSomeRain",
-    ThunderstormWithHeavyRain = "ThunderstormWithHeavyRain",
+  Clear = 'Clear',
+  MostlyClear = 'MostlyClear',
+  PartlyClear = 'PartlyClear',
+  Overcast = 'Overcast',
+  Fog = 'Fog',
+  RimeFog = 'RimeFog',
+  LightDrizzle = 'LightDrizzle',
+  MediumDrizzle = 'MediumDrizzle',
+  HeavyDrizzle = 'HeavyDrizzle',
+  LightFreezingDrizzle = 'LightFreezingDrizzle',
+  HeavyFreezingDrizzle = 'HeavyFreezingDrizzle',
+  LightRain = 'LightRain',
+  MediumRain = 'MediumRain',
+  HeavyRain = 'HeavyRain',
+  LightFreezingRain = 'LightFreezingRain',
+  HeavyFreezingRain = 'HeavyFreezingRain',
+  LightSnow = 'LightSnow',
+  MediumSnow = 'MediumSnow',
+  HeavySnow = 'HeavySnow',
+  GrainySnow = 'GrainySnow',
+  LightRainShower = 'LightRainShower',
+  MediumRainShower = 'MediumRainShower',
+  HeavyRainShower = 'HeavyRainShower',
+  LightSnowShower = 'LightSnowShower',
+  HeavySnowShower = 'HeavySnowShower',
+  Thunderstorm = 'Thunderstorm',
+  ThunderstormWithSomeRain = 'ThunderstormWithSomeRain',
+  ThunderstormWithHeavyRain = 'ThunderstormWithHeavyRain',
 }
 
 function jsonParse(json: any, reviver?: any) {
-    json = JSON.parse(json, reviver);
+  json = JSON.parse(json, reviver);
 
-    var byid: any = {};
-    var refs: any = [];
-    json = (function recurse(obj: any, prop?: any, parent?: any) {
-        if (typeof obj !== 'object' || !obj)
-            return obj;
-        
-        if ("$ref" in obj) {
-            let ref = obj.$ref;
-            if (ref in byid)
-                return byid[ref];
-            refs.push([parent, prop, ref]);
-            return undefined;
-        } else if ("$id" in obj) {
-            let id = obj.$id;
-            delete obj.$id;
-            if ("$values" in obj)
-                obj = obj.$values;
-            byid[id] = obj;
-        }
-        
-        if (Array.isArray(obj)) {
-            obj = obj.map((v, i) => recurse(v, i, obj));
-        } else {
-            for (var p in obj) {
-                if (obj.hasOwnProperty(p) && obj[p] && typeof obj[p] === 'object')
-                    obj[p] = recurse(obj[p], p, obj);
-            }
-        }
+  var byid: any = {};
+  var refs: any = [];
+  json = (function recurse(obj: any, prop?: any, parent?: any) {
+    if (typeof obj !== 'object' || !obj) return obj;
 
-        return obj;
-    })(json);
-
-    for (let i = 0; i < refs.length; i++) {
-        const ref = refs[i];
-        ref[0][ref[1]] = byid[ref[2]];
+    if ('$ref' in obj) {
+      let ref = obj.$ref;
+      if (ref in byid) return byid[ref];
+      refs.push([parent, prop, ref]);
+      return undefined;
+    } else if ('$id' in obj) {
+      let id = obj.$id;
+      delete obj.$id;
+      if ('$values' in obj) obj = obj.$values;
+      byid[id] = obj;
     }
 
-    return json;
+    if (Array.isArray(obj)) {
+      obj = obj.map((v, i) => recurse(v, i, obj));
+    } else {
+      for (var p in obj) {
+        if (obj.hasOwnProperty(p) && obj[p] && typeof obj[p] === 'object')
+          obj[p] = recurse(obj[p], p, obj);
+      }
+    }
+
+    return obj;
+  })(json);
+
+  for (let i = 0; i < refs.length; i++) {
+    const ref = refs[i];
+    ref[0][ref[1]] = byid[ref[2]];
+  }
+
+  return json;
 }
 
 function createInstance<T>(data: any, mappings: any, type: any): T | null {
-  if (!mappings)
-    mappings = [];
-  if (!data)
-    return null;
+  if (!mappings) mappings = [];
+  if (!data) return null;
 
-  const mappingIndexName = "__mappingIndex";
-  if (data[mappingIndexName])
-    return <T>mappings[data[mappingIndexName]].target;
+  const mappingIndexName = '__mappingIndex';
+  if (data[mappingIndexName]) return <T>mappings[data[mappingIndexName]].target;
 
   data[mappingIndexName] = mappings.length;
 
@@ -1194,49 +1492,65 @@ function createInstance<T>(data: any, mappings: any, type: any): T | null {
 }
 
 export class SwaggerResponse<TResult> {
-    status: number;
-    headers: { [key: string]: any; };
-    result: TResult;
+  status: number;
+  headers: { [key: string]: any };
+  result: TResult;
 
-    constructor(status: number, headers: { [key: string]: any; }, result: TResult)
-    {
-        this.status = status;
-        this.headers = headers;
-        this.result = result;
-    }
+  constructor(
+    status: number,
+    headers: { [key: string]: any },
+    result: TResult,
+  ) {
+    this.status = status;
+    this.headers = headers;
+    this.result = result;
+  }
 }
 
 export interface FileResponse {
-    data: Blob;
-    status: number;
-    fileName?: string;
-    headers?: { [name: string]: any };
+  data: Blob;
+  status: number;
+  fileName?: string;
+  headers?: { [name: string]: any };
 }
 
 export class ApiException extends Error {
-    override message: string;
-    status: number;
-    response: string;
-    headers: { [key: string]: any; };
-    result: any;
+  override message: string;
+  status: number;
+  response: string;
+  headers: { [key: string]: any };
+  result: any;
+  protected isApiException = true;
 
-    constructor(message: string, status: number, response: string, headers: { [key: string]: any; }, result: any) {
-        super();
+  constructor(
+    message: string,
+    status: number,
+    response: string,
+    headers: { [key: string]: any },
+    result: any,
+  ) {
+    super();
 
-        this.message = message;
-        this.status = status;
-        this.response = response;
-        this.headers = headers;
-        this.result = result;
-    }
+    this.message = message;
+    this.status = status;
+    this.response = response;
+    this.headers = headers;
+    this.result = result;
+  }
 
-    protected isApiException = true;
-
-    static isApiException(obj: any): obj is ApiException {
-        return obj.isApiException === true;
-    }
+  static isApiException(obj: any): obj is ApiException {
+    return obj.isApiException === true;
+  }
 }
 
-function throwException(message: string, status: number, response: string, headers: { [key: string]: any; }, result?: any): any {
-    throw new ApiException(message, status, response, headers, result);
+function throwException(
+  message: string,
+  status: number,
+  response: string,
+  headers: {
+    [key: string]: any;
+  },
+  result?: any,
+): any {
+  throw new ApiException(message, status, response, headers, result);
 }

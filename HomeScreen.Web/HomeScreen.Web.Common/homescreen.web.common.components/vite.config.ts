@@ -10,14 +10,15 @@ export default defineConfig(() => {
       vue(),
       dts({
         tsconfigPath: fileURLToPath(
-          new URL('./tsconfig.app.json', import.meta.url)
-        )
-      })
+          new URL('./tsconfig.app.json', import.meta.url),
+        ),
+        exclude: ['**/*.stories.*'],
+      }),
     ],
     resolve: {
       alias: {
-        '@': fileURLToPath(new URL('./src', import.meta.url))
-      }
+        '@': fileURLToPath(new URL('./src', import.meta.url)),
+      },
     },
     build: {
       target: 'modules',
@@ -26,7 +27,7 @@ export default defineConfig(() => {
         entry: fileURLToPath(new URL('./src/index.ts', import.meta.url)),
         formats: ['es'],
         name: 'web-common-components',
-        fileName: (fmt) => `web-common-components.${fmt}.js`
+        fileName: (fmt) => `web-common-components.${fmt}.js`,
       },
       rollupOptions: {
         external: ['vue', /@vueuse\/.*/, 'luxon', /@fortawesome\/.*/],
@@ -37,15 +38,15 @@ export default defineConfig(() => {
               'leaflet',
               '@vue-leaflet/vue-leaflet',
               '@turf/turf',
-              'geojson'
+              'geojson',
             ],
-            sentry: ['@sentry/vue']
+            sentry: ['@sentry/vue'],
           },
           globals: {
-            vue: 'Vue'
-          }
-        }
-      }
-    }
+            vue: 'Vue',
+          },
+        },
+      },
+    },
   } satisfies UserConfig;
 });

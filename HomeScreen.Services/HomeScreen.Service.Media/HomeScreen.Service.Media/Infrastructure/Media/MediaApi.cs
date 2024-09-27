@@ -30,8 +30,8 @@ public class MediaApi(
         var rawFiles = await mediaPaths.GetRawFiles(cancellationToken);
         var files = await rawFiles.ToAsyncEnumerable()
             .WhereAwaitWithCancellation(
-                async (file, cancellation) => !(await disabled.ToAsyncEnumerable()
-                    .AnyAsync((entry) => entry.OriginalFile.Contains(file.FullName), cancellation))
+                async (file, cancellation) => !await disabled.ToAsyncEnumerable()
+                    .AnyAsync(entry => entry.OriginalFile.Contains(file.FullName), cancellation)
             )
             .SelectAwaitWithCancellation(
                 async (file, cancellation) =>

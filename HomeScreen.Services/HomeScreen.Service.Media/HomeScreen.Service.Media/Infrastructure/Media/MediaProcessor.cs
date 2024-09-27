@@ -42,7 +42,7 @@ public class MediaProcessor(
                             ImageRatioWidth = image.Width / (double)image.Height,
                             ImageRatioHeight = image.Height / (double)image.Width,
                             CapturedUtc = capturedUtc,
-                            CapturedOffset = capturedOffset,
+                            CapturedOffset = capturedOffset
                         };
 
             var profile = image.GetExifProfile();
@@ -61,11 +61,7 @@ public class MediaProcessor(
                 return entry;
             }
 
-            logger.LogDebug(
-                "Writing Original File {OriginalFile} {CachedFile}",
-                file.FullName,
-                originalInfo.FullName
-            );
+            logger.LogDebug("Writing Original File {OriginalFile} {CachedFile}", file.FullName, originalInfo.FullName);
             if (!originalInfo.Exists)
             {
                 file.CopyTo(originalInfo.FullName);

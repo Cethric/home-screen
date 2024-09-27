@@ -28,17 +28,17 @@
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Grpc.AspNetCore" Version="2.66.0" />
+        <PackageReference Include="Grpc.AspNetCore" Version="2.66.0"/>
         <PackageReference Include="Magick.NET.Core" Version="14.0.0"/>
         <PackageReference Include="Magick.NET-Q16-HDRI-AnyCPU" Version="14.0.0"/>
-        <PackageReference Include="MetadataExtractor" Version="2.8.1" />
+        <PackageReference Include="MetadataExtractor" Version="2.8.1"/>
         <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="8.0.0"/>
         <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.0"/>
         <PackageReference Include="NSwag.MSBuild" Version="14.1.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="System.Linq.Async" Version="6.0.1" />
+        <PackageReference Include="System.Linq.Async" Version="6.0.1"/>
     </ItemGroup>
 
     <ItemGroup>

@@ -7,12 +7,6 @@ namespace HomeScreen.Service.Media.Infrastructure.Media;
 public class MediaDateTimeProcessor(ILogger<MediaDateTimeProcessor> logger, IGenericCache genericCache)
     : IMediaDateTimeProcessor
 {
-    private class CacheEntry
-    {
-        public DateTimeOffset DateTime { get; init; }
-        public TimeSpan Offset { get; init; }
-    }
-
     private static ActivitySource ActivitySource => new(nameof(MediaDateTimeProcessor));
 
     public async Task<(DateTimeOffset, TimeSpan)> MediaCaptureDate(
@@ -97,5 +91,11 @@ public class MediaDateTimeProcessor(ILogger<MediaDateTimeProcessor> logger, IGen
                    Offset = TimeZoneInfo.FindSystemTimeZoneById("E. Australia Standard Time")
                        .GetUtcOffset(info.CreationTime)
                };
+    }
+
+    private class CacheEntry
+    {
+        public DateTimeOffset DateTime { get; init; }
+        public TimeSpan Offset { get; init; }
     }
 }
