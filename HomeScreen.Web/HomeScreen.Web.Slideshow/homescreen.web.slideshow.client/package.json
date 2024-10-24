@@ -67,7 +67,7 @@
     "@types/uuid": "^10.0.0",
     "@vitejs/plugin-vue": "^5.1.4",
     "@vue/tsconfig": "^0.5.1",
-    "eslint": "^8.57.1",
+    "eslint": "^9.13.0",
     "jsdom": "^25.0.1",
     "npm-run-all2": "^6.2.3",
     "postcss": "^8.4.47",
