@@ -39,7 +39,7 @@
     "seedrandom": "^3.0.5",
     "sortablejs": "^1.15.3",
     "universal-cookie": "^7.2.0",
-    "uuid": "^10.0.0",
+    "uuid": "^11.0.2",
     "vue": "^3.5.9",
     "vue-router": "^4.4.5"
   },
