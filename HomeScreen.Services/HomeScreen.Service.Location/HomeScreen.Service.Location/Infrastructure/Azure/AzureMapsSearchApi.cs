@@ -5,7 +5,6 @@ using Azure.Core.GeoJson;
 using Azure.Maps;
 using Azure.Maps.Search;
 using Azure.Maps.Search.Models;
-using Azure.Maps.Search.Models.Queries;
 
 namespace HomeScreen.Service.Location.Infrastructure.Azure;
 
