@@ -7,7 +7,7 @@
     "eslint": "^8.57.1",
     "prettier": "^3.3.3",
     "prettier-plugin-tailwindcss": "^0.6.8",
-    "typescript": "~5.6.2"
+    "typescript": "~5.6.3"
   },
   "dependencies": {
     "@homescreen/eslint-config": "workspace:*",
@@ -18,7 +18,7 @@
     "@homescreen/web-dashboard-client": "workspace:*",
     "@homescreen/web-slideshow-client": "workspace:*"
   },
-  "packageManager": "pnpm@9.11.0",
+  "packageManager": "pnpm@9.12.3",
   "engines": {
     "node": ">=20",
     "pnpm": ">=9"
