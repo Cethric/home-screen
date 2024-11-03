@@ -1,0 +1,60 @@
+﻿apiVersion: kustomize.config.k8s.io/v1beta1
+
+resources:
+  - namespace.yaml
+
+helmCharts:
+  - name: cert-manager
+    includeCRDs: true
+    valuesInline:
+      config:
+        kind: ControllerConfiguration
+      crds:
+        enabled: true
+      podDnsPolicy: ClusterFirst
+      podDnsConfig:
+        nameservers:
+          - 192.168.156.4
+          - 192.168.156.6
+        searches:
+          - home-automation.cloud
+        options:
+          - name: "ndots"
+            value: "2"
+      extraArgs:
+        - --acme-http01-solver-nameservers=192.168.156.4:53,192.168.156.6:53
+    releaseName: cert-manager
+    version: v1.16.1
+    namespace: cert-manager
+    repo: https://charts.jetstack.io
+
+  - name: csi-driver-smb
+    includeCRDs: true
+    releaseName: csi-driver-smb
+    version: v1.16.0
+    namespace: kube-system
+    repo: https://raw.githubusercontent.com/kubernetes-csi/csi-driver-smb/master/charts
+
+  - name: traefik
+    includeCRDs: true
+    releaseName: traefik
+    version: v33.0.0
+    namespace: traefik
+    repo: https://traefik.github.io/charts
+    valuesInline:
+      deployment:
+        dnsPolicy: ClusterFirst
+        dnsConfig:
+          nameservers:
+            - 192.168.156.4
+            - 192.168.156.6
+          searches:
+            - home-automation.cloud
+          options:
+            - name: "ndots"
+              value: "2"
+      ingressRoute:
+        dashboard:
+          enabled: true
+          matchRule: "Host(`traefik.dev.homescreen.home-automation.cloud`)"
+      
