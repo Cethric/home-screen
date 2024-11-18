@@ -20,7 +20,7 @@ jobs:
           fetch-depth: 0
         
       - name: Install GitVersion
-        uses: gittools/actions/gitversion/setup@v1.2.0
+        uses: gittools/actions/gitversion/setup@v3.0.1
         with:
           versionSpec: '6.x'
           
@@ -69,7 +69,7 @@ jobs:
         run: pnpm install
         
       - name: Determine Version
-        uses: gittools/actions/gitversion/execute@v1.2.0
+        uses: gittools/actions/gitversion/execute@v3.0.1
         with:
           useConfigFile: true
 #          updateAssemblyInfo: true
