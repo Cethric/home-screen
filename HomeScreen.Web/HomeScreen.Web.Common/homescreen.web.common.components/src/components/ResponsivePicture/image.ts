@@ -1,11 +1,11 @@
-import type { DateTime } from 'luxon';
+import { DateTime } from 'luxon';
 import {
   computed,
   type ComputedRef,
   type MaybeRefOrGetter,
   toValue,
 } from 'vue';
-import type { MediaItem } from '@/domain/generated/homescreen-common-api';
+import type { MediaItem } from '@/domain/client/media.ts';
 
 export interface ImageLocation {
   name: string;
@@ -96,7 +96,9 @@ export const useImageAspectSize = ({
 export const transformMediaItemToImage = (item: MediaItem): Image =>
   ({
     id: item.id!,
-    dateTime: item.created!,
+    dateTime: DateTime.isDateTime(item.created)
+      ? DateTime.fromHTTP(item.created)
+      : DateTime.invalid('Created date not provided'),
     enabled: item.enabled!,
     location:
       item.location?.name && item.location?.latitude && item.location?.longitude

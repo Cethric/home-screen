@@ -47,13 +47,13 @@
 </template>
 
 <script lang="ts" setup>
-import { MediaTransformOptionsFormat } from '@/domain/generated/homescreen-common-api';
 import MediaSource from '@/components/ResponsivePicture/PictureSource.vue';
 import { computed, toValue } from 'vue';
 import type {
   ComputedMediaSize,
   Image,
 } from '@/components/ResponsivePicture/image';
+import { MediaTransformOptionsFormat } from '@/domain/generated/schema';
 
 const props = defineProps<{ image: Image; imageSize: ComputedMediaSize }>();
 const computedSize = computed(() => {

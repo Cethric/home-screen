@@ -25,7 +25,7 @@ import {
   type Direction,
   Directions,
   type Image,
-  type IWeatherForecast,
+  type WeatherForecast,
 } from '@homescreen/web-common-components';
 import { computed } from 'vue';
 import RollingSlider from '@/slideshows/rolling/RollingSlider.vue';
@@ -41,7 +41,7 @@ import { DateTimeWeatherComboAsync } from '@/components/DateTimeWeatherComboAsyn
 const props = withDefaults(
   defineProps<{
     images: Record<Image['id'], Image>;
-    weatherForecast: IWeatherForecast;
+    weatherForecast: WeatherForecast;
     direction?: Direction;
     count?: number;
     durationSeconds?: number;

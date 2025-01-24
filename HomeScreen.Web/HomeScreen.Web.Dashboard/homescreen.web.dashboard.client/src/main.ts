@@ -4,7 +4,7 @@ import { createApp } from 'vue';
 import App from './App.vue';
 import {
   ConfigApiProvider,
-  configureSentry,
+  getCommonApi,
   getConfigClient,
   getMediaClient,
   getWeatherClient,
@@ -16,15 +16,14 @@ import { useRoutes } from '@/routes';
 
 (async () => {
   const response = await loadConfig();
-  const commonConfigApi = getConfigClient(response.commonUrl);
-  const commonResponse = await commonConfigApi.config();
+  const commonApi = getCommonApi(response.commonUrl);
+  const commonConfigApi = getConfigClient(commonApi);
 
   const app = createApp(App)
     .provide(ConfigProvider, response)
-    .provide(MediaApiProvider, getMediaClient(response.commonUrl))
-    .provide(WeatherApiProvider, getWeatherClient(response.commonUrl))
+    .provide(MediaApiProvider, getMediaClient(commonApi))
+    .provide(WeatherApiProvider, getWeatherClient(commonApi))
     .provide(ConfigApiProvider, commonConfigApi)
     .use(useRoutes());
-  configureSentry(app, commonResponse.result.sentryDsn);
   app.mount('#app');
 })();

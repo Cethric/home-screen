@@ -34,6 +34,13 @@ helmCharts:
     version: v1.16.0
     namespace: kube-system
     repo: https://raw.githubusercontent.com/kubernetes-csi/csi-driver-smb/master/charts
+    valuesInline:
+      linux:
+        kubelet: /var/snap/microk8s/common/var/lib/kubelet
+      extraArgs:
+        - --set="linux.kubeletRootDir=/var/snap/microk8s/common/var/lib/kubelet"
+        - --set="controller.runOnControlPlane=true"
+        - --set="controller.nodeSelector.node.kubernetes.io/microk8s-controlplane=microk8s-controlplane"
 
   - name: traefik
     includeCRDs: true
@@ -56,5 +63,5 @@ helmCharts:
       ingressRoute:
         dashboard:
           enabled: true
-          matchRule: "Host(`traefik.dev.homescreen.home-automation.cloud`)"
+          matchRule: "Host(`traefik.prod.homescreen.home-automation.cloud`)"
       

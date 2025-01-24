@@ -7,18 +7,17 @@
     "type": "git",
     "url": "https://github.com/Cethric/home-screen.git"
   },
-  "packageManager": "pnpm@9.12.3",
   "engines": {
     "node": ">=20",
     "pnpm": ">=9"
   },
   "dependencies": {
-    "prettier-plugin-tailwindcss": "^0.6.8"
+    "prettier-plugin-tailwindcss": "^0.6.10"
   },
   "devDependencies": {
-    "prettier": "^3.3.3"
+    "prettier": "^3.4.2"
   },
   "peerDependencies": {
-    "prettier": "^3.3.3"
+    "prettier": "^3.4.2"
   }
 }

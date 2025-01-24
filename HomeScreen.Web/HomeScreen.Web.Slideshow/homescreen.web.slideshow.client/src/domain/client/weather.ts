@@ -1,19 +1,18 @@
 import {
   injectWeatherApi,
-  WeatherForecast,
+  type WeatherForecast,
 } from '@homescreen/web-common-components';
 
-export const loadWeather = async (): Promise<WeatherForecast> => {
+export const loadWeather = async (): Promise<WeatherForecast | undefined> => {
   const weatherApi = injectWeatherApi();
   console.log(weatherApi);
   try {
-    const response = await weatherApi.current(151.20732, -33.86785);
-    return response.result;
+    return await weatherApi.current(151.20732, -33.86785);
   } catch (e) {
     console.log('Unable to load weather data', e);
-    return new WeatherForecast({
+    return {
       feelsLikeTemperature: 0,
       weatherCode: 'Unable to load weather data',
-    });
+    } satisfies WeatherForecast;
   }
 };

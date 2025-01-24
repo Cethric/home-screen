@@ -36,17 +36,17 @@ useInfiniteScroll(
     isLoading.value = true;
     progress.value = 0;
 
-    const media = mediaApi.paginateStream(images.value.length, 1000);
+    const media = mediaApi.paginate(images.value.length, 1000);
 
     let loaded = 0;
     for await (const item of media) {
-      if (item.result.mediaItem) {
-        const transformed = transformMediaItemToImage(item.result.mediaItem);
-        console.log('Loaded image', item.result.mediaItem, transformed);
+      if (item.mediaItem) {
+        const transformed = transformMediaItemToImage(item.mediaItem);
+        console.log('Loaded image', item.mediaItem, transformed);
         images.value.push(transformed);
         progress.value = ++loaded / 20;
       }
-      currentTotal.value = item.result.totalPages ?? 0;
+      currentTotal.value = item.totalPages ?? 0;
     }
 
     progress.value = 1;

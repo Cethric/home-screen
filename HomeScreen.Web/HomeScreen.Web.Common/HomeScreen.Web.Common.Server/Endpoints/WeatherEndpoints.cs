@@ -67,8 +67,8 @@ public static class WeatherEndpoints
             .WithName("Weather")
             .WithGroupName("Weather");
 
-        group.MapGet("/current", CurrentForecast).WithName(nameof(CurrentForecast));
-        group.MapGet("/hourly", HourlyForecast).WithName(nameof(HourlyForecast));
-        group.MapGet("/daily", DailyForecast).WithName(nameof(DailyForecast));
+        group.MapGet("/current", CurrentForecast).WithName(nameof(CurrentForecast)).WithDisplayName("Current Forecast").WithTags("current");
+        group.MapGet("/hourly", HourlyForecast).WithName(nameof(HourlyForecast)).WithDisplayName("Hourly forecast").WithTags("hourly");
+        group.MapGet("/daily", DailyForecast).WithName(nameof(DailyForecast)).WithTags("daily");
     }
 }

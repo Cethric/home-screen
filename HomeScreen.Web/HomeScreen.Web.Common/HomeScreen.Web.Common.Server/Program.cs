@@ -111,8 +111,8 @@ app.UseCors(cors => cors.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 
 if (app.Environment.IsDevelopment())
 {
-    app.UseOpenApi(p => p.Path = "/swagger/{documentName}/swagger.yaml");
-    app.UseSwaggerUi(p => p.DocumentPath = "/swagger/{documentName}/swagger.yaml");
+    app.UseOpenApi(p => p.Path = "/swagger/{documentName}/swagger.json");
+    app.UseSwaggerUi(p => p.DocumentPath = "/swagger/{documentName}/swagger.json");
     app.UseDeveloperExceptionPage();
 }
 

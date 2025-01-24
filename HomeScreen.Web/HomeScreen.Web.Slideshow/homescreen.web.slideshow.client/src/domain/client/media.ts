@@ -6,10 +6,10 @@ import {
 export const toggleMedia = async (
   imageId: string,
   state: boolean,
-): Promise<MediaItem> => {
+): Promise<MediaItem | undefined> => {
   const mediaApi = injectMediaApi();
   console.log('toggleMedia start', imageId, state);
   const response = await mediaApi.toggle(imageId, state);
-  console.log('toggleMedia end', response.result.id, response.result.enabled);
-  return response.result;
+  console.log('toggleMedia end', response?.id, response?.enabled);
+  return response;
 };

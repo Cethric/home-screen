@@ -21,19 +21,33 @@ import {
 import { type LoadImageCallback } from '@/helpers/computedMedia';
 
 import {
+  type ApiClient,
+  getCommonApi,
+  injectCommonApi,
+} from '@/domain/client/api';
+import {
   getMediaClient,
-  type IMediaClientWithStreaming,
+  type IMediaClient,
   injectMediaApi,
   MediaApiProvider,
+  MediaClient,
+  type MediaItem,
+  type MediaTransformOptionsFormat,
 } from '@/domain/client/media';
 import {
   getWeatherClient,
   injectWeatherApi,
+  type IWeatherClient,
   WeatherApiProvider,
+  WeatherClient,
+  type WeatherForecast,
 } from '@/domain/client/weather';
 import {
+  type Config,
   ConfigApiProvider,
+  ConfigClient,
   getConfigClient,
+  type IConfigClient,
   injectConfigApi,
 } from '@/domain/client/config';
 import {
@@ -47,24 +61,9 @@ import {
   useImageAspectSize,
 } from '@/components/ResponsivePicture/image';
 
-import {
-  Config,
-  ConfigClient,
-  type IConfig,
-  type IConfigClient,
-  type IMediaClient,
-  type IMediaItem,
-  type IWeatherClient,
-  type IWeatherForecast,
-  MediaClient,
-  MediaItem,
-  MediaTransformOptionsFormat,
-  WeatherClient,
-  WeatherForecast,
-  WmoWeatherCode,
-} from '@/domain/generated/homescreen-common-api';
+import { WmoWeatherCode } from '@/domain/generated/schema';
 
-import { configureSentry } from '@/helpers/sentry';
+import { otel } from '@/helpers/otel';
 
 export {
   PolaroidCard,
@@ -95,26 +94,25 @@ export {
   type ComputedMediaSize,
   type LoadImageCallback,
   getMediaClient,
-  type IMediaClientWithStreaming,
   getWeatherClient,
   injectWeatherApi,
   WeatherApiProvider,
   getConfigClient,
   injectConfigApi,
   ConfigApiProvider,
-  Config,
+  type Config,
   ConfigClient,
-  type IConfig,
   type IConfigClient,
   type IMediaClient,
-  type IMediaItem,
+  type MediaItem,
   type IWeatherClient,
-  type IWeatherForecast,
+  type WeatherForecast,
   MediaClient,
-  MediaItem,
-  MediaTransformOptionsFormat,
+  type MediaTransformOptionsFormat,
   WeatherClient,
-  WeatherForecast,
   WmoWeatherCode,
-  configureSentry,
+  getCommonApi,
+  injectCommonApi,
+  type ApiClient,
+  otel,
 };

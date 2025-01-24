@@ -30,7 +30,7 @@ export default defineConfig(() => {
         fileName: (fmt) => `web-common-components.${fmt}.js`,
       },
       rollupOptions: {
-        external: ['vue', /@vueuse\/.*/, 'luxon', /@fortawesome\/.*/],
+        external: ['vue', /@vueuse\/.*/, 'luxon', /@fortawesome\/.*/, 'zod'],
         output: {
           // Global variables for use in the UMD build
           manualChunks: {
@@ -40,7 +40,20 @@ export default defineConfig(() => {
               '@turf/turf',
               'geojson',
             ],
-            sentry: ['@sentry/vue'],
+            otel: [
+              '@opentelemetry/api',
+              '@opentelemetry/sdk-trace-web',
+              '@opentelemetry/instrumentation',
+              '@opentelemetry/instrumentation-document-load',
+              '@opentelemetry/instrumentation-user-interaction',
+              '@opentelemetry/instrumentation-fetch',
+              '@opentelemetry/context-zone',
+              '@opentelemetry/exporter-trace-otlp-proto',
+              '@opentelemetry/exporter-metrics-otlp-proto',
+              '@opentelemetry/resources',
+              '@opentelemetry/semantic-conventions',
+              '@opentelemetry/otlp-exporter-base',
+            ],
           },
           globals: {
             vue: 'Vue',

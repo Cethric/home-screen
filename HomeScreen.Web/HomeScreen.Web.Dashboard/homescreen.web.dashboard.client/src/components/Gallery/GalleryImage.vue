@@ -48,6 +48,7 @@ const size = useImageAspectSize({
   minSize: { width: 0, height: 0 },
 });
 const aspectSize = computed(() => {
+  // @ts-expect-error
   const { width, height } = toValue(size);
   return { width: `${width + 16}px`, height: `${height + 75}px` };
 });
@@ -68,5 +69,3 @@ const styledSize = computed(() => {
   };
 });
 </script>
-
-<style lang="scss" scoped></style>

@@ -16,15 +16,10 @@ public static class ConfigEndpoint
         group.MapGet("/", Config).WithName(nameof(Config));
     }
 
-    private static async Task<Results<Ok<Config>, NotFound>> Config(IConfigApi api, CancellationToken token)
+    private static async Task<Ok<Config>> Config(IConfigApi api, CancellationToken token)
     {
-        using var activity = ActivitySource.StartActivity("Config", ActivityKind.Client);
+        using var activity = ActivitySource.StartActivity(nameof(Config), ActivityKind.Client);
         var result = await api.ResolveConfig(token);
-        if (result is null)
-        {
-            return TypedResults.NotFound();
-        }
-
         return TypedResults.Ok(result);
     }
 }

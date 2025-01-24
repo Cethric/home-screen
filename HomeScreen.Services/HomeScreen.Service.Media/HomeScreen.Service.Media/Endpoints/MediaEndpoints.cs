@@ -13,9 +13,24 @@ public static class MediaEndpoints
 
     public static void RegisterMediaEndpoints(this WebApplication app)
     {
-        var group = app.MapGroup("media").WithTags("media").WithName("Media").WithGroupName("Media");
-        group.MapGet("{mediaId:guid:required}/download/{width:int:required}/{height:int:required}", DownloadMedia)
+        var group = app.MapGroup("media/download")
+            .WithTags("media", "download")
+            .WithName("Download Media")
+            .WithGroupName("MediaDownload");
+        group.MapGet("item/{mediaId:guid:required}/{width:int:required}/{height:int:required}", DownloadMedia)
             .WithName(nameof(DownloadMedia))
+            .Produces<FileStreamHttpResult>(
+                StatusCodes.Status200OK,
+                MediaTransformOptionsFormat.Jpeg.TransformFormatToMime(),
+                MediaTransformOptionsFormat.JpegXl.TransformFormatToMime(),
+                MediaTransformOptionsFormat.Png.TransformFormatToMime(),
+                MediaTransformOptionsFormat.WebP.TransformFormatToMime(),
+                MediaTransformOptionsFormat.Avif.TransformFormatToMime()
+            )
+            .Produces<NotFound>(StatusCodes.Status404NotFound, MediaTypeNames.Application.Json);
+
+        group.MapGet("line/{direction:int:required}/{size:int:required}", DownloadLine)
+            .WithName(nameof(DownloadLine))
             .Produces<FileStreamHttpResult>(
                 StatusCodes.Status200OK,
                 MediaTransformOptionsFormat.Jpeg.TransformFormatToMime(),
@@ -63,5 +78,17 @@ public static class MediaEndpoints
             new EntityTagHeaderValue($"\"{mediaId:D}\"", true),
             true
         );
+    }
+
+    private static async Task<Results<FileStreamHttpResult, NotFound>> DownloadLine(
+        uint direction,
+        uint size,
+        bool blur,
+        IEnumerable<string> mediaIds,
+        IMediaApi mediaApi,
+        CancellationToken cancellationToken
+    )
+    {
+        return TypedResults.NotFound();
     }
 }

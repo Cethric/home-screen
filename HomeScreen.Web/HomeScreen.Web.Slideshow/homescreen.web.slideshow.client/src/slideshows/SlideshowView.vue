@@ -1,7 +1,7 @@
 <template>
   <SlideshowContainer
     :active-slideshow="activeSlideshow"
-    :forecast="forecast"
+    :forecast="forecast!"
   />
   <div class="fixed bottom-4 left-4 z-50">
     <button

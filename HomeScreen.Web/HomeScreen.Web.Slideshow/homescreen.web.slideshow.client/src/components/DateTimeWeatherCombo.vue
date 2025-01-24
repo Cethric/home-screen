@@ -64,10 +64,10 @@ import {
   type DateTimeWeatherComboKind,
   DateTimeWeatherComboKinds,
 } from '@/components/properties';
-import type { IWeatherForecast } from '@homescreen/web-common-components';
+import type { WeatherForecast } from '@homescreen/web-common-components';
 
 defineProps<{
-  weatherForecast: IWeatherForecast;
+  weatherForecast: WeatherForecast;
   kind: DateTimeWeatherComboKind;
 }>();
 

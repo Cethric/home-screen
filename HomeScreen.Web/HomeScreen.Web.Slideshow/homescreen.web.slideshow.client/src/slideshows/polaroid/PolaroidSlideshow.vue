@@ -28,7 +28,7 @@ import { computed, ref, watch } from 'vue';
 import {
   type Direction,
   type Image,
-  type IWeatherForecast,
+  type WeatherForecast,
   type PolaroidImage,
   TransformedPolaroidModal,
 } from '@homescreen/web-common-components';
@@ -43,7 +43,7 @@ const props = withDefaults(
   defineProps<{
     images: Record<Image['id'], Image>;
     intervalSeconds?: number;
-    weatherForecast: IWeatherForecast;
+    weatherForecast: WeatherForecast;
     direction?: Direction;
     count?: number;
     total: number;

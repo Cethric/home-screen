@@ -4,5 +4,5 @@ namespace HomeScreen.Web.Common.Server.Services;
 
 public interface IConfigApi
 {
-    Task<Config?> ResolveConfig(CancellationToken cancellationToken = default);
+    Task<Config> ResolveConfig(CancellationToken cancellationToken = default);
 }

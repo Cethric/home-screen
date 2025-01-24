@@ -1,7 +1,9 @@
 import { computedAsync, useMemoize } from '@vueuse/core';
 import { type Ref } from 'vue';
-import { MediaTransformOptionsFormat } from '@/domain/generated/homescreen-common-api';
-import { injectMediaApi } from '@/domain/client/media';
+import {
+  injectMediaApi,
+  type MediaTransformOptionsFormat,
+} from '@/domain/client/media';
 
 export const loadImage = async (
   imageId: string,
@@ -12,7 +14,7 @@ export const loadImage = async (
   signal?: AbortSignal,
 ): Promise<string> => {
   const mediaApi = injectMediaApi();
-  const response = await mediaApi.transform(
+  const response = await mediaApi.transformItem(
     imageId,
     Math.floor(width),
     Math.floor(height),
@@ -20,11 +22,8 @@ export const loadImage = async (
     format,
     // signal,
   );
-  return (
-    response.result.url ||
-    response.headers['location'] ||
-    response.headers['Location']
-  );
+
+  return response?.url ?? 'invalid-url';
 };
 
 export type LoadImageCallback = typeof loadImage;

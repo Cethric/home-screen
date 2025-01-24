@@ -10,12 +10,12 @@
 
 <script async lang="ts" setup>
 import { loadImage } from '@/helpers/computedMedia';
-import { MediaTransformOptionsFormat } from '@/domain/generated/homescreen-common-api';
 import { toValue } from 'vue';
 import {
   type ComputedMediaSize,
   type Image,
 } from '@/components/ResponsivePicture/image';
+import { MediaTransformOptionsFormat } from '@/domain/generated/schema';
 
 const props = defineProps<{
   image: Image;

@@ -131,7 +131,7 @@ public class MediaApi(ILogger<MediaApi> logger, MediaGrpcClient client, IMediaCl
     {
         using var activity = ActivitySource.StartActivity("DownloadMedia", ActivityKind.Client);
         logger.LogDebug("Downloading media for {MediaId}", mediaId);
-        var response = await mediaFileClient.MediaAsync(
+        var response = await mediaFileClient.Download_MediaAsync(
             mediaId,
             (int)width,
             (int)height,

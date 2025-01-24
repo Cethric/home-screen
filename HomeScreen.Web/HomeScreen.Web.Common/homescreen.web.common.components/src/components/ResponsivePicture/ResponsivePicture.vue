@@ -43,7 +43,6 @@
 <script lang="ts" setup>
 import { Variants } from '@/components/properties';
 import LoadingSpinner from '@/components/LoadingSpinner/LoadingSpinner.vue';
-import { MediaTransformOptionsFormat } from '@/domain/generated/homescreen-common-api';
 import PictureImage from '@/components/ResponsivePicture/PictureImage.vue';
 import PictureSources from '@/components/ResponsivePicture/PictureSources.vue';
 import {
@@ -51,6 +50,7 @@ import {
   type ResponsivePictureProps,
   useImageAspectSize,
 } from '@/components/ResponsivePicture/image';
+import { MediaTransformOptionsFormat } from '@/domain/generated/schema';
 
 const props = defineProps<ResponsivePictureProps>();
 

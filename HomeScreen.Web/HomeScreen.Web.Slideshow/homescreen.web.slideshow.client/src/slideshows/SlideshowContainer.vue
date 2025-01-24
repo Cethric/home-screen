@@ -67,13 +67,13 @@ const { execute, isReady } = useAsyncState(
       images.value = [];
     });
     let loaded = 0;
-    const media = mediaApi.randomStream(currentTotal.value, signal);
+    const media = mediaApi.random(currentTotal.value, signal);
 
     for await (const item of media) {
       signal?.throwIfAborted();
-      if (item && item.result.id !== undefined) {
+      if (item && item.id !== undefined) {
         const duplicateIndex = images.value.findIndex(
-          (img: Image) => img.id === item.result.id,
+          (img: Image) => img.id === item.id,
         );
         if (duplicateIndex >= 0) {
           if (images.value.length >= currentTotal.value) {
@@ -90,7 +90,7 @@ const { execute, isReady } = useAsyncState(
           console.log('Removed image', removed);
         }
         await nextTick(() => {
-          images.value.push(transformMediaItemToImage(item.result));
+          images.value.push(transformMediaItemToImage(item));
           ++loaded;
           progress.value = loaded / currentTotal.value;
         });
