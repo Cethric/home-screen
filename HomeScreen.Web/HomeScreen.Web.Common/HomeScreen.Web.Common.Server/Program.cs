@@ -130,12 +130,13 @@ static void ProcessRandomMediaMime(OperationProcessorContext context)
     context.OperationDescription.Operation.Responses.Clear();
 
     var response = new OpenApiResponse
-                   {
-                       Schema = new JsonSchema
-                                {
-                                    Type = JsonObjectType.Object, Reference = context.Document.Definitions["MediaItem"]
-                                }
-                   };
+    {
+        Schema = new JsonSchema
+        {
+            Type = JsonObjectType.Object,
+            Reference = context.Document.Definitions["MediaItem"]
+        }
+    };
     response.Content.Clear();
     foreach (var operation in context.OperationDescription.Operation.Produces)
     {
@@ -144,9 +145,10 @@ static void ProcessRandomMediaMime(OperationProcessorContext context)
             new OpenApiMediaType
             {
                 Schema = new JsonSchema
-                         {
-                             Type = JsonObjectType.Object, Reference = context.Document.Definitions["MediaItem"]
-                         }
+                {
+                    Type = JsonObjectType.Object,
+                    Reference = context.Document.Definitions["MediaItem"]
+                }
             }
         );
     }
@@ -169,13 +171,13 @@ static void ProcessFileMime(OperationProcessorContext context)
     context.OperationDescription.Operation.Responses.Clear();
 
     var response = new OpenApiResponse
-                   {
-                       Schema = new JsonSchema
-                                {
-                                    Type = JsonObjectType.File,
-                                    Reference = context.Document.Definitions["FileStreamHttpResult"]
-                                }
-                   };
+    {
+        Schema = new JsonSchema
+        {
+            Type = JsonObjectType.File,
+            Reference = context.Document.Definitions["FileStreamHttpResult"]
+        }
+    };
     response.Content.Clear();
     foreach (var operation in context.OperationDescription.Operation.Produces)
     {
@@ -184,10 +186,10 @@ static void ProcessFileMime(OperationProcessorContext context)
             new OpenApiMediaType
             {
                 Schema = new JsonSchema
-                         {
-                             Type = JsonObjectType.File,
-                             Reference = context.Document.Definitions["FileStreamHttpResult"]
-                         }
+                {
+                    Type = JsonObjectType.File,
+                    Reference = context.Document.Definitions["FileStreamHttpResult"]
+                }
             }
         );
     }
