@@ -8,26 +8,26 @@ public class OtelCollectorResource(string name, ParameterResource user, Paramete
     : ContainerResource(name), IResourceWithConnectionString
 {
     public const string OtelCollectorGrpcEndpoint = "OtelCollectorGRPC";
-    public const string OtelCollectorHttpEndpoint = "OtelCollectorHttp";
+public const string OtelCollectorHttpEndpoint = "OtelCollectorHttp";
 
-    public ParameterResource UserParameter { get; } = user;
-    public ParameterResource PasswordParameter { get; } = password;
+public ParameterResource UserParameter { get; } = user;
+public ParameterResource PasswordParameter { get; } = password;
 
-    private EndpointReference? _endpointHttp;
-    private EndpointReference? _endpointGrpc;
+private EndpointReference? _endpointHttp;
+private EndpointReference? _endpointGrpc;
 
-    public EndpointReference EndpointReferenceHttp =>
-        _endpointHttp ??= new EndpointReference(this, OtelCollectorHttpEndpoint);
+public EndpointReference EndpointReferenceHttp =>
+    _endpointHttp ??= new EndpointReference(this, OtelCollectorHttpEndpoint);
 
-    public EndpointReference EndpointReferenceGrpc =>
-        _endpointGrpc ??= new EndpointReference(this, OtelCollectorGrpcEndpoint);
+public EndpointReference EndpointReferenceGrpc =>
+    _endpointGrpc ??= new EndpointReference(this, OtelCollectorGrpcEndpoint);
 
-    public ReferenceExpression ConnectionStringExpression => ReferenceExpression.Create(
-        $"EndpointHttp={EndpointReferenceHttp.Property(EndpointProperty.Host)}:{EndpointReferenceHttp.Property(EndpointProperty.Port)}" +
-        $"EndpointGrpc={EndpointReferenceGrpc.Property(EndpointProperty.Host)}:{EndpointReferenceGrpc.Property(EndpointProperty.Port)}" +
-        $";Username={UserParameter}" +
-        $";Password={PasswordParameter}"
-    );
+public ReferenceExpression ConnectionStringExpression => ReferenceExpression.Create(
+    $"EndpointHttp={EndpointReferenceHttp.Property(EndpointProperty.Host)}:{EndpointReferenceHttp.Property(EndpointProperty.Port)}" +
+    $"EndpointGrpc={EndpointReferenceGrpc.Property(EndpointProperty.Host)}:{EndpointReferenceGrpc.Property(EndpointProperty.Port)}" +
+    $";Username={UserParameter}" +
+    $";Password={PasswordParameter}"
+);
 }
 
 public static class OtelCollector
