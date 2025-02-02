@@ -11,14 +11,14 @@
 import { ref } from 'vue';
 import {
   type Image,
-  injectMediaApi,
+  injectComponentMediaClient,
   transformMediaItemToImage,
 } from '@homescreen/web-common-components';
 import { useNProgress } from '@vueuse/integrations';
 import { useInfiniteScroll } from '@vueuse/core';
 import GalleryImage from '@/components/Gallery/GalleryImage.vue';
 
-const mediaApi = injectMediaApi();
+const mediaApi = injectComponentMediaClient();
 const images = ref<Image[]>([]);
 const { isLoading, progress } = useNProgress(0, {
   trickle: false,

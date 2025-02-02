@@ -47,7 +47,7 @@ defineProps<{
 const emits = defineEmits<{ pause: []; resume: [] }>();
 </script>
 
-<style lang="scss" scoped>
+<style lang="css" scoped>
 .grid-vertical {
   grid-template-columns: repeat(1, 100%);
   grid-template-rows: masonry;

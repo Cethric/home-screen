@@ -5,7 +5,7 @@ import {
   type MaybeRefOrGetter,
   toValue,
 } from 'vue';
-import type { MediaItem } from '@/domain/client/media.ts';
+import type { MediaItem } from '@homescreen/web-common-components-api';
 
 export interface ImageLocation {
   name: string;
@@ -96,8 +96,8 @@ export const useImageAspectSize = ({
 export const transformMediaItemToImage = (item: MediaItem): Image =>
   ({
     id: item.id!,
-    dateTime: DateTime.isDateTime(item.created)
-      ? DateTime.fromHTTP(item.created)
+    dateTime: item.created
+      ? DateTime.fromISO(item.created)
       : DateTime.invalid('Created date not provided'),
     enabled: item.enabled!,
     location:

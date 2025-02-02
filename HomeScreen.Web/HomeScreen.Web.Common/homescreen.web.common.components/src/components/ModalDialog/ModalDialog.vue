@@ -28,7 +28,7 @@
           </div>
         </header>
         <main
-          class="flex max-w-modal flex-col items-center justify-center overflow-auto pt-2"
+          class="max-w-modal flex flex-col items-center justify-center overflow-auto pt-2"
         >
           <slot name="default" @click="closeDialog" />
         </main>
@@ -66,7 +66,9 @@ const closeDialog = () => {
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="css" scoped>
+@reference "../../styles/tailwind.css";
+
 dialog {
   background: none;
 

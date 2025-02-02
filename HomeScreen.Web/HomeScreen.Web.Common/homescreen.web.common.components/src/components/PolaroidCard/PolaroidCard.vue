@@ -43,7 +43,7 @@
 </template>
 
 <script async lang="ts" setup>
-import { type Direction, Directions } from '../properties';
+import { type Direction, Directions } from '@/components/properties';
 import { refDebounced, useElementSize } from '@vueuse/core';
 import { computed, ref } from 'vue';
 import { ResponsivePictureAsync } from '@/components/ResponsivePicture/ResponsivePictureAsync';

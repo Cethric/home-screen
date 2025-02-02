@@ -33,6 +33,7 @@
                   :longitude="image.location.longitude"
                   :tooltip="image.location.name"
                 />
+                <p v-else>No location recorded {{ JSON.stringify(image) }}</p>
               </template>
             </PolaroidCard>
           </template>

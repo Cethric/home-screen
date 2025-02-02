@@ -5,6 +5,8 @@ import fs from 'node:fs';
 import { env } from 'node:process';
 import path from 'node:path';
 import child_process from 'node:child_process';
+import { parseConnectionString } from '@tediousjs/connection-string';
+import tailwindcss from '@tailwindcss/vite';
 
 const makeServerConfig = (): UserConfig['server'] => {
   let keyFilePath: string | undefined = undefined;
@@ -12,7 +14,7 @@ const makeServerConfig = (): UserConfig['server'] => {
   const baseFolder =
     env.APPDATA !== undefined && env.APPDATA !== ''
       ? `${env.APPDATA}/ASP.NET/https`
-      : `${env.HOME}/.aspnet/https`;
+      : `${env.HOME}/.aspnet/dev-certs`;
 
   const certificateName = 'homescreen.web.slideshow.client';
   certFilePath = path.join(baseFolder, `${certificateName}.pem`);
@@ -48,12 +50,34 @@ const makeServerConfig = (): UserConfig['server'] => {
       : env.ASPNETCORE_URLS.split(';')[0];
   }
 
+  let otel_endpoint = 'http://localhost:63688';
+  if (env.OTEL_EXPORTER_OTLP_ENDPOINT) {
+    otel_endpoint = env.OTEL_EXPORTER_OTLP_ENDPOINT;
+  }
+  if (env.ConnectionStrings__OtelCollector) {
+    const connection = parseConnectionString(
+      env.ConnectionStrings__OtelCollector,
+    ) as { endpointhttp: string };
+    otel_endpoint = connection.endpointhttp.substring(
+      0,
+      connection.endpointhttp.indexOf('EndpointGrpc='),
+    );
+  }
+
+  console.log('Otel Endpoint:', otel_endpoint);
+
   return {
     proxy: {
       '/api': {
         target: target,
         changeOrigin: true,
         secure: false,
+      },
+      '/otel': {
+        target: `http://${otel_endpoint}`,
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path.replace(/^\/otel/, ''),
       },
     },
     port: 5173,
@@ -68,7 +92,7 @@ const makeServerConfig = (): UserConfig['server'] => {
 // https://vitejs.dev/config/
 export default defineConfig(({ command }) => {
   return {
-    plugins: [vue()],
+    plugins: [vue(), tailwindcss()],
     build: {
       rollupOptions: {
         output: {

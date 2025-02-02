@@ -50,7 +50,13 @@ builder.Services.AddOpenApiDocument(
         document.SchemaSettings.TypeMappers.Add(
             new ObjectTypeMapper(
                 typeof(FileStreamHttpResult),
-                new JsonSchema { Type = JsonObjectType.File, Format = "binary" }
+                new JsonSchema
+                {
+                    Type = JsonObjectType.File,
+                    Format = "binary",
+                    Title = nameof(FileStreamHttpResult),
+                    Id = nameof(FileStreamHttpResult)
+                }
             )
         );
         document.OperationProcessors.Add(
@@ -71,16 +77,19 @@ builder.Services.AddOpenApiDocument(
                         MediaTransformOptionsFormat.WebP.TransformFormatToMime(),
                         MediaTransformOptionsFormat.Avif.TransformFormatToMime()
                     ];
-                    context.OperationDescription.Operation.Responses.Clear();
+                    // context.OperationDescription.Operation.Responses.Clear();
+
+                    context.Document.Definitions.Add(nameof(FileStreamHttpResult),
+                        new JsonSchema { Type = JsonObjectType.File, Format = "binary" });
 
                     var response = new OpenApiResponse
-                                   {
-                                       Schema = new JsonSchema
-                                                {
-                                                    Type = JsonObjectType.File,
-                                                    Reference = context.Document.Definitions["FileStreamHttpResult"]
-                                                }
-                                   };
+                    {
+                        Schema = new JsonSchema
+                        {
+                            Type = JsonObjectType.File,
+                            Reference = context.Document.Definitions[nameof(FileStreamHttpResult)]
+                        }
+                    };
                     response.Content.Clear();
                     foreach (var operation in context.OperationDescription.Operation.Produces)
                     {
@@ -89,10 +98,10 @@ builder.Services.AddOpenApiDocument(
                             new OpenApiMediaType
                             {
                                 Schema = new JsonSchema
-                                         {
-                                             Type = JsonObjectType.File,
-                                             Reference = context.Document.Definitions["FileStreamHttpResult"]
-                                         }
+                                {
+                                    Type = JsonObjectType.File,
+                                    Reference = context.Document.Definitions[nameof(FileStreamHttpResult)]
+                                }
                             }
                         );
                     }

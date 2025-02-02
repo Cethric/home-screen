@@ -12,7 +12,7 @@ const makeServerConfig = (): UserConfig['server'] => {
   const baseFolder =
     env.APPDATA !== undefined && env.APPDATA !== ''
       ? `${env.APPDATA}/ASP.NET/https`
-      : `${env.HOME}/.aspnet/https`;
+      : `${env.HOME}/.aspnet/dev-certs`;
 
   const certificateName = 'homescreen.web.slideshow.client';
   certFilePath = path.join(baseFolder, `${certificateName}.pem`);

@@ -143,6 +143,12 @@ namespace HomeScreen.Service.Media.Client.Generated
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
+                        if (status_ == 404)
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new ApiException("A server side error occurred.", status_, responseText_, headers_, null);
+                        }
+                        else
                         if (status_ == 200 || status_ == 206)
                         {
                             var responseStream_ = response_.Content == null ? System.IO.Stream.Null : await response_.Content.ReadAsStreamAsync().ConfigureAwait(false);
@@ -172,7 +178,7 @@ namespace HomeScreen.Service.Media.Client.Generated
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<FileResponse> Download_Media2Async(int direction, int size, bool blur, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task<SwaggerResponse> Download_Media2Async(int direction, int size, bool blur, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (direction == null)
                 throw new System.ArgumentNullException("direction");
@@ -190,7 +196,6 @@ namespace HomeScreen.Service.Media.Client.Generated
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
                     request_.Method = new System.Net.Http.HttpMethod("GET");
-                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
                     var urlBuilder_ = new System.Text.StringBuilder();
                     if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
@@ -228,20 +233,14 @@ namespace HomeScreen.Service.Media.Client.Generated
                         var status_ = (int)response_.StatusCode;
                         if (status_ == 404)
                         {
-                            var objectResponse_ = await ReadObjectResponseAsync<NotFound>(response_, headers_, cancellationToken).ConfigureAwait(false);
-                            if (objectResponse_.Object == null)
-                            {
-                                throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
-                            }
-                            throw new ApiException<NotFound>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new ApiException("A server side error occurred.", status_, responseText_, headers_, null);
                         }
                         else
-                        if (status_ == 200 || status_ == 206)
+
+                        if (status_ == 200 || status_ == 204)
                         {
-                            var responseStream_ = response_.Content == null ? System.IO.Stream.Null : await response_.Content.ReadAsStreamAsync().ConfigureAwait(false);
-                            var fileResponse_ = new FileResponse(status_, headers_, responseStream_, null, response_);
-                            disposeClient_ = false; disposeResponse_ = false; // response and client are disposed by FileResponse
-                            return fileResponse_;
+                            return new SwaggerResponse(status_, headers_);
                         }
                         else
                         {

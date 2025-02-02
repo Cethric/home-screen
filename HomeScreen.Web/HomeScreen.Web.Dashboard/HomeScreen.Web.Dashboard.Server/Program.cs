@@ -14,7 +14,9 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddOpenApiDocument(
     document =>
     {
-        document.Description = "Home Dashboard API";
+        document.Title = "HomeScreen Dashboard API";
+        document.Description = "";
+        document.Version = GitVersionInformation.FullSemVer;
         document.SchemaSettings.DefaultReferenceTypeNullHandling = ReferenceTypeNullHandling.NotNull;
         document.SchemaSettings.GenerateExamples = true;
         document.SchemaSettings.GenerateEnumMappingDescription = true;

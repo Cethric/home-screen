@@ -21,7 +21,7 @@ import { type Slideshow } from './properties';
 import {
   Directions,
   type Image,
-  injectMediaApi,
+  injectComponentMediaClient,
   transformMediaItemToImage,
   type WeatherForecast,
 } from '@homescreen/web-common-components';
@@ -55,7 +55,7 @@ const { isLoading, progress } = useNProgress(0, {
   speed: 0,
 });
 
-const mediaApi = injectMediaApi();
+const mediaApi = injectComponentMediaClient();
 
 const { execute, isReady } = useAsyncState(
   async (signal?: AbortSignal) => {
@@ -97,7 +97,6 @@ const { execute, isReady } = useAsyncState(
       }
     }
     isLoading.value = false;
-    console.log('Loaded all images');
   },
   undefined,
   { immediate: false },

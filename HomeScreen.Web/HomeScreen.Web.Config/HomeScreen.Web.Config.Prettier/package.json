@@ -12,7 +12,7 @@
     "pnpm": ">=9"
   },
   "dependencies": {
-    "prettier-plugin-tailwindcss": "^0.6.10"
+    "prettier-plugin-tailwindcss": "^0.6.11"
   },
   "devDependencies": {
     "prettier": "^3.4.2"

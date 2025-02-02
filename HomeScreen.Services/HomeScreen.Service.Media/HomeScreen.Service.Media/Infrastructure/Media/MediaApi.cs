@@ -26,15 +26,13 @@ public class MediaApi(
         using var activity = ActivitySource.StartActivity();
         activity?.AddBaggage("Count", count.ToString());
         logger.LogDebug("GetRandomMedia Start {Count}", count);
-        var disabled = await context.MediaEntries.Where(entry => !entry.Enabled).ToListAsync(cancellationToken);
-        var rawFiles = await mediaPaths.GetRawFiles(cancellationToken);
-        var files = await rawFiles.ToAsyncEnumerable()
-            .WhereAwaitWithCancellation(
-                async (file, cancellation) => !await disabled.ToAsyncEnumerable()
-                    .AnyAsync(entry => entry.OriginalFile.Contains(file.FullName), cancellation)
-            )
-            .SelectAwaitWithCancellation(
-                async (file, cancellation) =>
+        var disabled = context.MediaEntries
+            .Where(entry => !entry.Enabled)
+            .Select(entry => entry.OriginalFile)
+            .ToAsyncEnumerable();
+        var files = await mediaPaths.GetRawFiles(cancellationToken)
+            .ExceptBy(disabled, f => f.FullName, cancellationToken: cancellationToken)
+            .SelectAwaitWithCancellation(async (file, cancellation) =>
                 {
                     var hash = await mediaHasher.HashMedia(file, cancellation);
                     return (file, hash);
@@ -47,7 +45,15 @@ public class MediaApi(
             yield break;
         }
 
-        await foreach (var entry in EnumerateMedia(Random.Shared.GetItems(files, (int)count), cancellationToken))
+        await foreach (
+            var entry in EnumerateMedia(
+                Random.Shared.GetItems(
+                    files,
+                    (int)Math.Min(count, files.Length)
+                ),
+                cancellationToken
+            )
+        )
         {
             yield return entry;
         }
@@ -110,7 +116,7 @@ public class MediaApi(
 
         logger.LogDebug("Attempting to get transformed media for {MediaId}", mediaId);
         return (await mediaTransformer.GetTransformedMedia(mediaEntry, options, cancellationToken),
-                mediaEntry.CapturedUtc.ToOffset(mediaEntry.CapturedOffset));
+            mediaEntry.CapturedUtc.ToOffset(mediaEntry.CapturedOffset));
     }
 
     public async IAsyncEnumerable<(MediaEntry, ulong)> GetPaginatedMedia(
@@ -124,18 +130,9 @@ public class MediaApi(
         activity?.AddBaggage("Length", requestLength.ToString());
         logger.LogDebug("GetPaginatedMedia Start {Offset}, {Length}", requestOffset, requestLength);
         cancellationToken.ThrowIfCancellationRequested();
-        var rawFiles = await (await mediaPaths.GetRawFiles(cancellationToken)).ToAsyncEnumerable()
-            .ToListAsync(cancellationToken);
-        var total = rawFiles.Count;
-        if (total == 0)
-        {
-            logger.LogDebug("GetPaginatedMedia End {Offset}, {Length}", requestOffset, requestLength);
-            yield break;
-        }
-
-        var files = await rawFiles.ToAsyncEnumerable()
-            .SelectAwaitWithCancellation(
-                async (file, cancellation) =>
+        var rawFiles = await mediaPaths
+            .GetRawFiles(cancellationToken)
+            .SelectAwaitWithCancellation(async (file, cancellation) =>
                 {
                     var hash = await mediaHasher.HashMedia(file, cancellation);
                     var (dateTimeOffset, offset) =
@@ -145,10 +142,19 @@ public class MediaApi(
                 }
             )
             .OrderBy(item => item.unix)
-            .Skip(requestOffset)
-            .Take(requestLength)
             .Select(item => (item.file, item.hash))
             .ToListAsync(cancellationToken);
+        var total = rawFiles.Count;
+        if (total == 0)
+        {
+            logger.LogDebug("GetPaginatedMedia End {Offset}, {Length}", requestOffset, requestLength);
+            yield break;
+        }
+
+        var files = rawFiles
+            .Skip(requestOffset)
+            .Take(requestLength)
+            .ToList();
         if (files.Count == 0)
         {
             logger.LogDebug("GetPaginatedMedia End {Offset}, {Length}", requestOffset, requestLength);

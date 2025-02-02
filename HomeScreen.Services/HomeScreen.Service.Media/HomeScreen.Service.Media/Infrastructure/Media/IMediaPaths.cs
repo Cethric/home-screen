@@ -8,7 +8,7 @@ public interface IMediaPaths
 
     FileInfo GetCachePath(MediaTransformOptions mediaTransformOptions, string fileHash);
 
-    Task<IEnumerable<FileInfo>> GetRawFiles(CancellationToken cancellationToken = default);
+    IAsyncEnumerable<FileInfo> GetRawFiles(CancellationToken cancellationToken = default);
 
     Task<ulong> TotalMedia(CancellationToken cancellationToken = default);
 }

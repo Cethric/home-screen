@@ -1,0 +1,42 @@
+{
+  "name": "@homescreen/web-common-components-api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "run-p build:clear build:js",
+    "build:clear": "rimraf dist/",
+    "build:js": "tsc -p tsconfig.json",
+    "generate-api": "openapi-ts --file ./openapi-ts.config.ts"
+  },
+  "dependencies": {
+    "@hey-api/client-fetch": "^0.7.3",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@hey-api/openapi-ts": "^0.63.2",
+    "@homescreen/eslint-config": "workspace:*",
+    "@homescreen/prettier-config": "workspace:*",
+    "@tsconfig/node22": "^22.0.0",
+    "@types/node": "^22.13.0",
+    "eslint": "^9.19.0",
+    "prettier": "^3.4.2",
+    "rimraf": "^6.0.1",
+    "npm-run-all2": "^7.0.2",
+    "typescript": "^5.7.3",
+    "vue": "^3.5.13"
+  },
+  "peerDependencies": {
+    "vue": "^3.5.13"
+  },
+  "packageManager": "pnpm@9.15.4",
+  "engines": {
+    "node": ">=20",
+    "pnpm": ">=9"
+  },
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/"
+  ]
+}

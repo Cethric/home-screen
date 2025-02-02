@@ -39,7 +39,7 @@ namespace HomeScreen.Service.Media.Client.Generated
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<FileResponse> Download_Media2Async(int direction, int size, bool blur, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task<SwaggerResponse> Download_Media2Async(int direction, int size, bool blur, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
     }
 
@@ -50,40 +50,6 @@ namespace HomeScreen.Service.Media.Client.Generated
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <exception cref="ApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<SwaggerResponse<string>> GetAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.2.0.0 (NJsonSchema v11.1.0.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial record NotFound
-    {
-        [System.Text.Json.Serialization.JsonConstructor]
-
-        public NotFound(int? @statusCode)
-
-        {
-
-            this.StatusCode = @statusCode;
-
-        }
-        [System.Text.Json.Serialization.JsonPropertyName("statusCode")]
-        public int? StatusCode { get; init; }
-
-        public string ToJson()
-        {
-
-            var options = new System.Text.Json.JsonSerializerOptions();
-
-            return System.Text.Json.JsonSerializer.Serialize(this, options);
-
-        }
-        public static NotFound FromJson(string data)
-        {
-
-            var options = new System.Text.Json.JsonSerializerOptions();
-
-            return System.Text.Json.JsonSerializer.Deserialize<NotFound>(data, options);
-
-        }
 
     }
 

@@ -22,7 +22,7 @@ defineProps<{
 const emits = defineEmits<{ resume: []; pause: [] }>();
 </script>
 
-<style lang="scss" scoped>
+<style lang="css" scoped>
 .polaroid-modal {
   transform: translate(
       calc(var(--offset-left) * 1dvw),

@@ -1,39 +1,58 @@
 import 'web-streams-polyfill/polyfill';
 
-import '@/styles/_root.scss';
+import '@/styles/tailwind.css';
+import '@/styles/nprogress.css';
+import '@homescreen/web-common-components/dist/web-common-components.css';
 
 import { createApp } from 'vue';
 import App from './App.vue';
 import {
-  ConfigApiProvider,
-  getCommonApi,
-  getConfigClient,
-  getMediaClient,
-  getWeatherClient,
-  MediaApiProvider,
+  ComponentApiPlugin,
+  makeClient,
+  openobserver,
   otel,
-  WeatherApiProvider,
 } from '@homescreen/web-common-components';
 import { ConfigProvider, loadConfig } from '@/domain/client/config';
 
 (async () => {
   const response = await loadConfig();
-  const commonApi = getCommonApi(response.commonUrl);
-  const commonConfigApi = getConfigClient(commonApi);
-  const config = await commonConfigApi.config();
+  const {
+    client,
+    config,
+    response: commonConfig,
+  } = await makeClient(response.commonUrl);
 
   const app = createApp(App)
-    .provide(ConfigProvider, response)
-    .provide(MediaApiProvider, getMediaClient(commonApi))
-    .provide(WeatherApiProvider, getWeatherClient(commonApi))
-    .provide(ConfigApiProvider, commonConfigApi);
+    .use(ComponentApiPlugin, { client, config })
+    .provide(ConfigProvider, response);
 
-  if (config?.otlpConfig?.endpoint) {
+  if (commonConfig?.otlpConfig) {
     app.use(otel, {
       serviceName: 'slideshow-web',
-      endpoint: config!.otlpConfig.endpoint,
-      headers: config!.otlpConfig.headers,
-      attributes: config!.otlpConfig.attributes,
+      endpoint: `${location.protocol}//${location.hostname}:${location.port}/otel`,
+      headers: commonConfig.otlpConfig.headers,
+      attributes: commonConfig.otlpConfig.attributes,
+    });
+  }
+
+  if (commonConfig?.rumConfig) {
+    const credentials = await fetch(
+      `http://${commonConfig.rumConfig.endpoint}/api/${commonConfig.rumConfig.organizationIdentifier}/rumtoken`,
+      {
+        headers: {
+          Authorization: `Basic ${commonConfig.rumConfig.clientToken}`,
+        },
+      },
+    ).then((res) => res.json());
+    app.use(openobserver, {
+      applicationId: 'homescreen.web.slideshow.client',
+      clientToken: credentials['data']['rum_token'],
+      organizationIdentifier: commonConfig.rumConfig.organizationIdentifier,
+      service: 'homescreen.web.slideshow.client',
+      env: 'development',
+      version: '0.0.0',
+      endpoint: commonConfig.rumConfig.endpoint,
+      insecureHTTP: commonConfig.rumConfig.insecureHttp,
     });
   }
   app.mount('#app');

@@ -50,7 +50,7 @@ import {
   type ResponsivePictureProps,
   useImageAspectSize,
 } from '@/components/ResponsivePicture/image';
-import { MediaTransformOptionsFormat } from '@/domain/generated/schema';
+import { MediaTransformOptionsFormat } from '@homescreen/web-common-components-api';
 
 const props = defineProps<ResponsivePictureProps>();
 

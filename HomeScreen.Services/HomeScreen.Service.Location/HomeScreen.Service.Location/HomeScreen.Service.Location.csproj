@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
     <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
+        <TargetFramework>net9.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <RuntimeIdentifiers>linux-x64</RuntimeIdentifiers>
@@ -10,7 +10,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="GitVersion.MsBuild" Version="6.0.5">
+        <PackageReference Include="GitVersion.MsBuild" Version="6.1.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
@@ -20,6 +20,7 @@
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
+        <PackageReference Include="System.Text.Json" Version="9.0.1" />
     </ItemGroup>
 
     <ItemGroup>
@@ -30,7 +31,7 @@
     <Target Name="NSwag-Pre" BeforeTargets="PreBuildEvent">
         <Exec WorkingDirectory="$(ProjectDir)"
               EnvironmentVariables="ASPNETCORE_ENVIRONMENT=Development"
-              Command="$(NSwagExe_Net80) run Infrastructure/NominatimLocationService/nominatim.nswag /variables:Configuration=$(Configuration)"/>
+              Command="$(NSwagExe_Net90) run Infrastructure/NominatimLocationService/nominatim.nswag /variables:Configuration=$(Configuration)"/>
     </Target>
 
 </Project>

@@ -1,7 +1,0 @@
-apis:
-  common:
-    root: http://localhost:5298/swagger/v1/swagger.json
-    x-openapi-ts:
-      output: ./src/domain/generated/schema.ts
-      enum: true
-      check: true

@@ -120,28 +120,30 @@ public static class MediaTransformEndpoints
         );
         if (url == null)
         {
-            return TypedResults.NotFound();
+            return await Task.FromResult(TypedResults.NotFound());
         }
 
-        return TypedResults.AcceptedAtRoute(
-            new AcceptedTransformMediaLine
-            {
-                // MediaId = mediaId,
-                // Width = width,
-                // Height = height,
-                // Blur = blur,
-                // Format = format,
-                // Url = url
-            },
-            nameof(MediaDownloadEndpoints.DownloadLine),
-            new
-            {
-                // mediaId,
-                // width,
-                // height,
-                // blur,
-                // format
-            }
+        return await Task.FromResult(
+            TypedResults.AcceptedAtRoute(
+                new AcceptedTransformMediaLine
+                {
+                    // MediaId = mediaId,
+                    // Width = width,
+                    // Height = height,
+                    // Blur = blur,
+                    // Format = format,
+                    // Url = url
+                },
+                nameof(MediaDownloadEndpoints.DownloadLine),
+                new
+                {
+                    // mediaId,
+                    // width,
+                    // height,
+                    // blur,
+                    // format
+                }
+            )
         );
     }
 }

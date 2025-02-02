@@ -15,7 +15,7 @@
     "baseUrl": ".",
     "verbatimModuleSyntax": true,
     "lib": [
-      "ES2022.Object",
+      "ESNext.Object",
       "ESNext",
       "DOM",
       "DOM.Iterable"

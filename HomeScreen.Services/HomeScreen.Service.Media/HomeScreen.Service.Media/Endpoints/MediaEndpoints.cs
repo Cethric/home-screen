@@ -89,6 +89,6 @@ public static class MediaEndpoints
         CancellationToken cancellationToken
     )
     {
-        return TypedResults.NotFound();
+        return await Task.FromResult(TypedResults.NotFound());
     }
 }

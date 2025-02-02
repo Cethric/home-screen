@@ -4,7 +4,7 @@ import {
 } from '@/domain/generated/homescreen-slideshow-api';
 import { inject } from 'vue';
 
-export const ConfigProvider: symbol = Symbol('Config');
+export const ConfigProvider: symbol = Symbol.for('SlideshowConfig');
 
 export async function loadConfig() {
   const config = new ConfigClient(undefined, window);

@@ -19,7 +19,7 @@ import {
   type Image,
   imageToColour,
 } from '@/components/ResponsivePicture/image';
-import type { MediaTransformOptionsFormat } from '@/domain/client/media.ts';
+import type { MediaTransformOptionsFormat } from '@homescreen/web-common-components-api';
 
 const props = withDefaults(
   defineProps<{
@@ -53,7 +53,7 @@ const alt = computed(
 );
 </script>
 
-<style lang="scss" scoped>
+<style lang="css" scoped>
 img {
   min-width: calc(v-bind(width) * 1px);
   min-height: calc(v-bind(height) * 1px);

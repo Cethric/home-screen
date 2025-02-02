@@ -1,9 +1,9 @@
 import { computedAsync, useMemoize } from '@vueuse/core';
 import { type Ref } from 'vue';
 import {
-  injectMediaApi,
-  type MediaTransformOptionsFormat,
-} from '@/domain/client/media';
+  injectComponentMediaClient,
+  MediaTransformOptionsFormat,
+} from '@homescreen/web-common-components-api';
 
 export const loadImage = async (
   imageId: string,
@@ -13,14 +13,14 @@ export const loadImage = async (
   format: MediaTransformOptionsFormat,
   signal?: AbortSignal,
 ): Promise<string> => {
-  const mediaApi = injectMediaApi();
+  const mediaApi = injectComponentMediaClient();
   const response = await mediaApi.transformItem(
     imageId,
     Math.floor(width),
     Math.floor(height),
     blur,
     format,
-    // signal,
+    signal,
   );
 
   return response?.url ?? 'invalid-url';

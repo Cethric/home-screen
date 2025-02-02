@@ -5,6 +5,8 @@ using HomeScreen.Web.Common.Server.Entities;
 using HomeScreen.Web.Common.Server.Services;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.Net.Http.Headers;
+using EntityTagHeaderValue = Microsoft.Net.Http.Headers.EntityTagHeaderValue;
+using FileStreamHttpResult = Microsoft.AspNetCore.Http.HttpResults.FileStreamHttpResult;
 using NotFound = Microsoft.AspNetCore.Http.HttpResults.NotFound;
 
 namespace HomeScreen.Web.Common.Server.Endpoints;
@@ -82,6 +84,8 @@ public static class MediaDownloadEndpoints
             );
         }
 
+        await response.Stream.DisposeAsync();
+
         return response.StatusCode == StatusCodes.Status404NotFound
             ? TypedResults.NotFound()
             : TypedResults.BadRequest();
@@ -93,6 +97,7 @@ public static class MediaDownloadEndpoints
     )
     {
         using var activity = ActivitySource.StartActivity("DownloadLine", ActivityKind.Client);
-        return TypedResults.NotFound();
+
+        return await Task.FromResult(TypedResults.NotFound());
     }
 }

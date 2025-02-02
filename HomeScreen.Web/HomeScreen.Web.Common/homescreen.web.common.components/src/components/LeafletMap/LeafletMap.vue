@@ -10,7 +10,7 @@
         layer-type="base"
         name="OpenStreetMap"
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-      ></l-tile-layer>
+      />
       <l-geo-json :geojson="location">
         <l-tooltip>{{ tooltip }}</l-tooltip>
       </l-geo-json>

@@ -85,7 +85,7 @@ const imageGroups = computed(() =>
 );
 </script>
 
-<style lang="scss" scoped>
+<style lang="css" scoped>
 .grid-horizontal {
   grid-template-columns: repeat(1, minmax(0, 1fr));
   grid-template-rows: repeat(v-bind(count), minmax(0, 1fr));

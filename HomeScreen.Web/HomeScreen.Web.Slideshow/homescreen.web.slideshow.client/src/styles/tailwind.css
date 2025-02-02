@@ -1,0 +1,10 @@
+@import "tailwindcss";
+
+@theme {
+
+}
+
+body,
+#app {
+    @apply bg-gray-900;
+}

@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
     <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
+        <TargetFramework>net9.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <RuntimeIdentifiers>linux-x64</RuntimeIdentifiers>
@@ -24,21 +24,22 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="GitVersion.MsBuild" Version="6.0.5">
+        <PackageReference Include="GitVersion.MsBuild" Version="6.1.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="Grpc.AspNetCore" Version="2.67.0" />
-        <PackageReference Include="Magick.NET.Core" Version="14.2.0" />
-        <PackageReference Include="Magick.NET-Q16-HDRI-AnyCPU" Version="14.2.0" />
-        <PackageReference Include="MetadataExtractor" Version="2.8.1"/>
-        <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="9.0.0" />
+        <PackageReference Include="Magick.NET.Core" Version="14.4.0" />
+        <PackageReference Include="Magick.NET-Q16-HDRI-AnyCPU" Version="14.4.0" />
+        <PackageReference Include="MetadataExtractor" Version="2.9.0-rc2" />
+        <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="9.0.1" />
         <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.0"/>
         <PackageReference Include="NSwag.MSBuild" Version="14.2.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="System.Linq.Async" Version="6.0.1"/>
+        <PackageReference Include="System.Private.Uri" Version="4.3.2" />
     </ItemGroup>
 
     <ItemGroup>
@@ -53,6 +54,6 @@
     </PropertyGroup>
 
     <Target Name="NSwag-Post" AfterTargets="PostBuildEvent" Condition=" '$(Configuration)' == 'Debug' ">
-        <Exec WorkingDirectory="$(ProjectDir)" EnvironmentVariables="ASPNETCORE_ENVIRONMENT=Development" Command="$(NSwagExe_Net80) run media.nswag /variables:Configuration=SwaggerBuild"/>
+        <Exec WorkingDirectory="$(ProjectDir)" EnvironmentVariables="ASPNETCORE_ENVIRONMENT=Development" Command="$(NSwagExe_Net90) run media.nswag /variables:Configuration=SwaggerBuild"/>
     </Target>
 </Project>

@@ -21,6 +21,8 @@ builder.Services.ConfigureHttpJsonOptions(
     options => { options.SerializerOptions.Converters.Add(new JsonStringEnumConverter()); }
 );
 builder.AddServiceDefaults(GitVersionInformation.InformationalVersion);
+builder.AddOpenObserve("OpenObserve");
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddControllers()
     .AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));

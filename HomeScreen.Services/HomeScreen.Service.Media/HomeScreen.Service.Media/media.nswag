@@ -1,5 +1,5 @@
 {
-  "runtime": "Net80",
+  "runtime": "Net90",
   "defaultVariables": null,
   "documentGenerator": {
     "aspNetCoreToOpenApi": {
@@ -8,7 +8,7 @@
       "msBuildProjectExtensionsPath": null,
       "configuration": "SwaggerBuild",
       "runtime": "",
-      "targetFramework": "net8.0",
+      "targetFramework": "net9.0",
       "noBuild": false,
       "msBuildOutputPath": null,
       "verbose": true,
