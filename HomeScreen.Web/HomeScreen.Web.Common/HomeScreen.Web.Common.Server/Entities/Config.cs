@@ -22,5 +22,5 @@ public record RumConfig
 public record Config
 {
     [Required] public required OtlpConfig OtlpConfig { get; init; }
-    [Required] public required RumConfig RumConfig { get; init; }
+[Required] public required RumConfig RumConfig { get; init; }
 }
