@@ -14,10 +14,10 @@ internal sealed class OpenObserveHealthCheck(OpenObserveSettings settings, HttpC
         HealthCheckContext context,
         CancellationToken cancellationToken
     )
-    {
-        var response = await client.GetAsync(settings.Endpoint, cancellationToken);
-        return response.IsSuccessStatusCode ? HealthCheckResult.Healthy() : HealthCheckResult.Degraded();
-    }
+{
+    var response = await client.GetAsync(settings.Endpoint, cancellationToken);
+    return response.IsSuccessStatusCode ? HealthCheckResult.Healthy() : HealthCheckResult.Degraded();
+}
 }
 
 public class OpenObserveSettings
@@ -60,7 +60,7 @@ public class OpenObserveSettings
 public class OpenObserveSettingsAdapter(OpenObserveSettings settings)
 {
     public string Endpoint => settings.Endpoint ?? string.Empty;
-    public string Credentials => settings.Credentials ?? string.Empty;
+public string Credentials => settings.Credentials ?? string.Empty;
 }
 
 public static class OpenObserve
