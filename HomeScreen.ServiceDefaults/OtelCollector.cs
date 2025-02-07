@@ -13,10 +13,10 @@ internal sealed class OtelCollectorHealthCheck(OtelCollectorSettings settings, H
         HealthCheckContext context,
         CancellationToken cancellationToken
     )
-    {
-        var response = await client.GetAsync(settings.EndpointHttp, cancellationToken);
-        return response.IsSuccessStatusCode ? HealthCheckResult.Healthy() : HealthCheckResult.Degraded();
-    }
+{
+    var response = await client.GetAsync(settings.EndpointHttp, cancellationToken);
+    return response.IsSuccessStatusCode ? HealthCheckResult.Healthy() : HealthCheckResult.Degraded();
+}
 }
 
 public class OtelCollectorSettings
@@ -53,8 +53,8 @@ public class OtelCollectorSettings
 public class OtelCollectorSettingsAdapter(OtelCollectorSettings settings)
 {
     public string EndpointGrpc => settings.EndpointGrpc ?? string.Empty;
-    public string EndpointHttp => settings.EndpointHttp ?? string.Empty;
-    public string Credentials => settings.Credentials ?? string.Empty;
+public string EndpointHttp => settings.EndpointHttp ?? string.Empty;
+public string Credentials => settings.Credentials ?? string.Empty;
 }
 
 public static class OtelCollector
