@@ -2,13 +2,16 @@
   <PolaroidModal
     :image="item.image"
     :style="{
-      '--offset-top': item.top,
-      '--offset-left': item.left,
-      '--rotation': item.rotation,
+      transform: `translate(
+      calc(${item.left} * 1dvw),
+      calc(${item.top} * 1dvh)
+    )
+    rotate(calc(${item.rotation} * 1deg))`,
     }"
-    class="polaroid-modal absolute size-fit"
+    class="absolute size-fit"
     @pause="() => emits('pause')"
     @resume="() => emits('resume')"
+    :max-size="600"
   />
 </template>
 
@@ -21,13 +24,3 @@ defineProps<{
 }>();
 const emits = defineEmits<{ resume: []; pause: [] }>();
 </script>
-
-<style lang="css" scoped>
-.polaroid-modal {
-  transform: translate(
-      calc(var(--offset-left) * 1dvw),
-      calc(var(--offset-top) * 1dvh)
-    )
-    rotate(calc(var(--rotation) * 1deg));
-}
-</style>

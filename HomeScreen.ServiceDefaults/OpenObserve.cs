@@ -1,5 +1,4 @@
 using System.Data.Common;
-using System.Net;
 using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -31,29 +30,17 @@ public class OpenObserveSettings
     internal void ParseConnectionString(string connectionString)
     {
         if (string.IsNullOrWhiteSpace(connectionString))
-        {
             throw new InvalidOperationException("Connection string is empty.");
-        }
 
-        var builder = new DbConnectionStringBuilder()
-        {
-            ConnectionString = connectionString
-        };
+        var builder = new DbConnectionStringBuilder { ConnectionString = connectionString };
 
         if (builder.TryGetValue("Endpoint", out var endpoint) is false)
-        {
             throw new InvalidOperationException("Connection string has invalid endpoint.");
-        }
 
         Endpoint = endpoint.ToString();
 
         if (builder.TryGetValue("Username", out var username) && builder.TryGetValue("Password", out var password))
-        {
-            Credentials = Convert.ToBase64String(Encoding.UTF8.GetBytes(
-                    $"{username}:{password}"
-                )
-            );
-        }
+            Credentials = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{username}:{password}"));
     }
 }
 
@@ -68,18 +55,15 @@ public static class OpenObserve
     public static void AddOpenObserve(
         this IHostApplicationBuilder builder,
         string connectionName,
-        Action<OpenObserveSettings>? configureSettings = null) =>
-        AddOpenObserve(
-            builder,
-            OpenObserveSettings.DefaultConfigSectionName,
-            configureSettings,
-            connectionName,
-            serviceKey: null);
+        Action<OpenObserveSettings>? configureSettings = null
+    ) =>
+        AddOpenObserve(builder, OpenObserveSettings.DefaultConfigSectionName, configureSettings, connectionName, null);
 
     public static void AddKeyedOpenObserve(
         this IHostApplicationBuilder builder,
         string name,
-        Action<OpenObserveSettings>? configureSettings = null)
+        Action<OpenObserveSettings>? configureSettings = null
+    )
     {
         ArgumentNullException.ThrowIfNull(name);
 
@@ -87,8 +71,9 @@ public static class OpenObserve
             builder,
             $"{OpenObserveSettings.DefaultConfigSectionName}:{name}",
             configureSettings,
-            connectionName: name,
-            serviceKey: name);
+            name,
+            name
+        );
     }
 
     private static void AddOpenObserve(
@@ -96,15 +81,14 @@ public static class OpenObserve
         string configurationSectionName,
         Action<OpenObserveSettings>? configureSettings,
         string connectionName,
-        object? serviceKey)
+        object? serviceKey
+    )
     {
         ArgumentNullException.ThrowIfNull(builder);
 
         var settings = new OpenObserveSettings();
 
-        builder.Configuration
-            .GetSection(configurationSectionName)
-            .Bind(settings);
+        builder.Configuration.GetSection(configurationSectionName).Bind(settings);
 
         if (builder.Configuration.GetConnectionString(connectionName) is { } connectionString)
         {
@@ -117,13 +101,12 @@ public static class OpenObserve
         builder.Services.AddTransient(_ => new OpenObserveSettingsAdapter(settings));
 
         if (settings.DisableHealthChecks is false)
-        {
-            builder.Services.AddHealthChecks()
+            builder
+                .Services.AddHealthChecks()
                 .AddCheck<OpenObserveHealthCheck>(
-                    name: serviceKey is null ? "OpenObserve" : $"OpenObserve_{connectionName}",
-                    failureStatus: default,
-                    tags: ["open-observe"]
+                    serviceKey is null ? "OpenObserve" : $"OpenObserve_{connectionName}",
+                    default,
+                    ["open-observe"]
                 );
-        }
     }
 }

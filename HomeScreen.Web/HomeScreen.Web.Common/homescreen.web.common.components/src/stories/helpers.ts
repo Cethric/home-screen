@@ -1,15 +1,21 @@
 import { DateTime } from 'luxon';
-import type { Image } from '@/components/ResponsivePicture/image';
+import { type Image } from '@/helpers/image';
+
+export const picsumImage = (
+  width: number,
+  height: number,
+  portrait: boolean,
+  id: number,
+) =>
+  ({
+    id: `https://picsum.photos/${width}/${height}/${id}`,
+    dateTime: DateTime.now(),
+    enabled: true,
+    location: { name: 'Sydney', longitude: 151.20732, latitude: -33.86785 },
+    aspectRatio: width / height,
+    portrait: portrait,
+    colour: { red: 0, green: 128, blue: 64 },
+  }) satisfies Image;
 
 export const picsumImages = (count: number = 300) =>
-  Array.from({ length: count }).map((_, i) => {
-    return {
-      id: `https://picsum.photos/400/500/${i}`,
-      dateTime: DateTime.now(),
-      enabled: true,
-      location: { name: 'Sydney', longitude: 151.20732, latitude: -33.86785 },
-      aspectWidth: 16.0 / 9.0,
-      aspectHeight: 9.0 / 16.0,
-      colour: { red: 0, green: 0, blue: 0 },
-    } satisfies Image;
-  });
+  Array.from({ length: count }).map((_, i) => picsumImage(800, 600, false, i));

@@ -8,7 +8,8 @@ public static class HealthChecks
 {
     public static IHostApplicationBuilder AddDefaultHealthChecks(this IHostApplicationBuilder builder, string version)
     {
-        builder.Services.AddHealthChecks()
+        builder
+            .Services.AddHealthChecks()
             // Add a default liveness check to ensure app is responsive
             .AddCheck(
                 "self",

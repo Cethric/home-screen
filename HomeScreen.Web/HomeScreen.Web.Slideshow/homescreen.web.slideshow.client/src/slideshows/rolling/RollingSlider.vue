@@ -4,7 +4,7 @@
     :class="[
       'm-0',
       {
-        'min-w-dvw flex flex-row px-1 py-2 first:pt-4 last:pb-4':
+        'flex min-w-dvw flex-row px-1 py-2 first:pt-4 last:pb-4':
           direction === Directions.horizontal,
         'flex h-dvh flex-col flex-nowrap content-between self-center px-2 py-1 first:pl-4 last:pr-4':
           direction === Directions.vertical,

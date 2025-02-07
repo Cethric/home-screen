@@ -17,25 +17,21 @@ public class MediaDateTimeProcessor(ILogger<MediaDateTimeProcessor> logger, IGen
     {
         using var activity = ActivitySource.StartActivity();
         var cache = await genericCache.ReadCache<CacheEntry>(CacheKey(hash), cancellationToken);
-        if (cache is not null)
-        {
-            return (cache.DateTime, cache.Offset);
-        }
+        if (cache is not null) return (cache.DateTime, cache.Offset);
 
         logger.LogDebug("Determining media date for {FileName}", file.FullName);
         try
         {
             var metadata = ImageMetadataReader.ReadMetadata(file.FullName);
-            var exif = await metadata.ToAsyncEnumerable()
+            var exif = await metadata
+                .ToAsyncEnumerable()
                 .Where(data => string.Equals(data.Name, "Exif SubIfd"))
                 .FirstOrDefaultAsync(cancellationToken);
             var dateTime = exif?.Tags.FirstOrDefault(tag => tag.Type == 36867)?.Description;
             var offset = exif?.Tags.FirstOrDefault(tag => tag.Type == 36880)?.Description;
             if (!DateTimeOffset.TryParse(dateTime, CultureInfo.InvariantCulture, out var dateTimeOffset) ||
                 !TimeSpan.TryParse(offset, CultureInfo.InvariantCulture, out var offsetSpan))
-            {
                 return await ProcessFileTime(file, hash, cancellationToken);
-            }
 
             await genericCache.WriteCache(
                 CacheKey(hash),
@@ -76,21 +72,21 @@ public class MediaDateTimeProcessor(ILogger<MediaDateTimeProcessor> logger, IGen
     {
         using var activity = ActivitySource.StartActivity();
         if (info.LastWriteTimeUtc < info.CreationTimeUtc)
-        {
             return new CacheEntry
-                   {
-                       DateTime = info.LastWriteTimeUtc,
-                       Offset = TimeZoneInfo.FindSystemTimeZoneById("E. Australia Standard Time")
-                           .GetUtcOffset(info.LastWriteTime)
-                   };
-        }
+            {
+                DateTime = info.LastWriteTimeUtc,
+                Offset = TimeZoneInfo
+                    .FindSystemTimeZoneById("E. Australia Standard Time")
+                    .GetUtcOffset(info.LastWriteTime)
+            };
 
         return new CacheEntry
-               {
-                   DateTime = info.CreationTimeUtc,
-                   Offset = TimeZoneInfo.FindSystemTimeZoneById("E. Australia Standard Time")
-                       .GetUtcOffset(info.CreationTime)
-               };
+        {
+            DateTime = info.CreationTimeUtc,
+            Offset = TimeZoneInfo
+                .FindSystemTimeZoneById("E. Australia Standard Time")
+                .GetUtcOffset(info.CreationTime)
+        };
     }
 
     private class CacheEntry

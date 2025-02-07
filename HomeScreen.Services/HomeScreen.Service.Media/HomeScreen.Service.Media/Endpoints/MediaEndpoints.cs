@@ -13,11 +13,13 @@ public static class MediaEndpoints
 
     public static void RegisterMediaEndpoints(this WebApplication app)
     {
-        var group = app.MapGroup("media/download")
+        var group = app
+            .MapGroup("media/download")
             .WithTags("media", "download")
             .WithName("Download Media")
             .WithGroupName("MediaDownload");
-        group.MapGet("item/{mediaId:guid:required}/{width:int:required}/{height:int:required}", DownloadMedia)
+        group
+            .MapGet("item/{mediaId:guid:required}/{width:int:required}/{height:int:required}", DownloadMedia)
             .WithName(nameof(DownloadMedia))
             .Produces<FileStreamHttpResult>(
                 StatusCodes.Status200OK,
@@ -29,7 +31,8 @@ public static class MediaEndpoints
             )
             .Produces<NotFound>(StatusCodes.Status404NotFound, MediaTypeNames.Application.Json);
 
-        group.MapGet("line/{direction:int:required}/{size:int:required}", DownloadLine)
+        group
+            .MapGet("line/{direction:int:required}/{size:int:required}", DownloadLine)
             .WithName(nameof(DownloadLine))
             .Produces<FileStreamHttpResult>(
                 StatusCodes.Status200OK,
@@ -87,8 +90,6 @@ public static class MediaEndpoints
         IEnumerable<string> mediaIds,
         IMediaApi mediaApi,
         CancellationToken cancellationToken
-    )
-    {
-        return await Task.FromResult(TypedResults.NotFound());
-    }
+    ) =>
+        await Task.FromResult(TypedResults.NotFound());
 }

@@ -15,11 +15,16 @@
       @show="() => emits('pause')"
     >
       <template #activator="props">
-        <ResponsivePictureAsync
-          :image="image"
-          :image-size="imageSize"
-          :min-image-size="{ width: 0, height: 0 }"
-          class="rounded-md object-contain drop-shadow-md hover:shadow-inner active:drop-shadow-lg"
+        <HSImage
+          :id="image.id"
+          :aspect-ratio="image.aspectRatio"
+          :colour="image.colour"
+          :date-time="image.dateTime"
+          :enabled="image.enabled"
+          :portrait="image.portrait"
+          :rounded="false"
+          :size="256"
+          class="hover:shadow-inner active:drop-shadow-lg"
           v-bind="props"
         />
       </template>
@@ -44,16 +49,23 @@
             </PolaroidCard>
           </template>
           <template #default>
-            <LargeImage :image="image" />
+            <HSImage
+              :id="image.id"
+              :aspect-ratio="image.aspectRatio"
+              :colour="image.colour"
+              :date-time="image.dateTime"
+              :enabled="image.enabled"
+              :portrait="image.portrait"
+              :rounded="false"
+              :size="512"
+              class="hover:shadow-inner active:drop-shadow-lg"
+              v-bind="props"
+            />
           </template>
         </ModalDialog>
       </template>
     </ModalDialog>
-    <div
-      v-else
-      :style="styledSize"
-      class="rounded-md object-contain drop-shadow-md"
-    />
+    <div v-else class="hidden-box rounded-md object-contain drop-shadow-md" />
   </div>
 </template>
 
@@ -62,13 +74,11 @@ import {
   type ComputedMediaSize,
   type Direction,
   Directions,
+  HSImage,
   type Image,
-  LargeImage,
   LeafletMapAsync,
   ModalDialog,
   PolaroidCard,
-  ResponsivePictureAsync,
-  useImageAspectSize,
 } from '@homescreen/web-common-components';
 import { useElementVisibility } from '@vueuse/core';
 import { computed, ref, toValue } from 'vue';
@@ -85,26 +95,23 @@ const sliderModal = ref<HTMLElement>();
 const isVisible = useElementVisibility(sliderModal, {
   threshold: [1e-1],
 });
-const size = useImageAspectSize({
-  image: props.image,
-  size: props.imageSize,
-  minSize: { width: 0, height: 0 },
-});
-console.log('Aspect Size Result', size);
-const aspectSize = computed(() => {
-  const { width, height } = toValue(size);
-  return { width: `${width}px`, height: `${height}px` };
-});
 
-const styledSize = computed(() => {
-  const { width, height } = toValue(aspectSize);
-  return {
-    minWidth: width,
-    minHeight: height,
-    maxWidth: width,
-    maxHeight: height,
-    width: width,
-    height: height,
-  };
-});
+const size =
+  props.direction === Directions.horizontal
+    ? toValue(props.imageSize).height
+    : toValue(props.imageSize).width;
+
+const imageWidth = computed(
+  () => size * (props.image.portrait ? 1 : props.image.aspectRatio),
+);
+const imageHeight = computed(
+  () => size * (props.image.portrait ? props.image.aspectRatio : 1),
+);
 </script>
+
+<style lang="scss" scoped>
+.hidden-box {
+  width: calc(1px * v-bind(imageWidth));
+  height: calc(1px * v-bind(imageHeight));
+}
+</style>

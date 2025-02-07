@@ -1,7 +1,7 @@
 <template>
   <NavBar />
 
-  <main class="flex grow flex-col overflow-y-auto overflow-x-clip">
+  <main class="flex grow flex-col overflow-x-clip overflow-y-auto">
     <router-view />
   </main>
 </template>

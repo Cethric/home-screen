@@ -9,12 +9,12 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.AddServiceDefaults(GitVersionInformation.InformationalVersion);
 
-builder.Services.AddControllers()
+builder
+    .Services.AddControllers()
     .AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddOpenApiDocument(
-    document =>
+builder.Services.AddOpenApiDocument(document =>
     {
         document.Title = "HomeScreen Slideshow API";
         document.Description = "";
@@ -48,6 +48,7 @@ app.MapControllers();
 
 app.MapFallbackToFile("/index.html");
 
-app.Services.GetRequiredService<ILogger<Program>>()
+app
+    .Services.GetRequiredService<ILogger<Program>>()
     .LogInformation("Launching version: {Version}", GitVersionInformation.InformationalVersion);
 await app.RunAsync();

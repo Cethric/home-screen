@@ -28,17 +28,15 @@ public class JsonLinesExecutor<TValue>(ILogger<JsonLinesExecutor<TValue>> logger
         ArgumentNullException.ThrowIfNull(httpContext);
         ArgumentNullException.ThrowIfNull(jsonLines);
 
-        logger.LogDebug("Executing JsonLines");
+        logger.LogTrace("Executing JsonLines");
         var response = httpContext.Response;
         response.StatusCode = (int)HttpStatusCode.OK;
         response.ContentType = $"{MediaTypeNames.Application.JsonSequence};charset={Encoding.UTF8.WebName}";
 
         await foreach (var value in jsonLines.Data)
-        {
             await ProgressLine(httpContext, value, response, jsonLines.JsonSerializerOptions);
-        }
 
-        logger.LogDebug("Executed JsonLines");
+        logger.LogTrace("Executed JsonLines");
     }
 
     private async Task ProgressLine(
@@ -50,7 +48,7 @@ public class JsonLinesExecutor<TValue>(ILogger<JsonLinesExecutor<TValue>> logger
     {
         using var activity = ActivitySource.StartActivity();
         httpContext.RequestAborted.ThrowIfCancellationRequested();
-        logger.LogDebug("Progressing JsonLines");
+        logger.LogTrace("Progressing JsonLines");
         await JsonSerializer.SerializeAsync(response.Body, value, serializerOptions, httpContext.RequestAborted);
         await response.Body.WriteAsync(Line, httpContext.RequestAborted);
         await response.Body.FlushAsync(httpContext.RequestAborted);

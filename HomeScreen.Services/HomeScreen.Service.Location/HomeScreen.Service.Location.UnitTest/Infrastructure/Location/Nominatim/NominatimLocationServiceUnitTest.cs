@@ -20,8 +20,8 @@ public class NominatimLocationServiceUnitTest
         // Arrange
         var logger = new Mock<ILogger<NominatimLocationApi>>();
         var searchService = new Mock<INominatimClient>();
-        searchService.Setup(
-                x => x.Reverse_phpAsync(
+        searchService
+            .Setup(x => x.Reverse_phpAsync(
                     lat,
                     lon,
                     It.IsAny<OutputFormat>(),
@@ -67,8 +67,8 @@ public class NominatimLocationServiceUnitTest
         var location = "Example Location";
         var logger = new Mock<ILogger<NominatimLocationApi>>();
         var searchService = new Mock<INominatimClient>();
-        searchService.Setup(
-                x => x.Reverse_phpAsync(
+        searchService
+            .Setup(x => x.Reverse_phpAsync(
                     lat,
                     lon,
                     It.IsAny<OutputFormat>(),

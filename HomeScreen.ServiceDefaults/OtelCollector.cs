@@ -31,36 +31,22 @@ public class OtelCollectorSettings
     internal void ParseConnectionString(string connectionString)
     {
         if (string.IsNullOrWhiteSpace(connectionString))
-        {
             throw new InvalidOperationException("Connection string is empty.");
-        }
 
-        var builder = new DbConnectionStringBuilder()
-        {
-            ConnectionString = connectionString
-        };
+        var builder = new DbConnectionStringBuilder { ConnectionString = connectionString };
 
         if (builder.TryGetValue("EndpointGrpc", out var endpointGrpc) is false)
-        {
             throw new InvalidOperationException("Connection string has invalid grpc endpoint.");
-        }
 
         EndpointGrpc = endpointGrpc.ToString();
 
         if (builder.TryGetValue("EndpointHttp", out var endpointHttp) is false)
-        {
             throw new InvalidOperationException("Connection string has invalid http endpoint.");
-        }
 
         EndpointHttp = endpointHttp.ToString();
 
         if (builder.TryGetValue("Username", out var username) && builder.TryGetValue("Password", out var password))
-        {
-            Credentials = Convert.ToBase64String(Encoding.UTF8.GetBytes(
-                    $"{username}:{password}"
-                )
-            );
-        }
+            Credentials = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{username}:{password}"));
     }
 }
 
@@ -76,18 +62,21 @@ public static class OtelCollector
     public static void AddOtelCollector(
         this IHostApplicationBuilder builder,
         string connectionName,
-        Action<OtelCollectorSettings>? configureSettings = null) =>
+        Action<OtelCollectorSettings>? configureSettings = null
+    ) =>
         AddOtelCollector(
             builder,
             OtelCollectorSettings.DefaultConfigSectionName,
             configureSettings,
             connectionName,
-            serviceKey: null);
+            null
+        );
 
     public static void AddKeyedOtelCollector(
         this IHostApplicationBuilder builder,
         string name,
-        Action<OtelCollectorSettings>? configureSettings = null)
+        Action<OtelCollectorSettings>? configureSettings = null
+    )
     {
         ArgumentNullException.ThrowIfNull(name);
 
@@ -95,8 +84,9 @@ public static class OtelCollector
             builder,
             $"{OtelCollectorSettings.DefaultConfigSectionName}:{name}",
             configureSettings,
-            connectionName: name,
-            serviceKey: name);
+            name,
+            name
+        );
     }
 
     private static void AddOtelCollector(
@@ -104,33 +94,29 @@ public static class OtelCollector
         string configurationSectionName,
         Action<OtelCollectorSettings>? configureSettings,
         string connectionName,
-        object? serviceKey)
+        object? serviceKey
+    )
     {
         ArgumentNullException.ThrowIfNull(builder);
 
         var settings = new OtelCollectorSettings();
 
-        builder.Configuration
-            .GetSection(configurationSectionName)
-            .Bind(settings);
+        builder.Configuration.GetSection(configurationSectionName).Bind(settings);
 
         if (builder.Configuration.GetConnectionString(connectionName) is { } connectionString)
-        {
             settings.ParseConnectionString(connectionString);
-        }
 
         configureSettings?.Invoke(settings);
 
         builder.Services.AddTransient(_ => new OtelCollectorSettingsAdapter(settings));
 
         if (settings.DisableHealthChecks is false)
-        {
-            builder.Services.AddHealthChecks()
+            builder
+                .Services.AddHealthChecks()
                 .AddCheck<OtelCollectorHealthCheck>(
-                    name: serviceKey is null ? "OtelCollector" : $"OtelCollector_{connectionName}",
-                    failureStatus: default,
-                    tags: ["otel-collector"]
+                    serviceKey is null ? "OtelCollector" : $"OtelCollector_{connectionName}",
+                    default,
+                    ["otel-collector"]
                 );
-        }
     }
 }

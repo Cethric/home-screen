@@ -23,7 +23,8 @@ public class ConfigApi(IWebHostEnvironment environment, IConfiguration configura
         using var activity = ActivitySource.StartActivity();
         return (environment.IsProduction()
                    ? configuration.GetValue<string>("CommonAddress")
-                   : configuration.GetSection("services")
+                   : configuration
+                       .GetSection("services")
                        .GetSection("homescreen-web-common-server")
                        .GetSection("http")
                        .GetChildren()
@@ -37,7 +38,8 @@ public class ConfigApi(IWebHostEnvironment environment, IConfiguration configura
         using var activity = ActivitySource.StartActivity();
         return (environment.IsProduction()
                    ? configuration.GetValue<string>("SlideshowAddress")
-                   : configuration.GetSection("services")
+                   : configuration
+                       .GetSection("services")
                        .GetSection("homescreen-web-slideshow-server")
                        .GetSection("http")
                        .GetChildren()

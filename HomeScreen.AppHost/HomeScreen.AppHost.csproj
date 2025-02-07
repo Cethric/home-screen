@@ -1,42 +1,42 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <Sdk Name="Aspire.AppHost.Sdk" Version="9.0.0" />
-  <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>net9.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-    <IsAspireHost>true</IsAspireHost>
-    <UserSecretsId>9264b4d1-a40a-4bf5-b93b-8782ffe4673c</UserSecretsId>
-    <Configurations>Debug;Release;SwaggerBuild</Configurations>
-    <Platforms>AnyCPU</Platforms>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'SwaggerBuild' ">
-    <DebugSymbols Condition=" '$(DebugSymbols)' == '' ">true</DebugSymbols>
-    <Optimize Condition=" '$(Optimize)' == '' ">false</Optimize>
-  </PropertyGroup>
-  <ItemGroup>
-    <PackageReference Include="GitVersion.MsBuild" Version="6.1.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Aspire.Hosting.AppHost" Version="9.0.0" />
-    <PackageReference Include="Aspire.Hosting.Redis" Version="9.0.0" />
-    <PackageReference Include="Aspire.Hosting.SqlServer" Version="9.0.0" />
-    <PackageReference Include="System.Text.Json" Version="9.0.1" />
-    <PackageReference Include="YamlDotNet" Version="16.3.0" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\HomeScreen.Database\HomeScreen.Database.MediaDb.Migrations\HomeScreen.Database.MediaDb.Migrations.csproj" />
-    <ProjectReference Include="..\HomeScreen.Services\HomeScreen.Service.Location\HomeScreen.Service.Location\HomeScreen.Service.Location.csproj" />
-    <ProjectReference Include="..\HomeScreen.Services\HomeScreen.Service.Media\HomeScreen.Service.Media\HomeScreen.Service.Media.csproj" />
-    <ProjectReference Include="..\HomeScreen.Services\HomeScreen.Service.Weather\HomeScreen.Service.Weather\HomeScreen.Service.Weather.csproj" />
-    <ProjectReference Include="..\HomeScreen.Web\HomeScreen.Web.Common\HomeScreen.Web.Common.Server\HomeScreen.Web.Common.Server.csproj" />
-    <ProjectReference Include="..\HomeScreen.Web\HomeScreen.Web.Dashboard\HomeScreen.Web.Dashboard.Server\HomeScreen.Web.Dashboard.Server.csproj" />
-    <ProjectReference Include="..\HomeScreen.Web\HomeScreen.Web.Slideshow\HomeScreen.Web.Slideshow.Server\HomeScreen.Web.Slideshow.Server.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Update="config.yaml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
+    <Sdk Name="Aspire.AppHost.Sdk" Version="9.0.0"/>
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <IsAspireHost>true</IsAspireHost>
+        <UserSecretsId>9264b4d1-a40a-4bf5-b93b-8782ffe4673c</UserSecretsId>
+        <Configurations>Debug;Release;SwaggerBuild</Configurations>
+        <Platforms>AnyCPU</Platforms>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)' == 'SwaggerBuild' ">
+        <DebugSymbols Condition=" '$(DebugSymbols)' == '' ">true</DebugSymbols>
+        <Optimize Condition=" '$(Optimize)' == '' ">false</Optimize>
+    </PropertyGroup>
+    <ItemGroup>
+        <PackageReference Include="GitVersion.MsBuild" Version="6.1.0">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Aspire.Hosting.AppHost" Version="9.0.0"/>
+        <PackageReference Include="Aspire.Hosting.Redis" Version="9.0.0"/>
+        <PackageReference Include="Aspire.Hosting.SqlServer" Version="9.0.0"/>
+        <PackageReference Include="System.Text.Json" Version="9.0.1"/>
+        <PackageReference Include="YamlDotNet" Version="16.3.0"/>
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\HomeScreen.Database\HomeScreen.Database.MediaDb.Migrations\HomeScreen.Database.MediaDb.Migrations.csproj"/>
+        <ProjectReference Include="..\HomeScreen.Services\HomeScreen.Service.Location\HomeScreen.Service.Location\HomeScreen.Service.Location.csproj"/>
+        <ProjectReference Include="..\HomeScreen.Services\HomeScreen.Service.Media\HomeScreen.Service.Media\HomeScreen.Service.Media.csproj"/>
+        <ProjectReference Include="..\HomeScreen.Services\HomeScreen.Service.Weather\HomeScreen.Service.Weather\HomeScreen.Service.Weather.csproj"/>
+        <ProjectReference Include="..\HomeScreen.Web\HomeScreen.Web.Common\HomeScreen.Web.Common.Server\HomeScreen.Web.Common.Server.csproj"/>
+        <ProjectReference Include="..\HomeScreen.Web\HomeScreen.Web.Dashboard\HomeScreen.Web.Dashboard.Server\HomeScreen.Web.Dashboard.Server.csproj"/>
+        <ProjectReference Include="..\HomeScreen.Web\HomeScreen.Web.Slideshow\HomeScreen.Web.Slideshow.Server\HomeScreen.Web.Slideshow.Server.csproj"/>
+    </ItemGroup>
+    <ItemGroup>
+        <None Update="config.yaml">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
 </Project>

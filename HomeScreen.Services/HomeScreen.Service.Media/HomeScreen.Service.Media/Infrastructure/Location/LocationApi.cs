@@ -20,7 +20,7 @@ public class LocationApi(ILogger<LocationApi> logger, LocationGrpcClient client)
         activity?.AddBaggage("Longitude", longitude.ToString(CultureInfo.InvariantCulture));
         activity?.AddBaggage("Latitude", latitude.ToString(CultureInfo.InvariantCulture));
         activity?.AddBaggage("Altitude", altitude.ToString(CultureInfo.InvariantCulture));
-        logger.LogDebug("Searching for location name at {Longitude}, {Latitude}", longitude, latitude);
+        logger.LogInformation("Searching for location name at {Longitude}, {Latitude}", longitude, latitude);
         var result = await client.SearchForLocationAsync(
             new SearchForLocationRequest { Longitude = longitude, Latitude = latitude, Altitude = altitude },
             cancellationToken: cancellationToken

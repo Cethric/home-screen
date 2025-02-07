@@ -9,8 +9,10 @@ public class IntegrationTest1
     {
         // Arrange
         var appHost = await DistributedApplicationTestingBuilder.CreateAsync<HomeScreen_AppHost>();
-        appHost.Services.ConfigureHttpClientDefaults(
-            clientBuilder => { clientBuilder.AddStandardResilienceHandler(); }
+        appHost.Services.ConfigureHttpClientDefaults(clientBuilder =>
+            {
+                clientBuilder.AddStandardResilienceHandler();
+            }
         );
         // To output logs to the xUnit.net ITestOutputHelper, consider adding a package from https://www.nuget.org/packages?q=xunit+logging
 

@@ -2,11 +2,11 @@
   <component
     :is="kind"
     :class="[
-      'fixed z-50 w-98 max-w-110 text-ellipsis bg-stone-400/40 p-4 drop-shadow-md backdrop-blur',
+      'fixed z-50 w-98 max-w-110 bg-stone-400/40 p-4 text-ellipsis drop-shadow-md backdrop-blur',
       {
-        'left-0 top-0 rounded-br-2xl':
+        'top-0 left-0 rounded-br-2xl':
           kind === DateTimeWeatherComboKinds.header,
-        'bottom-0 right-0 rounded-tl-2xl':
+        'right-0 bottom-0 rounded-tl-2xl':
           kind === DateTimeWeatherComboKinds.footer,
       },
     ]"
@@ -24,7 +24,7 @@
     </h1>
     <h1
       :class="[
-        'w-full text-5xl font-extrabold tabular-nums text-neutral-50',
+        'w-full text-5xl font-extrabold text-neutral-50 tabular-nums',
         {
           'text-left': kind === DateTimeWeatherComboKinds.header,
           'text-right': kind === DateTimeWeatherComboKinds.footer,

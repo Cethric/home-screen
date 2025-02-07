@@ -40,13 +40,9 @@ public class MediaTransformer(ILogger<MediaTransformer> logger, IMediaPaths medi
         image.AutoOrient();
 
         if (options.Blur)
-        {
             BlurImage(image, transformedInfo, options);
-        }
         else
-        {
             TransformImage(image, transformedInfo, options);
-        }
 
         await WriteImage(image, mediaEntry, transformedInfo, cancellationToken);
         return transformedInfo;

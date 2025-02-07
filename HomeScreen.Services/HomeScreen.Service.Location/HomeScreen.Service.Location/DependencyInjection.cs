@@ -17,16 +17,14 @@ public static class DependencyInjection
     private static IHostApplicationBuilder AddLocationService(
         this IHostApplicationBuilder builder,
         MappingService service
-    )
-    {
-        return service switch
+    ) =>
+        service switch
         {
             MappingService.AzureMaps => builder.AddAzureLocationService(),
             MappingService.Blank => builder.AddBlankLocationService(),
             MappingService.Nominatim => builder.AddNominatimLocationService(),
             _ => throw new ArgumentOutOfRangeException(nameof(service), service, "Invalid service name provided")
         };
-    }
 
     private static IHostApplicationBuilder AddAzureLocationService(this IHostApplicationBuilder builder)
     {
@@ -36,11 +34,11 @@ public static class DependencyInjection
                 MapSecretKey = builder.Configuration.GetValue<string>("AZURE_MAPS_SUBSCRIPTION_KEY") ?? string.Empty
             }
         );
-        builder.Services.AddSingleton<AzureKeyCredential>(
-            sp => new AzureKeyCredential(sp.GetRequiredService<AzureConfig>().MapSecretKey)
+        builder.Services.AddSingleton<AzureKeyCredential>(sp =>
+            new AzureKeyCredential(sp.GetRequiredService<AzureConfig>().MapSecretKey)
         );
-        builder.Services.AddSingleton<MapsSearchClient>(
-            sp => new MapsSearchClient(sp.GetRequiredService<AzureKeyCredential>())
+        builder.Services.AddSingleton<MapsSearchClient>(sp =>
+            new MapsSearchClient(sp.GetRequiredService<AzureKeyCredential>())
         );
         builder.Services.AddScoped<IAzureMapsSearchApi, AzureMapsSearchApi>();
         builder.Services.AddScoped<ILocationApi, AzureLocationApi>();
@@ -57,11 +55,11 @@ public static class DependencyInjection
     private static IHostApplicationBuilder AddNominatimLocationService(this IHostApplicationBuilder builder)
     {
         builder.Services.AddHttpClient("Nominatim");
-        builder.Services.AddScoped<INominatimClient, NominatimClient>(
-            sp => new NominatimClient(sp.GetRequiredService<IHttpClientFactory>().CreateClient("Nominatim"))
-                  {
-                      BaseUrl = "https://nominatim.geocoding.ai"
-                  }
+        builder.Services.AddScoped<INominatimClient, NominatimClient>(sp =>
+            new NominatimClient(sp.GetRequiredService<IHttpClientFactory>().CreateClient("Nominatim"))
+            {
+                BaseUrl = "https://nominatim.geocoding.ai"
+            }
         );
         builder.Services.AddScoped<ILocationApi, NominatimLocationApi>();
         return builder;

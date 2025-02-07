@@ -22,7 +22,8 @@ public class MediaApi(ILogger<MediaApi> logger, MediaGrpcClient client, IMediaCl
 
         using var response = client.RandomMedia(
             new MediaRequest { Count = count },
-            new CallOptions().WithDeadline(DateTimeOffset.UtcNow.AddMinutes(10).UtcDateTime)
+            new CallOptions()
+                .WithDeadline(DateTimeOffset.UtcNow.AddMinutes(10).UtcDateTime)
                 .WithCancellationToken(cancellationToken)
                 .WithWaitForReady()
         );
@@ -53,7 +54,8 @@ public class MediaApi(ILogger<MediaApi> logger, MediaGrpcClient client, IMediaCl
         logger.LogDebug("PaginateMedia start");
         using var response = client.PaginateMedia(
             new PaginateMediaRequest { Offset = offset, Length = length },
-            new CallOptions().WithDeadline(DateTimeOffset.UtcNow.AddMinutes(10).UtcDateTime)
+            new CallOptions()
+                .WithDeadline(DateTimeOffset.UtcNow.AddMinutes(10).UtcDateTime)
                 .WithCancellationToken(cancellationToken)
                 .WithWaitForReady()
         );
@@ -80,7 +82,8 @@ public class MediaApi(ILogger<MediaApi> logger, MediaGrpcClient client, IMediaCl
         logger.LogDebug("ToggleMedia start");
         var response = await client.ToggleMediaAsync(
             new ToggleMediaRequest { Id = mediaId.ToString("D"), Enabled = enabled },
-            new CallOptions().WithDeadline(DateTimeOffset.UtcNow.AddMinutes(5).UtcDateTime)
+            new CallOptions()
+                .WithDeadline(DateTimeOffset.UtcNow.AddMinutes(5).UtcDateTime)
                 .WithCancellationToken(cancellationToken)
         );
         logger.LogDebug("ToggleMedia end");
@@ -114,7 +117,8 @@ public class MediaApi(ILogger<MediaApi> logger, MediaGrpcClient client, IMediaCl
                     _ => throw new ArgumentOutOfRangeException(nameof(format), format, "Invalid media format requested")
                 }
             },
-            new CallOptions().WithDeadline(DateTimeOffset.UtcNow.AddMinutes(5).UtcDateTime)
+            new CallOptions()
+                .WithDeadline(DateTimeOffset.UtcNow.AddMinutes(5).UtcDateTime)
                 .WithCancellationToken(cancellationToken)
         );
         return result?.State ?? TransformMediaState.NotFound;
@@ -142,9 +146,7 @@ public class MediaApi(ILogger<MediaApi> logger, MediaGrpcClient client, IMediaCl
         logger.LogDebug("Downloaded media for {MediaId} - {StatusCode}", mediaId, response.StatusCode);
 
         if (response.StatusCode != StatusCodes.Status200OK)
-        {
             logger.LogWarning("Failed to download media item {StatusCode}", response.StatusCode);
-        }
 
         return response;
     }
@@ -157,11 +159,11 @@ public class MediaApi(ILogger<MediaApi> logger, MediaGrpcClient client, IMediaCl
             Notes = entry.Notes,
             Enabled = entry.Enabled,
             Location = new MediaItemLocation
-                       {
-                           Name = entry.Location, Latitude = entry.Latitude, Longitude = entry.Longitude
-                       },
-            AspectRatioWidth = entry.AspectRatioWidth,
-            AspectRatioHeight = entry.AspectRatioHeight,
+            {
+                Name = entry.Location, Latitude = entry.Latitude, Longitude = entry.Longitude
+            },
+            AspectRatio = entry.AspectRatio,
+            Portrait = entry.Portrait,
             BaseB = entry.BaseB,
             BaseG = entry.BaseG,
             BaseR = entry.BaseR

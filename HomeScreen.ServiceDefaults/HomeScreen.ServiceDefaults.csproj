@@ -20,21 +20,21 @@
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <FrameworkReference Include="Microsoft.AspNetCore.App"/>
-        <PackageReference Include="Aspire.StackExchange.Redis.DistributedCaching" Version="9.0.0" />
-        <PackageReference Include="Aspire.StackExchange.Redis.OutputCaching" Version="9.0.0" />
+        <PackageReference Include="Aspire.StackExchange.Redis.DistributedCaching" Version="9.0.0"/>
+        <PackageReference Include="Aspire.StackExchange.Redis.OutputCaching" Version="9.0.0"/>
 
-        <PackageReference Include="Microsoft.Extensions.Http.Resilience" Version="9.1.0" />
-        <PackageReference Include="Microsoft.Extensions.ServiceDiscovery" Version="9.0.0" />
-        <PackageReference Include="NSwag.AspNetCore" Version="14.2.0" />
-        <PackageReference Include="OpenTelemetry.Exporter.Console" Version="1.11.1" />
-        <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.11.1" />
-        <PackageReference Include="OpenTelemetry.Exporter.Zipkin" Version="1.11.1" />
-        <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.11.1" />
-        <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.11.0" />
-        <PackageReference Include="OpenTelemetry.Instrumentation.EntityFrameworkCore" Version="1.11.0-beta.1" />
-        <PackageReference Include="OpenTelemetry.Instrumentation.GrpcNetClient" Version="1.11.0-beta.1" />
-        <PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="1.11.0" />
-        <PackageReference Include="OpenTelemetry.Instrumentation.Runtime" Version="1.11.0" />
+        <PackageReference Include="Microsoft.Extensions.Http.Resilience" Version="9.1.0"/>
+        <PackageReference Include="Microsoft.Extensions.ServiceDiscovery" Version="9.0.0"/>
+        <PackageReference Include="NSwag.AspNetCore" Version="14.2.0"/>
+        <PackageReference Include="OpenTelemetry.Exporter.Console" Version="1.11.1"/>
+        <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.11.1"/>
+        <PackageReference Include="OpenTelemetry.Exporter.Zipkin" Version="1.11.1"/>
+        <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.11.1"/>
+        <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.11.0"/>
+        <PackageReference Include="OpenTelemetry.Instrumentation.EntityFrameworkCore" Version="1.11.0-beta.1"/>
+        <PackageReference Include="OpenTelemetry.Instrumentation.GrpcNetClient" Version="1.11.0-beta.1"/>
+        <PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="1.11.0"/>
+        <PackageReference Include="OpenTelemetry.Instrumentation.Runtime" Version="1.11.0"/>
     </ItemGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'SwaggerBuild' ">

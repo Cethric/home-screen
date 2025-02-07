@@ -1,12 +1,12 @@
 <template>
   <header class="fixed inset-x-0 top-0 z-50 flex justify-center align-middle">
     <div
-      class="w-98 max-w-110 text-ellipsis rounded-b-2xl bg-stone-400/40 pb-4 pl-8 pr-4 pt-8 text-center drop-shadow-md backdrop-blur"
+      class="w-98 max-w-110 rounded-b-2xl bg-stone-400/40 pt-8 pr-4 pb-4 pl-8 text-center text-ellipsis drop-shadow-md backdrop-blur"
     >
-      <h1 class="text-5xl font-extrabold tabular-nums text-neutral-50">
+      <h1 class="text-5xl font-extrabold text-neutral-50 tabular-nums">
         {{ dayFormat }}
       </h1>
-      <h1 class="mt-4 text-5xl font-extrabold tabular-nums text-neutral-50">
+      <h1 class="mt-4 text-5xl font-extrabold text-neutral-50 tabular-nums">
         {{ timeFormat }}
       </h1>
     </div>
@@ -28,7 +28,7 @@
     class="fixed inset-x-0 bottom-0 z-50 flex justify-center align-middle"
   >
     <div
-      class="w-98 max-w-110 text-ellipsis rounded-t-2xl bg-stone-400/40 pb-4 pl-8 pr-4 pt-8 text-center drop-shadow-md backdrop-blur"
+      class="w-98 max-w-110 rounded-t-2xl bg-stone-400/40 pt-8 pr-4 pb-4 pl-8 text-center text-ellipsis drop-shadow-md backdrop-blur"
     >
       <p class="text-4xl font-bold text-neutral-50">
         {{ weatherForecast.feelsLikeTemperature }}&deg;C
@@ -44,12 +44,17 @@
 import {
   type Direction,
   type Image,
+  openobserveRum,
   type WeatherForecast,
 } from '@homescreen/web-common-components';
-import { computed } from 'vue';
+import { computed, onBeforeMount } from 'vue';
 import { useDateFormat, useNow } from '@vueuse/core';
 import FullscreenMainLoader from '@/slideshows/fullscreen/FullscreenMainLoader.vue';
 import GridItem from '@/slideshows/grid/GridItem.vue';
+
+onBeforeMount(() => {
+  openobserveRum.startView('GridSlideshow');
+});
 
 const props = withDefaults(
   defineProps<{

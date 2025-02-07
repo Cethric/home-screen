@@ -34,16 +34,19 @@ public class MediaProcessor(
             var (capturedUtc, capturedOffset) =
                 await mediaDateTimeProcessor.MediaCaptureDate(file, hash, cancellationToken);
             var entry = new Database.MediaDb.Entities.MediaEntry(file, hash)
-                        {
-                            Enabled = true,
-                            BaseColourB = histogram[2],
-                            BaseColourG = histogram[1],
-                            BaseColourR = histogram[0],
-                            ImageRatioWidth = image.Width / (double)image.Height,
-                            ImageRatioHeight = image.Height / (double)image.Width,
-                            CapturedUtc = capturedUtc,
-                            CapturedOffset = capturedOffset
-                        };
+            {
+                Enabled = true,
+                BaseColourB = histogram[2],
+                BaseColourG = histogram[1],
+                BaseColourR = histogram[0],
+                ImageRatio =
+                    image.Width > image.Height
+                        ? image.Width / (double)image.Height
+                        : image.Height / (double)image.Width,
+                ImagePortrait = image.Height >= image.Width,
+                CapturedUtc = capturedUtc,
+                CapturedOffset = capturedOffset
+            };
 
             var profile = image.GetExifProfile();
             if (profile is not null)
@@ -56,16 +59,10 @@ public class MediaProcessor(
 
             var directory = mediaPaths.GetTransformDirectory(entry.OriginalHash);
             var originalInfo = new FileInfo(Path.Combine(directory.FullName, "original" + file.Extension));
-            if (originalInfo.Exists)
-            {
-                return entry;
-            }
+            if (originalInfo.Exists) return entry;
 
             logger.LogDebug("Writing Original File {OriginalFile} {CachedFile}", file.FullName, originalInfo.FullName);
-            if (!originalInfo.Exists)
-            {
-                file.CopyTo(originalInfo.FullName);
-            }
+            if (!originalInfo.Exists) file.CopyTo(originalInfo.FullName);
 
             return entry;
         }
@@ -83,17 +80,17 @@ public class MediaProcessor(
         {
             logger.LogError(ex, "Unable to process file - MissingDelegateException {FileName}", file.FullName);
             return new Database.MediaDb.Entities.MediaEntry(file, hash)
-                   {
-                       Notes = $"No magick handler provided {file.FullName}"
-                   };
+            {
+                Notes = $"No magick handler provided {file.FullName}"
+            };
         }
         catch (MagickCorruptImageErrorException ex)
         {
             logger.LogError(ex, "Unable to process file - CorruptImageException {FileName}", file.FullName);
             return new Database.MediaDb.Entities.MediaEntry(file, hash)
-                   {
-                       Notes = $"Corrupt image provided {file.FullName}"
-                   };
+            {
+                Notes = $"Corrupt image provided {file.FullName}"
+            };
         }
     }
 
@@ -104,10 +101,7 @@ public class MediaProcessor(
     )
     {
         using var activity = ActivitySource.StartActivity();
-        if (profile.GetValue(ExifTag.GPSLongitude) == null)
-        {
-            return;
-        }
+        if (profile.GetValue(ExifTag.GPSLongitude) == null) return;
 
         var lonRef = profile.GetValue(ExifTag.GPSLongitudeRef)?.Value;
         entry.LongitudeDirection = GpsLongitudeRefToLongitudeDirection(lonRef);
@@ -181,7 +175,8 @@ public class MediaProcessor(
         image.Alpha(AlphaOption.Remove);
         image.Thumbnail(32, 32);
         image.MedianFilter(4);
-        var histogram = image.Histogram()
+        var histogram = image
+            .Histogram()
             .OrderByDescending(entry => entry.Value)
             .FirstOrDefault(entry => !entry.Key.IsCmyk);
         return ColorRGB.FromMagickColor(histogram.Key)?.ToMagickColor().ToByteArray() ?? [0, 0, 0, 0];

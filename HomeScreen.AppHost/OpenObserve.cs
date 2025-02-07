@@ -6,10 +6,10 @@ public class OpenObserveResource(string name, ParameterResource user, ParameterR
     public const string ConnectionGrpcEndpoint = "grpc";
     public const string ConnectionHttpEndpoint = "http";
 
+    private EndpointReference? _endpoint;
+
     public ParameterResource UserParameter { get; } = user;
     public ParameterResource PasswordParameter { get; } = password;
-
-    private EndpointReference? _endpoint;
 
     public EndpointReference EndpointReference => _endpoint ??= new EndpointReference(this, "http");
 
@@ -30,8 +30,8 @@ public static class OpenObserve
         int? port = null
     )
     {
-        var passwordParameter = password?.Resource
-                                ?? ParameterResourceBuilderExtensions.CreateDefaultPasswordParameter(
+        var passwordParameter = password?.Resource ??
+                                ParameterResourceBuilderExtensions.CreateDefaultPasswordParameter(
                                     builder,
                                     $"{name}-password",
                                     true,
@@ -45,25 +45,26 @@ public static class OpenObserve
                                 );
         var resource = new OpenObserveResource(name, email.Resource, passwordParameter);
 
-        return builder.AddResource(resource)
+        return builder
+            .AddResource(resource)
             .WithImage("zinclabs/openobserve")
             .WithImageRegistry("public.ecr.aws")
             .WithImageTag("latest-simd")
-            .WithHttpEndpoint(port: port, targetPort: 5080, name: OpenObserveResource.ConnectionHttpEndpoint)
+            .WithHttpEndpoint(port, 5080, OpenObserveResource.ConnectionHttpEndpoint)
             .WithEndpoint(targetPort: 5081, scheme: "http", name: OpenObserveResource.ConnectionGrpcEndpoint)
             .WithEnvironment(context =>
-            {
-                context.EnvironmentVariables["ZO_ROOT_USER_EMAIL"] = resource.UserParameter;
-                context.EnvironmentVariables["ZO_ROOT_USER_PASSWORD"] = resource.PasswordParameter;
-            })
+                {
+                    context.EnvironmentVariables["ZO_ROOT_USER_EMAIL"] = resource.UserParameter;
+                    context.EnvironmentVariables["ZO_ROOT_USER_PASSWORD"] = resource.PasswordParameter;
+                }
+            )
             .WithOtlpExporter();
     }
 
     public static IResourceBuilder<OpenObserveResource> WithDataVolume(
         this IResourceBuilder<OpenObserveResource> builder
-    )
-    {
-        return builder
+    ) =>
+        builder
             .WithEnvironment("ZO_META_STORE", "sqlite")
             .WithEnvironment("ZO_DATA_DIR", "/data")
             .WithEnvironment("ZO_DATA_DB_DIR", "/data/db")
@@ -73,5 +74,4 @@ public static class OpenObserve
             .WithEnvironment("ZO_LOCAL_MODE", "true")
             .WithEnvironment("ZO_LOCAL_MODE_STORAGE", "disk")
             .WithVolume("/data");
-    }
 }

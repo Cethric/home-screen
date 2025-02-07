@@ -29,10 +29,7 @@ public class GenericCache(IDistributedCache distributedCache) : IGenericCache
         using var activity = ActivitySource.StartActivity();
         activity?.AddTag("Key", key);
         var cache = await distributedCache.GetStringAsync(key, cancellationToken);
-        if (string.IsNullOrEmpty(cache))
-        {
-            return null;
-        }
+        if (string.IsNullOrEmpty(cache)) return null;
 
         var result = JsonSerializer.Deserialize<T>(cache, JsonSerializerOptions.Default);
         return result ?? null;

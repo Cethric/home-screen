@@ -10,6 +10,7 @@ builder.AddMediaDb();
 
 var host = builder.Build();
 
-host.Services.GetRequiredService<ILogger<Program>>()
+host
+    .Services.GetRequiredService<ILogger<Program>>()
     .LogInformation("Launching version: {Version}", GitVersionInformation.InformationalVersion);
 await host.RunAsync();

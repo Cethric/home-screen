@@ -35,8 +35,8 @@ message MediaEntry {
   double latitude = 5;
   string notes = 6;
   bool enabled = 7;
-  double aspect_ratio_width = 8;
-  double aspect_ratio_height = 9;
+  double aspect_ratio = 8;
+  bool portrait = 9;
   uint32 base_r = 10;
   uint32 base_g = 11;
   uint32 base_b = 12;

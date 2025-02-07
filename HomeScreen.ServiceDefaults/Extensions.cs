@@ -1,14 +1,6 @@
-using System.Reflection;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using OpenTelemetry;
-using OpenTelemetry.Metrics;
-using OpenTelemetry.Resources;
-using OpenTelemetry.Trace;
 
 namespace HomeScreen.ServiceDefaults;
 
@@ -32,12 +24,10 @@ public static class Extensions
 
         builder.Services.AddServiceDiscovery();
 
-        builder.Services.ConfigureHttpClientDefaults(
-            http =>
+        builder.Services.ConfigureHttpClientDefaults(http =>
             {
                 // Turn on resilience by default
-                http.AddStandardResilienceHandler(
-                    config =>
+                http.AddStandardResilienceHandler(config =>
                     {
                         config.AttemptTimeout.Timeout = TimeSpan.FromMinutes(5);
                         config.CircuitBreaker.SamplingDuration = TimeSpan.FromMinutes(10);

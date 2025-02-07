@@ -17,7 +17,7 @@ namespace HomeScreen.Database.MediaDb.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.8")
+                .HasAnnotation("ProductVersion", "9.0.1")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -46,10 +46,10 @@ namespace HomeScreen.Database.MediaDb.Migrations
                     b.Property<bool>("Enabled")
                         .HasColumnType("bit");
 
-                    b.Property<double>("ImageRatioHeight")
-                        .HasColumnType("float");
+                    b.Property<bool>("ImagePortrait")
+                        .HasColumnType("bit");
 
-                    b.Property<double>("ImageRatioWidth")
+                    b.Property<double>("ImageRatio")
                         .HasColumnType("float");
 
                     b.Property<double>("Latitude")

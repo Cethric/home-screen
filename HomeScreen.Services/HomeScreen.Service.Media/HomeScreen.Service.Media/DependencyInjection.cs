@@ -19,7 +19,8 @@ public static class DependencyInjection
         builder.Services.AddGrpcClient<LocationGrpcClient>(
             "homescreen-service-location",
             c => c.Address = new Uri(
-                builder.Configuration.GetSection("services")
+                builder
+                    .Configuration.GetSection("services")
                     .GetSection("homescreen-service-location")
                     .GetSection("http")
                     .GetChildren()

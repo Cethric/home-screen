@@ -7,8 +7,8 @@ public class MediaItem
     public string Notes { get; set; } = string.Empty;
     public bool Enabled { get; set; }
     public MediaItemLocation Location { get; set; } = new();
-    public double AspectRatioWidth { get; set; }
-    public double AspectRatioHeight { get; set; }
+    public double AspectRatio { get; set; }
+    public bool Portrait { get; set; }
     public uint BaseB { get; set; }
     public uint BaseG { get; set; }
     public uint BaseR { get; set; }

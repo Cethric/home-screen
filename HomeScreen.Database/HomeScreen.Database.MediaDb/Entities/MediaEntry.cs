@@ -18,13 +18,13 @@ public class MediaEntry
         Notes = string.Empty;
         CapturedUtc = DateTimeOffset.UtcNow;
         CapturedOffset = TimeSpan.Zero;
-        Latitude = 0;
+        Latitude = 360;
         LatitudeDirection = LatitudeDirection.Invalid;
-        Longitude = 0;
+        Longitude = 360;
         LongitudeDirection = LongitudeDirection.Invalid;
         Enabled = false;
-        ImageRatioWidth = 16.0 / 9.0;
-        ImageRatioHeight = 9.0 / 16.0;
+        ImageRatio = 16.0 / 9.0;
+        ImagePortrait = false;
         BaseColourR = 128;
         BaseColourG = 128;
         BaseColourB = 128;
@@ -70,10 +70,10 @@ public class MediaEntry
     public bool Enabled { get; set; } = true;
 
     [Required]
-    public double ImageRatioWidth { get; set; }
+    public double ImageRatio { get; set; }
 
     [Required]
-    public double ImageRatioHeight { get; set; }
+    public bool ImagePortrait { get; set; }
 
     [Required]
     public uint BaseColourR { get; set; }

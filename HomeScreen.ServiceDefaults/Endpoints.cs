@@ -13,7 +13,7 @@ public static class Endpoints
 
         // Only health checks tagged with the "live" tag must pass for app to be considered alive
         app.MapHealthChecks("/alive", new HealthCheckOptions { Predicate = r => r.Tags.Contains("live") });
-        
+
         // Adding health checks endpoints to applications in non-development environments has security implications.
         // See https://aka.ms/dotnet/aspire/healthchecks for details before enabling these endpoints in non-development environments.
         if (!app.Environment.IsDevelopment()) return app;

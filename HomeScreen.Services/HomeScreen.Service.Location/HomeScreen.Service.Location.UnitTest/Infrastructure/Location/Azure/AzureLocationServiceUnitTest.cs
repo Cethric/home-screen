@@ -24,7 +24,8 @@ public class AzureLocationServiceUnitTest
         var response = new Mock<Response<GeocodingResponse>>();
         response.SetupGet(x => x.HasValue).Returns(false);
         var searchService = new Mock<IAzureMapsSearchApi>();
-        searchService.Setup(x => x.ReverseSearchAddressAsync(It.IsAny<GeoPosition>(), It.IsAny<CancellationToken>()))
+        searchService
+            .Setup(x => x.ReverseSearchAddressAsync(It.IsAny<GeoPosition>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(null as ReverseSearchAddressResponse);
         var service = new AzureLocationApi(logger.Object, searchService.Object);
         // Act
@@ -44,24 +45,25 @@ public class AzureLocationServiceUnitTest
         // Arrange
         var logger = new Mock<ILogger<AzureLocationApi>>();
         var searchService = new Mock<IAzureMapsSearchApi>();
-        searchService.Setup(x => x.ReverseSearchAddressAsync(It.IsAny<GeoPosition>(), It.IsAny<CancellationToken>()))
+        searchService
+            .Setup(x => x.ReverseSearchAddressAsync(It.IsAny<GeoPosition>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(
                 new ReverseSearchAddressResponse
                 {
                     Addresses = new List<ReverseSearchAddress>
-                                {
-                                    new()
-                                    {
-                                        AddressLine = "1",
-                                        Locality = "2",
-                                        Neighborhood = "3",
-                                        AdminDistricts = ["4", "5"],
-                                        PostalCode = "6",
-                                        CountryRegion = "7",
-                                        FormattedAddress = "8",
-                                        Intersection = "9"
-                                    }
-                                }
+                    {
+                        new()
+                        {
+                            AddressLine = "1",
+                            Locality = "2",
+                            Neighborhood = "3",
+                            AdminDistricts = ["4", "5"],
+                            PostalCode = "6",
+                            CountryRegion = "7",
+                            FormattedAddress = "8",
+                            Intersection = "9"
+                        }
+                    }
                 }
             );
         var service = new AzureLocationApi(logger.Object, searchService.Object);

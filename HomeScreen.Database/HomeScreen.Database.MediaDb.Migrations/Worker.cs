@@ -3,7 +3,6 @@ using HomeScreen.Database.MediaDb.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
-using OpenTelemetry.Trace;
 
 namespace HomeScreen.Database.MediaDb.Migrations;
 
@@ -47,8 +46,7 @@ public class Worker(
         var dbCreator = dbContext.GetService<IRelationalDatabaseCreator>();
 
         var strategy = dbContext.Database.CreateExecutionStrategy();
-        await strategy.ExecuteAsync(
-            async () =>
+        await strategy.ExecuteAsync(async () =>
             {
                 // Create the database if it does not exist.
                 // Do this first so there is then a database to start a transaction against.
@@ -65,8 +63,7 @@ public class Worker(
     {
         using var activity = ActivitySource.StartActivity();
         var strategy = dbContext.Database.CreateExecutionStrategy();
-        await strategy.ExecuteAsync(
-            async () =>
+        await strategy.ExecuteAsync(async () =>
             {
                 logger.LogInformation("Running migrations");
                 // Run migration in a transaction to avoid partial migration if it fails.

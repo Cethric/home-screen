@@ -17,17 +17,19 @@ using NSwag.Generation.Processors;
 using NSwag.Generation.Processors.Contexts;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.ConfigureHttpJsonOptions(
-    options => { options.SerializerOptions.Converters.Add(new JsonStringEnumConverter()); }
+builder.Services.ConfigureHttpJsonOptions(options =>
+    {
+        options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    }
 );
 builder.AddServiceDefaults(GitVersionInformation.InformationalVersion);
 builder.AddOpenObserve("OpenObserve");
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddControllers()
+builder
+    .Services.AddControllers()
     .AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
-builder.Services.AddOpenApiDocument(
-    document =>
+builder.Services.AddOpenApiDocument(document =>
     {
         document.Title = "HomeScreen Common API";
         document.Description = "";
@@ -42,8 +44,7 @@ builder.Services.AddOpenApiDocument(
             )
         );
         document.OperationProcessors.Add(
-            new OperationProcessor(
-                context =>
+            new OperationProcessor(context =>
                 {
                     switch (context.MethodInfo.Name)
                     {
@@ -65,7 +66,8 @@ builder.Services.AddTransient(typeof(IJsonLinesExecutor<>), typeof(JsonLinesExec
 builder.Services.AddGrpcClient<MediaGrpcClient>(
     "homescreen-service-media",
     c => c.Address = new Uri(
-        builder.Configuration.GetSection("services")
+        builder
+            .Configuration.GetSection("services")
             .GetSection("homescreen-service-media")
             .GetSection("http")
             .GetChildren()
@@ -75,7 +77,8 @@ builder.Services.AddGrpcClient<MediaGrpcClient>(
 builder.Services.AddGrpcClient<WeatherGrpcClient>(
     "homescreen-service-weather",
     c => c.Address = new Uri(
-        builder.Configuration.GetSection("services")
+        builder
+            .Configuration.GetSection("services")
             .GetSection("homescreen-service-weather")
             .GetSection("http")
             .GetChildren()
@@ -87,7 +90,8 @@ builder.Services.AddHttpClient(
     client =>
     {
         client.BaseAddress = new Uri(
-            builder.Configuration.GetSection("services")
+            builder
+                .Configuration.GetSection("services")
                 .GetSection("homescreen-service-media")
                 .GetSection("http")
                 .GetChildren()
@@ -97,8 +101,10 @@ builder.Services.AddHttpClient(
         client.DefaultVersionPolicy = HttpVersionPolicy.RequestVersionOrHigher;
     }
 );
-builder.Services.AddScoped<IMediaClient, MediaClient>(
-    sp => new MediaClient("", sp.GetRequiredService<IHttpClientFactory>().CreateClient("MediaDownloader"))
+builder.Services.AddScoped<IMediaClient, MediaClient>(sp => new MediaClient(
+        "",
+        sp.GetRequiredService<IHttpClientFactory>().CreateClient("MediaDownloader")
+    )
 );
 builder.Services.AddScoped<IMediaApi, MediaApi>();
 builder.Services.AddScoped<IWeatherApi, WeatherApi>();
@@ -120,7 +126,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.Services.GetRequiredService<ILogger<Program>>()
+app
+    .Services.GetRequiredService<ILogger<Program>>()
     .LogInformation("Launching version: {Version}", GitVersionInformation.InformationalVersion);
 await app.RunAsync();
 return;
@@ -132,26 +139,24 @@ static void ProcessRandomMediaMime(OperationProcessorContext context)
     context.OperationDescription.Operation.Responses.Clear();
 
     var response = new OpenApiResponse
-                   {
-                       Schema = new JsonSchema
-                                {
-                                    Type = JsonObjectType.Object, Reference = context.Document.Definitions["MediaItem"]
-                                }
-                   };
+    {
+        Schema = new JsonSchema
+        {
+            Type = JsonObjectType.Object, Reference = context.Document.Definitions["MediaItem"]
+        }
+    };
     response.Content.Clear();
     foreach (var operation in context.OperationDescription.Operation.Produces)
-    {
         response.Content.Add(
             operation,
             new OpenApiMediaType
             {
                 Schema = new JsonSchema
-                         {
-                             Type = JsonObjectType.Object, Reference = context.Document.Definitions["MediaItem"]
-                         }
+                {
+                    Type = JsonObjectType.Object, Reference = context.Document.Definitions["MediaItem"]
+                }
             }
         );
-    }
 
     context.OperationDescription.Operation.Responses.Add("200", response);
 }
@@ -171,28 +176,24 @@ static void ProcessFileMime(OperationProcessorContext context)
     context.OperationDescription.Operation.Responses.Clear();
 
     var response = new OpenApiResponse
-                   {
-                       Schema = new JsonSchema
-                                {
-                                    Type = JsonObjectType.File,
-                                    Reference = context.Document.Definitions["FileStreamHttpResult"]
-                                }
-                   };
+    {
+        Schema = new JsonSchema
+        {
+            Type = JsonObjectType.File, Reference = context.Document.Definitions["FileStreamHttpResult"]
+        }
+    };
     response.Content.Clear();
     foreach (var operation in context.OperationDescription.Operation.Produces)
-    {
         response.Content.Add(
             operation,
             new OpenApiMediaType
             {
                 Schema = new JsonSchema
-                         {
-                             Type = JsonObjectType.File,
-                             Reference = context.Document.Definitions["FileStreamHttpResult"]
-                         }
+                {
+                    Type = JsonObjectType.File, Reference = context.Document.Definitions["FileStreamHttpResult"]
+                }
             }
         );
-    }
 
     context.OperationDescription.Operation.Responses.Add("200", response);
 }

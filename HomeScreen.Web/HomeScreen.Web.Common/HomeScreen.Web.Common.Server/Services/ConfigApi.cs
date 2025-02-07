@@ -4,8 +4,11 @@ using HomeScreen.Web.Common.Server.Entities;
 
 namespace HomeScreen.Web.Common.Server.Services;
 
-public class ConfigApi(IConfiguration configuration, IWebHostEnvironment environment, OpenObserveSettingsAdapter settings)
-    : IConfigApi
+public class ConfigApi(
+    IConfiguration configuration,
+    IWebHostEnvironment environment,
+    OpenObserveSettingsAdapter settings
+) : IConfigApi
 {
     private static ActivitySource ActivitySource => new(nameof(ConfigApi));
 
@@ -13,7 +16,7 @@ public class ConfigApi(IConfiguration configuration, IWebHostEnvironment environ
     {
         using var activity = ActivitySource.StartActivity();
 
-        return Task.FromResult<Config>(
+        return Task.FromResult(
             new Config
             {
                 OtlpConfig = new OtlpConfig
@@ -29,7 +32,7 @@ public class ConfigApi(IConfiguration configuration, IWebHostEnvironment environ
                     Endpoint = settings.Endpoint,
                     ClientToken = settings.Credentials,
                     InsecureHttp = true,
-                    OrganizationIdentifier = "default",
+                    OrganizationIdentifier = "default"
                 }
             }
         );

@@ -20,10 +20,7 @@ public static class ConfigEndpoint
     {
         using var activity = ActivitySource.StartActivity();
         var result = await api.ResolveConfig(cancellationToken);
-        if (result is null)
-        {
-            return TypedResults.NotFound();
-        }
+        if (result is null) return TypedResults.NotFound();
 
         return TypedResults.Ok(result);
     }

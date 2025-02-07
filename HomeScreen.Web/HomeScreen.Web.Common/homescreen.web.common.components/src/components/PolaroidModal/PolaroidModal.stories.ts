@@ -1,12 +1,12 @@
 import type { Meta, StoryObj } from '@storybook/vue3';
 import PolaroidModal from '@/components/PolaroidModal/PolaroidModal.vue';
-import { picsumImages } from '@/stories/helpers';
+import { picsumImage } from '@/stories/helpers';
 
 const meta: Meta<typeof PolaroidModal> = {
   component: PolaroidModal,
   tags: ['autodocs'],
   args: {
-    image: picsumImages()[0],
+    image: picsumImage(800, 600, false, 2),
   },
   argTypes: {
     image: {

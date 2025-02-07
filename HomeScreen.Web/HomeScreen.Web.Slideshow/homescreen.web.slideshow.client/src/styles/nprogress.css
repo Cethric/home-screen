@@ -2,15 +2,15 @@
 @import 'nprogress/nprogress.css';
 
 #nprogress {
-  .bar {
-    @apply bg-orange-500;
-  }
+    .bar {
+        @apply bg-orange-500;
+    }
 
-  .peg {
-    @apply shadow-md shadow-orange-500;
-  }
+    .peg {
+        @apply shadow-md shadow-orange-500;
+    }
 
-  .spinner-icon {
-    @apply border-l-orange-500 border-t-orange-500;
-  }
+    .spinner-icon {
+        @apply border-l-orange-500 border-t-orange-500;
+    }
 }

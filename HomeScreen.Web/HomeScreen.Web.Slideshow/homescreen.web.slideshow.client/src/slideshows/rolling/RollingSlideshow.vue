@@ -25,9 +25,10 @@ import {
   type Direction,
   Directions,
   type Image,
+  openobserveRum,
   type WeatherForecast,
 } from '@homescreen/web-common-components';
-import { computed } from 'vue';
+import { computed, onBeforeMount } from 'vue';
 import RollingSlider from '@/slideshows/rolling/RollingSlider.vue';
 import {
   DateTimeWeatherComboKinds,
@@ -37,6 +38,10 @@ import { v4 as uuid } from 'uuid';
 import { choice } from '@/helpers/random';
 import FullscreenMainLoader from '@/slideshows/fullscreen/FullscreenMainLoader.vue';
 import { DateTimeWeatherComboAsync } from '@/components/DateTimeWeatherComboAsync';
+
+onBeforeMount(() => {
+  openobserveRum.startView('RollingSlideshow');
+});
 
 const props = withDefaults(
   defineProps<{
@@ -84,15 +89,3 @@ const imageGroups = computed(() =>
     : [],
 );
 </script>
-
-<style lang="css" scoped>
-.grid-horizontal {
-  grid-template-columns: repeat(1, minmax(0, 1fr));
-  grid-template-rows: repeat(v-bind(count), minmax(0, 1fr));
-}
-
-.grid-vertical {
-  grid-template-columns: repeat(v-bind(count), minmax(0, 1fr));
-  grid-template-rows: repeat(1, minmax(0, 1fr));
-}
-</style>

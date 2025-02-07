@@ -40,25 +40,23 @@ public class AzureMapsSearchApi(ILogger<AzureMapsSearchApi> logger, MapsSearchCl
             activity?.AddEvent(new ActivityEvent("HasValue")).AddBaggage("value", response.Value.ToString());
             logger.LogTrace("Reverse address found {ReverseSearchOptions} {Response}", coordinates, response.Value);
             return new ReverseSearchAddressResponse
-                   {
-                       Addresses = response.Value.Features.Select(
-                               feat => new ReverseSearchAddress
-                                       {
-                                           AddressLine = feat.Properties.Address.AddressLine ?? string.Empty,
-                                           Locality = feat.Properties.Address.Locality ?? string.Empty,
-                                           Neighborhood = feat.Properties.Address.Neighborhood ?? string.Empty,
-                                           AdminDistricts =
-                                               feat.Properties.Address.AdminDistricts.Select(dist => dist.Name)
-                                                   .ToImmutableList(),
-                                           PostalCode = feat.Properties.Address.PostalCode ?? string.Empty,
-                                           CountryRegion = feat.Properties.Address.CountryRegion.Name ?? string.Empty,
-                                           FormattedAddress = feat.Properties.Address.FormattedAddress ?? string.Empty,
-                                           Intersection = feat.Properties.Address.Intersection.DisplayName ??
-                                                          string.Empty
-                                       }
-                           )
-                           .ToList()
-                   };
+            {
+                Addresses = response
+                    .Value.Features.Select(feat => new ReverseSearchAddress
+                        {
+                            AddressLine = feat.Properties.Address.AddressLine ?? string.Empty,
+                            Locality = feat.Properties.Address.Locality ?? string.Empty,
+                            Neighborhood = feat.Properties.Address.Neighborhood ?? string.Empty,
+                            AdminDistricts =
+                                feat.Properties.Address.AdminDistricts.Select(dist => dist.Name).ToImmutableList(),
+                            PostalCode = feat.Properties.Address.PostalCode ?? string.Empty,
+                            CountryRegion = feat.Properties.Address.CountryRegion.Name ?? string.Empty,
+                            FormattedAddress = feat.Properties.Address.FormattedAddress ?? string.Empty,
+                            Intersection = feat.Properties.Address.Intersection.DisplayName ?? string.Empty
+                        }
+                    )
+                    .ToList()
+            };
         }
 
         logger.LogTrace("No reverse address found {ReverseSearchOptions}", coordinates);

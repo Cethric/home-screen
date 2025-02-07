@@ -36,9 +36,8 @@ public static class AsyncEnumerableExceptByExtensions
 
         await foreach (var element in first.WithCancellation(cancellationToken).ConfigureAwait(false))
         {
-            var active = activity?.AddEvent(new ActivityEvent());
+            activity?.AddEvent(new ActivityEvent());
             if (!set.Add(keySelector(element))) continue;
-            active?.AddBaggage("Element", element?.ToString());
             yield return element;
         }
     }

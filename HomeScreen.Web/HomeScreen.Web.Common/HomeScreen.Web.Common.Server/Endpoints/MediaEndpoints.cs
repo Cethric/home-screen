@@ -17,13 +17,15 @@ public static class MediaEndpoints
 
     public static void RegisterMediaEndpoints(this WebApplication app)
     {
-        var group = app.MapGroup("api/media")
+        var group = app
+            .MapGroup("api/media")
             // .WithTags("media")
             .WithName("Media")
             .WithDisplayName("Media")
             .WithGroupName("Media");
 
-        group.MapGet("random", RandomMedia)
+        group
+            .MapGet("random", RandomMedia)
             .WithName(nameof(RandomMedia))
             .WithDisplayName("Random Media")
             .WithTags("random", "media")
@@ -32,7 +34,8 @@ public static class MediaEndpoints
                 $"{MediaTypeNames.Application.JsonSequence};charset={Encoding.UTF8.WebName}"
             )
             .WithRequestTimeout(TimeSpan.FromMinutes(2));
-        group.MapGet("paginate", PaginateMedia)
+        group
+            .MapGet("paginate", PaginateMedia)
             .WithName(nameof(PaginateMedia))
             .WithDisplayName("Paginate Media")
             .WithTags("paginate", "media")
@@ -41,7 +44,8 @@ public static class MediaEndpoints
                 $"{MediaTypeNames.Application.JsonSequence};charset={Encoding.UTF8.WebName}"
             )
             .WithRequestTimeout(TimeSpan.FromMinutes(2));
-        group.MapPatch("item/{mediaId:guid:required}/toggle", ToggleMedia)
+        group
+            .MapPatch("item/{mediaId:guid:required}/toggle", ToggleMedia)
             .WithName(nameof(ToggleMedia))
             .WithDisplayName("Toggle Media")
             .WithTags("toggle", "media");

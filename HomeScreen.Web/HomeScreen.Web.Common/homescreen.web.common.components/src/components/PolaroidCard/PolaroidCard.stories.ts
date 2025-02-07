@@ -1,21 +1,13 @@
 import type { Meta, StoryObj } from '@storybook/vue3';
 import { Directions } from '../properties';
 import PolaroidCard from './PolaroidCard.vue';
-import { DateTime } from 'luxon';
+import { picsumImage } from '@/stories/helpers';
 
 const meta: Meta<typeof PolaroidCard> = {
   component: PolaroidCard,
   tags: ['autodocs'],
   args: {
-    image: {
-      id: 'https://picsum.photos/400/500',
-      dateTime: DateTime.now(),
-      enabled: true,
-      location: { name: 'Sydney', longitude: 151.20732, latitude: -33.86785 },
-      aspectWidth: 16.0 / 9.0,
-      aspectHeight: 9.0 / 16.0,
-      colour: { red: 0, green: 0, blue: 0 },
-    },
+    image: picsumImage(800, 600, false, 2),
   },
   argTypes: {
     direction: {
@@ -57,6 +49,19 @@ export const Default: PolaroidCardStory = {
       return { args };
     },
   }),
+};
+
+export const Portrait: PolaroidCardStory = {
+  render: (args) => ({
+    template: '<Suspense><PolaroidCard v-bind="args" /></Suspense>',
+    components: { PolaroidCard },
+    setup() {
+      return { args };
+    },
+  }),
+  args: {
+    image: picsumImage(600, 800, true, 2),
+  },
 };
 
 export const Horizontal: PolaroidCardStory = {

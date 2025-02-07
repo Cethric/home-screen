@@ -5,9 +5,8 @@ namespace HomeScreen.Web.Common.Server.Entities;
 
 public static class MediaTransformOptionsFormatExtensions
 {
-    public static string TransformFormatToMime(this MediaTransformOptionsFormat format)
-    {
-        return format switch
+    public static string TransformFormatToMime(this MediaTransformOptionsFormat format) =>
+        format switch
         {
             MediaTransformOptionsFormat.Jpeg => MediaTypeNames.Image.Jpeg,
             MediaTransformOptionsFormat.JpegXl => "image/jxl",
@@ -16,5 +15,4 @@ public static class MediaTransformOptionsFormatExtensions
             MediaTransformOptionsFormat.Avif => MediaTypeNames.Image.Avif,
             _ => throw new ArgumentOutOfRangeException(nameof(format), format, "Invalid transform format provided")
         };
-    }
 }

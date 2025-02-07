@@ -16,7 +16,8 @@ public class AzureLocationApi(ILogger<AzureLocationApi> logger, IAzureMapsSearch
     )
     {
         using var activity = ActivitySource.StartActivity();
-        activity?.AddBaggage("longitude", longitude.ToString(CultureInfo.InvariantCulture))
+        activity
+            ?.AddBaggage("longitude", longitude.ToString(CultureInfo.InvariantCulture))
             .AddBaggage("latitude", latitude.ToString(CultureInfo.InvariantCulture))
             .AddBaggage("altitude", altitude.ToString(CultureInfo.InvariantCulture));
         logger.LogInformation(
@@ -44,7 +45,8 @@ public class AzureLocationApi(ILogger<AzureLocationApi> logger, IAzureMapsSearch
             return ILocationApi.UnknownLocation;
         }
 
-        var formatted = string.Join(
+        var formatted = string
+            .Join(
                 " ",
                 new HashSet<string>
                 {

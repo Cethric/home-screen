@@ -1,7 +1,7 @@
 import type { Plugin } from 'vue';
 import { openobserveRum } from '@openobserve/browser-rum';
 import { openobserveLogs } from '@openobserve/browser-logs';
-import { v4, v6 } from 'uuid';
+import { v4 } from 'uuid';
 
 interface OpenObserverSettings {
   applicationId: string;
@@ -13,6 +13,8 @@ interface OpenObserverSettings {
   endpoint: string;
   insecureHTTP: boolean;
 }
+
+export { openobserveRum, openobserveLogs };
 
 export const openobserver = {
   install(
@@ -39,6 +41,8 @@ export const openobserver = {
       trackResources: true,
       trackLongTasks: true,
       trackUserInteractions: true,
+      trackFrustrations: true,
+      trackViewsManually: true,
       apiVersion: 'v1',
       insecureHTTP: insecureHTTP,
       defaultPrivacyLevel: 'allow', // 'allow' or 'mask-user-input' or 'mask'. Use one of the 3 values.
@@ -53,28 +57,26 @@ export const openobserver = {
       version: version,
       forwardErrorsToLogs: true,
       forwardConsoleLogs: 'all',
+      forwardReports: 'all',
+      trackLongTasks: true,
+      trackResources: true,
       insecureHTTP: insecureHTTP,
       apiVersion: 'v1',
     });
 
-    // You can set a user context
-    // openobserveRum.setUser({
-    //   id: '1',
-    //   name: 'Captain Hook',
-    //   email: 'captainhook@example.com',
-    // });
+    const ID_KEY = 'rum-id';
+    let key = localStorage.getItem(ID_KEY);
+    if (key === null) {
+      key = v4();
+      localStorage.setItem(ID_KEY, key);
+    }
+    openobserveRum.setUser({
+      id: key,
+      name: location.hostname,
+    });
 
     app.mixin({
-      mounted() {
-        const ID_KEY = 'rum-id';
-        let key = localStorage.getItem(ID_KEY);
-        if (key === null) {
-          key = v4();
-          localStorage.setItem(ID_KEY, key);
-        }
-        openobserveRum.setUser({
-          id: key,
-        });
+      beforeCreate() {
         openobserveRum.startSessionReplayRecording();
       },
       errorCaptured(error, instance, info) {

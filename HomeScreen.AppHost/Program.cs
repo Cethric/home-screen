@@ -5,6 +5,8 @@ using Projects;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
+var mappingService = builder.AddParameter("MappingService", "Nominatim");
+
 var mssqlPassword = builder.AddParameter("HomeScreenSqlServerPassword", true);
 
 var mediaSource = builder.AddParameter("MediaSourceDir");
@@ -23,23 +25,23 @@ var otelCollectorPassword = builder.AddParameter("OtelCollectorPassword", true);
 var openObserveEmail = builder.AddParameter("OpenObserveEmail");
 var openObservePassword = builder.AddParameter("OpenObservePassword", true);
 
-var openObserve = builder
-    .AddOpenObserve("OpenObserve", openObserveEmail, openObservePassword)
-    .WithDataVolume();
+var openObserve = builder.AddOpenObserve("OpenObserve", openObserveEmail, openObservePassword).WithDataVolume();
 
 var otelCollector = builder
     .AddOtelCollector("OtelCollector", otelCollectorUsername, otelCollectorPassword)
     .WithOpenObserve(openObserve)
     .WaitFor(openObserve);
 
-var redis = builder.AddRedis("homescreen-redis")
+var redis = builder
+    .AddRedis("homescreen-redis")
     .WithImageTag("latest")
     .WithOtelCollector(otelCollector)
     .WaitFor(otelCollector)
     .WithDataVolume()
     .WithPersistence();
 
-var sqlServer = builder.AddSqlServer("homescreen-sqlserver", mssqlPassword)
+var sqlServer = builder
+    .AddSqlServer("homescreen-sqlserver", mssqlPassword)
     .WithImageTag("2022-latest")
     .WithImageRegistry("mcr.microsoft.com")
     .WithImage("mssql/server")
@@ -51,24 +53,27 @@ var sqlServer = builder.AddSqlServer("homescreen-sqlserver", mssqlPassword)
 var mediaDb = sqlServer.AddDatabase("homescreen-media");
 var dashboardDb = sqlServer.AddDatabase("homescreen-dashboard");
 
-var mediaMigration = builder.AddProject<HomeScreen_Database_MediaDb_Migrations>("homescreen-media-migrations")
+var mediaMigration = builder
+    .AddProject<HomeScreen_Database_MediaDb_Migrations>("homescreen-media-migrations")
     .WithReference(mediaDb)
     .WithOtelCollector(otelCollector)
     .WaitFor(otelCollector)
     .WaitFor(mediaDb);
 
-var location = builder.AddProject<HomeScreen_Service_Location>("homescreen-service-location")
+var location = builder
+    .AddProject<HomeScreen_Service_Location>("homescreen-service-location")
     .AsHttp2Service()
     .WithReference(redis)
     .WithOtelCollector(otelCollector)
     .WaitFor(otelCollector)
     .WaitFor(redis)
-    .WithEnvironment("MappingService", "Nominatim")
+    .WithEnvironment("MappingService", mappingService)
     .WithEnvironment("AZURE_MAPS_SUBSCRIPTION_KEY", mapsKey)
     .WithEnvironment("AZURE_CLIENT_ID", clientId);
 
 
-var media = builder.AddProject<HomeScreen_Service_Media>("homescreen-service-media")
+var media = builder
+    .AddProject<HomeScreen_Service_Media>("homescreen-service-media")
     .AsHttp2Service()
     .WithReference(redis)
     .WithReference(mediaDb)
@@ -84,14 +89,16 @@ var media = builder.AddProject<HomeScreen_Service_Media>("homescreen-service-med
     .WithAnnotation(new ContainerMountAnnotation("cache", "/cache", ContainerMountType.Volume, false))
     .WithAnnotation(new ContainerMountAnnotation("media", "/media", ContainerMountType.Volume, true));
 
-var weather = builder.AddProject<HomeScreen_Service_Weather>("homescreen-service-weather")
+var weather = builder
+    .AddProject<HomeScreen_Service_Weather>("homescreen-service-weather")
     .AsHttp2Service()
     .WithReference(redis)
     .WithOtelCollector(otelCollector)
     .WaitFor(otelCollector)
     .WaitFor(redis);
 
-var common = builder.AddProject<HomeScreen_Web_Common_Server>("homescreen-web-common-server")
+var common = builder
+    .AddProject<HomeScreen_Web_Common_Server>("homescreen-web-common-server")
     .AsHttp2Service()
     .WithReference(redis)
     .WithReference(weather)
@@ -104,7 +111,8 @@ var common = builder.AddProject<HomeScreen_Web_Common_Server>("homescreen-web-co
     .WaitFor(weather)
     .WaitFor(redis);
 
-var dashboard = builder.AddProject<HomeScreen_Web_Dashboard_Server>("homescreen-web-dashboard-server")
+var dashboard = builder
+    .AddProject<HomeScreen_Web_Dashboard_Server>("homescreen-web-dashboard-server")
     .AsHttp2Service()
     .WithReference(redis)
     .WithReference(dashboardDb)
@@ -117,7 +125,8 @@ var dashboard = builder.AddProject<HomeScreen_Web_Dashboard_Server>("homescreen-
     .WithEnvironment("CommonAddress", commonAddress)
     .WithEnvironment("SlideshowAddress", slideshowAddress);
 
-var slideshow = builder.AddProject<HomeScreen_Web_Slideshow_Server>("homescreen-web-slideshow-server")
+var slideshow = builder
+    .AddProject<HomeScreen_Web_Slideshow_Server>("homescreen-web-slideshow-server")
     .AsHttp2Service()
     .WithReference(redis)
     .WithReference(common)
@@ -144,7 +153,8 @@ builder.Services.AddCors(options =>
 );
 
 var app = builder.Build();
-app.Services.GetRequiredService<ILogger<Program>>()
+app
+    .Services.GetRequiredService<ILogger<Program>>()
     .LogInformation("Launching version: {Version}", GitVersionInformation.InformationalVersion);
 
 await app.RunAsync();

@@ -13,17 +13,20 @@ public static class MediaTransformEndpoints
 
     public static void MapTransformEndpoints(this RouteGroupBuilder app)
     {
-        var group = app.MapGroup("transform")
+        var group = app
+            .MapGroup("transform")
             // .WithTags("transform", "media")
             .WithName("TransformMedia")
             .WithDisplayName("Transform Media")
             .WithGroupName("MediaTransform");
 
-        group.MapGet("item/{mediaId:guid:required}/{width:int:required}/{height:int:required}", TransformItem)
+        group
+            .MapGet("item/{mediaId:guid:required}/{width:int:required}/{height:int:required}", TransformItem)
             .WithName(nameof(TransformItem))
             .WithDisplayName("Transform Item")
             .WithTags("item", "transform", "media");
-        group.MapGet("line/{direction:int:required}/{size:int:required}", TransformLine)
+        group
+            .MapGet("line/{direction:int:required}/{size:int:required}", TransformLine)
             .WithName(nameof(TransformLine))
             .WithDisplayName("Transform Line")
             .WithTags("line", "transform", "media");
@@ -41,18 +44,8 @@ public static class MediaTransformEndpoints
     )
     {
         using var activity = ActivitySource.StartActivity("TransformItem", ActivityKind.Client);
-        var result = await service.TransformMedia(
-            mediaId,
-            width,
-            height,
-            blur,
-            format,
-            cancellationToken
-        );
-        if (result != TransformMediaState.Transformed)
-        {
-            return TypedResults.NotFound();
-        }
+        var result = await service.TransformMedia(mediaId, width, height, blur, format, cancellationToken);
+        if (result != TransformMediaState.Transformed) return TypedResults.NotFound();
 
         var linkGenerator = context.RequestServices.GetRequiredService<LinkGenerator>();
         var url = linkGenerator.GetUriByRouteValues(
@@ -68,10 +61,7 @@ public static class MediaTransformEndpoints
             },
             fragment: FragmentString.Empty
         );
-        if (url == null)
-        {
-            return TypedResults.NotFound();
-        }
+        if (url == null) return TypedResults.NotFound();
 
         return TypedResults.AcceptedAtRoute(
             new AcceptedTransformMediaItem
@@ -118,10 +108,7 @@ public static class MediaTransformEndpoints
             },
             fragment: FragmentString.Empty
         );
-        if (url == null)
-        {
-            return await Task.FromResult(TypedResults.NotFound());
-        }
+        if (url == null) return await Task.FromResult(TypedResults.NotFound());
 
         return await Task.FromResult(
             TypedResults.AcceptedAtRoute(

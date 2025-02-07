@@ -37,16 +37,16 @@ public class WeatherApi(ILogger<WeatherApi> logger, IOpenMeteoClient openMeteoCl
         );
         logger.LogInformation("Weather information returned from request");
         return new CurrentForecastReply
-               {
-                   FeelsLikeTemperature = result.Result.Current?.Apparent_temperature ?? 0,
-                   MaxTemperature = result.Result.Daily?.Apparent_temperature_max?.FirstOrDefault() ?? 0,
-                   MinTemperature = result.Result.Daily?.Apparent_temperature_min?.FirstOrDefault() ?? 0,
-                   ChanceOfRain = result.Result.Daily?.Precipitation_probability_max?.FirstOrDefault() ?? 0,
-                   AmountOfRain = result.Result.Daily?.Precipitation_probability_max?.FirstOrDefault() ?? 0,
-                   WeatherCode = WmoToString(
-                       result.Result.Daily?.Weather_code?.FirstOrDefault() ?? Generated.Entities.WmoWeatherCode._0
-                   )
-               };
+        {
+            FeelsLikeTemperature = result.Result.Current?.Apparent_temperature ?? 0,
+            MaxTemperature = result.Result.Daily?.Apparent_temperature_max?.FirstOrDefault() ?? 0,
+            MinTemperature = result.Result.Daily?.Apparent_temperature_min?.FirstOrDefault() ?? 0,
+            ChanceOfRain = result.Result.Daily?.Precipitation_probability_max?.FirstOrDefault() ?? 0,
+            AmountOfRain = result.Result.Daily?.Precipitation_probability_max?.FirstOrDefault() ?? 0,
+            WeatherCode = WmoToString(
+                result.Result.Daily?.Weather_code?.FirstOrDefault() ?? Generated.Entities.WmoWeatherCode._0
+            )
+        };
     }
 
     public async Task<HourlyForecastReply> GetHourlyForecast(
@@ -82,7 +82,6 @@ public class WeatherApi(ILogger<WeatherApi> logger, IOpenMeteoClient openMeteoCl
             cancellationToken: cancellationToken
         );
         if (response.Result.Hourly == null)
-        {
             throw new AggregateException(
                 new ArgumentOutOfRangeException(
                     nameof(latitude),
@@ -95,11 +94,9 @@ public class WeatherApi(ILogger<WeatherApi> logger, IOpenMeteoClient openMeteoCl
                     "Unable to find hourly forecast at longitude"
                 )
             );
-        }
 
         var forecast = new HourlyForecastReply();
         for (var i = response.Result.Hourly.Time.Count - 1; i >= 0; i--)
-        {
             forecast.Forecast.Add(
                 new HourlyForecast
                 {
@@ -114,7 +111,6 @@ public class WeatherApi(ILogger<WeatherApi> logger, IOpenMeteoClient openMeteoCl
                     CloudCover = response.Result.Hourly.Cloud_cover![i]
                 }
             );
-        }
 
         return forecast;
     }
@@ -153,7 +149,6 @@ public class WeatherApi(ILogger<WeatherApi> logger, IOpenMeteoClient openMeteoCl
         );
 
         if (response.Result.Daily == null)
-        {
             throw new AggregateException(
                 new ArgumentOutOfRangeException(
                     nameof(latitude),
@@ -166,17 +161,17 @@ public class WeatherApi(ILogger<WeatherApi> logger, IOpenMeteoClient openMeteoCl
                     "Unable to find hourly forecast at longitude"
                 )
             );
-        }
 
         var forecast = new DailyForecastReply();
         for (var i = response.Result.Daily.Time.Count - 1; i >= 0; i--)
-        {
             forecast.Forecast.Add(
                 new DailyForecast
                 {
                     Time =
-                        new DateTimeOffset(response.Result.Daily.Time[i].ToDateTime(TimeOnly.MinValue), TimeSpan.Zero)
-                            .ToUnixTimeMilliseconds(),
+                        new DateTimeOffset(
+                            response.Result.Daily.Time[i].ToDateTime(TimeOnly.MinValue),
+                            TimeSpan.Zero
+                        ).ToUnixTimeMilliseconds(),
                     ApparentTemperatureMin = response.Result.Daily.Apparent_temperature_min![i],
                     ApparentTemperatureMax = response.Result.Daily.Apparent_temperature_max![i],
                     DaylightDuration = response.Result.Daily.Daylight_duration![i],
@@ -191,7 +186,6 @@ public class WeatherApi(ILogger<WeatherApi> logger, IOpenMeteoClient openMeteoCl
                     PrecipitationProbabilityMin = response.Result.Daily.Precipitation_probability_min![i]
                 }
             );
-        }
 
         return forecast;
     }

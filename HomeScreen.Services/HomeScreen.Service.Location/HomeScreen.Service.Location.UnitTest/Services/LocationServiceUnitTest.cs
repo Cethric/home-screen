@@ -23,7 +23,8 @@ public class LocationServiceUnitTest
         var value = "Location Name";
         var logger = new Mock<ILogger<LocationService>>();
         var cache = new Mock<IDistributedCache>();
-        cache.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+        cache
+            .Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(Encoding.UTF8.GetBytes(value));
         var context = new Mock<ServerCallContext>();
         var service = new LocationService(

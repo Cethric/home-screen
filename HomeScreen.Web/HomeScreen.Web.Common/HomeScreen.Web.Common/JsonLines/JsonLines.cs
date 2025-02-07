@@ -27,7 +27,7 @@ public class JsonLines<TValue>(IAsyncEnumerable<TValue> data, JsonSerializerOpti
             new ProducesResponseTypeMetadata(
                 StatusCodes.Status200OK,
                 typeof(TValue),
-                new[] { $"{MediaTypeNames.Application.JsonSequence};charset={Encoding.UTF8.WebName}" }
+                [$"{MediaTypeNames.Application.JsonSequence};charset={Encoding.UTF8.WebName}"]
             )
         );
     }

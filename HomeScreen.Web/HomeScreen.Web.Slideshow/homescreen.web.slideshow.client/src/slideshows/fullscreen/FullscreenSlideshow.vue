@@ -1,12 +1,12 @@
 <template>
   <header class="fixed inset-x-0 top-0 z-50 flex justify-center align-middle">
     <div
-      class="w-98 max-w-110 text-ellipsis rounded-b-2xl bg-stone-400/40 pb-4 pl-8 pr-4 pt-8 text-center drop-shadow-md backdrop-blur"
+      class="w-98 max-w-110 rounded-b-2xl bg-stone-400/40 pt-8 pr-4 pb-4 pl-8 text-center text-ellipsis drop-shadow-md backdrop-blur"
     >
-      <h1 class="text-5xl font-extrabold tabular-nums text-neutral-50">
+      <h1 class="text-5xl font-extrabold text-neutral-50 tabular-nums">
         {{ dayFormat }}
       </h1>
-      <h1 class="mt-4 text-5xl font-extrabold tabular-nums text-neutral-50">
+      <h1 class="mt-4 text-5xl font-extrabold text-neutral-50 tabular-nums">
         {{ timeFormat }}
       </h1>
     </div>
@@ -23,7 +23,7 @@
         v-for="(imageId, idx) in activeItems"
         v-show="idx === 0"
         :key="imageId"
-        class="absolute left-1/2 top-1/2 flex h-dvh w-dvw -translate-x-1/2 -translate-y-1/2 items-center justify-center p-2"
+        class="absolute top-1/2 left-1/2 flex h-dvh w-dvw -translate-x-1/2 -translate-y-1/2 items-center justify-center p-2"
       >
         <PolaroidModal
           :image="images[imageId]"
@@ -38,7 +38,7 @@
     class="fixed inset-x-0 bottom-0 z-50 flex justify-center align-middle"
   >
     <div
-      class="w-98 max-w-110 text-ellipsis rounded-t-2xl bg-stone-400/40 pb-4 pl-8 pr-4 pt-8 text-center drop-shadow-md backdrop-blur"
+      class="w-98 max-w-110 rounded-t-2xl bg-stone-400/40 pt-8 pr-4 pb-4 pl-8 text-center text-ellipsis drop-shadow-md backdrop-blur"
     >
       <p class="text-4xl font-bold text-neutral-50">
         {{ weatherForecast.feelsLikeTemperature }}&deg;C
@@ -54,12 +54,17 @@
 import {
   type Direction,
   type Image,
-  type WeatherForecast,
+  openobserveRum,
   PolaroidModal,
+  type WeatherForecast,
 } from '@homescreen/web-common-components';
-import { computed, ref, watch } from 'vue';
+import { computed, onBeforeMount, ref, watch } from 'vue';
 import { useDateFormat, useIntervalFn, useNow } from '@vueuse/core';
 import FullscreenMainLoader from '@/slideshows/fullscreen/FullscreenMainLoader.vue';
+
+onBeforeMount(() => {
+  openobserveRum.startView('FullscreenSlideshow');
+});
 
 const props = withDefaults(
   defineProps<{
@@ -88,7 +93,6 @@ const nextId = ref<Image['id']>();
 
 watch(hasImages, (val, last) => {
   if (val && val !== last) {
-    console.log('Update start images');
     currentId.value = Object.keys(props.images)[index.value];
     nextId.value = Object.keys(props.images)[(index.value + 1) % length.value];
   }
@@ -100,7 +104,6 @@ const { pause, resume } = useIntervalFn(() => {
     currentId.value = Object.keys(props.images)[index.value];
     nextId.value = Object.keys(props.images)[(index.value + 1) % length.value];
   }
-  console.log('Next image', index.value, currentId.value, nextId.value);
 }, props.intervalSeconds * 1000);
 
 const activeItems = computed(() =>

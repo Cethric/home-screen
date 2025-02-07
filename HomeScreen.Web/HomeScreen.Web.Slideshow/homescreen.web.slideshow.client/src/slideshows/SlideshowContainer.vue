@@ -1,5 +1,5 @@
 <template>
-  <Suspense v-if="isReady">
+  <template v-if="isReady">
     <component
       :is="currentSlideshow"
       :count="currentCount"
@@ -8,11 +8,7 @@
       :total="currentTotal"
       :weather-forecast="forecast"
     />
-
-    <template #fallback>
-      <FullscreenMainLoader />
-    </template>
-  </Suspense>
+  </template>
   <FullscreenMainLoader v-else />
 </template>
 
@@ -22,10 +18,19 @@ import {
   Directions,
   type Image,
   injectComponentMediaClient,
+  type MediaItem,
+  openobserveRum,
   transformMediaItemToImage,
   type WeatherForecast,
 } from '@homescreen/web-common-components';
-import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue';
+import {
+  computed,
+  nextTick,
+  onBeforeUnmount,
+  onMounted,
+  ref,
+  toValue,
+} from 'vue';
 import FullscreenMainLoader from '@/slideshows/fullscreen/FullscreenMainLoader.vue';
 import { useNProgress } from '@vueuse/integrations';
 import { useAsyncState, useIntervalFn } from '@vueuse/core';
@@ -60,6 +65,10 @@ const mediaApi = injectComponentMediaClient();
 const { execute, isReady } = useAsyncState(
   async (signal?: AbortSignal) => {
     console.log(`Loading ${currentTotal.value} images`);
+    openobserveRum.addAction('change-view', {
+      total: toValue(currentTotal),
+      slideshow: toValue(props.activeSlideshow),
+    });
     isLoading.value = true;
     progress.value = 0.0;
 
@@ -67,8 +76,21 @@ const { execute, isReady } = useAsyncState(
       images.value = [];
     });
     let loaded = 0;
-    const media = mediaApi.random(currentTotal.value, signal);
+    openobserveRum.addTiming('media-loaded');
+    let media: AsyncGenerator<MediaItem | undefined> =
+      (async function* () {})();
+    try {
+      media = mediaApi.random(currentTotal.value, signal);
+    } catch (e) {
+      console.error('Failed to load images', e);
+      openobserveRum.addError(e, {
+        total: toValue(currentTotal),
+        slideshow: toValue(currentSlideshow),
+      });
+    }
+    openobserveRum.addTiming('media-loaded');
 
+    openobserveRum.addTiming('media-processed');
     for await (const item of media) {
       signal?.throwIfAborted();
       if (item && item.id !== undefined) {
@@ -90,12 +112,15 @@ const { execute, isReady } = useAsyncState(
           console.log('Removed image', removed);
         }
         await nextTick(() => {
-          images.value.push(transformMediaItemToImage(item));
+          images.value.push(transformMediaItemToImage(item as MediaItem));
           ++loaded;
           progress.value = loaded / currentTotal.value;
         });
       }
     }
+    openobserveRum.addTiming('media-processed');
+    console.log('loaded images', toValue(images));
+
     isLoading.value = false;
   },
   undefined,

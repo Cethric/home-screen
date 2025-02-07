@@ -33,13 +33,15 @@ builder.Services.AddSingleton(
 // Add services to the container.
 builder.Services.AddGrpc(options => { options.EnableDetailedErrors = true; });
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddControllers()
+builder
+    .Services.AddControllers()
     .AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
-builder.Services.ConfigureHttpJsonOptions(
-    options => { options.SerializerOptions.Converters.Add(new JsonStringEnumConverter()); }
+builder.Services.ConfigureHttpJsonOptions(options =>
+    {
+        options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    }
 );
-builder.Services.AddOpenApiDocument(
-    document =>
+builder.Services.AddOpenApiDocument(document =>
     {
         document.Title = "Home Screen Media API";
         document.Description = "";
@@ -60,13 +62,9 @@ builder.Services.AddOpenApiDocument(
             )
         );
         document.OperationProcessors.Add(
-            new OperationProcessor(
-                context =>
+            new OperationProcessor(context =>
                 {
-                    if (context.MethodInfo.Name != "DownloadMedia")
-                    {
-                        return true;
-                    }
+                    if (context.MethodInfo.Name != "DownloadMedia") return true;
 
                     context.OperationDescription.Operation.Produces.Clear();
                     context.OperationDescription.Operation.Produces =
@@ -79,8 +77,10 @@ builder.Services.AddOpenApiDocument(
                     ];
                     // context.OperationDescription.Operation.Responses.Clear();
 
-                    context.Document.Definitions.Add(nameof(FileStreamHttpResult),
-                        new JsonSchema { Type = JsonObjectType.File, Format = "binary" });
+                    context.Document.Definitions.Add(
+                        nameof(FileStreamHttpResult),
+                        new JsonSchema { Type = JsonObjectType.File, Format = "binary" }
+                    );
 
                     var response = new OpenApiResponse
                     {
@@ -92,7 +92,6 @@ builder.Services.AddOpenApiDocument(
                     };
                     response.Content.Clear();
                     foreach (var operation in context.OperationDescription.Operation.Produces)
-                    {
                         response.Content.Add(
                             operation,
                             new OpenApiMediaType
@@ -104,7 +103,6 @@ builder.Services.AddOpenApiDocument(
                                 }
                             }
                         );
-                    }
 
                     context.OperationDescription.Operation.Responses.Add("200", response);
 
@@ -131,6 +129,7 @@ app.MapGet(
         "Communication with gRPC endpoints must be made through a gRPC client. To learn how to create a client, visit: https://go.microsoft.com/fwlink/?linkid=2086909"
 );
 
-app.Services.GetRequiredService<ILogger<Program>>()
+app
+    .Services.GetRequiredService<ILogger<Program>>()
     .LogInformation("Launching version: {Version}", GitVersionInformation.InformationalVersion);
 await app.RunAsync();

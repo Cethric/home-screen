@@ -19,9 +19,9 @@ public class MediaService(ILogger<MediaService> logger, IMediaApi mediaApi) : Me
         activity?.AddBaggage("Count", request.Count.ToString());
         logger.LogDebug("Requested random media: {Count}", request.Count);
         await foreach (var mediaEntry in mediaApi.GetRandomMedia(request.Count, context.CancellationToken))
-        {
             await responseStream.WriteAsync(mediaEntry, context.CancellationToken);
-        }
+
+        logger.LogDebug("Random media request complete: {Count}", request.Count);
     }
 
     public override async Task<MediaEntry> ToggleMedia(ToggleMediaRequest request, ServerCallContext context)
@@ -30,9 +30,7 @@ public class MediaService(ILogger<MediaService> logger, IMediaApi mediaApi) : Me
         activity?.AddBaggage("Id", request.Id);
         logger.LogDebug("Requested toggle media: {Id}", request.Id);
         if (!Guid.TryParse(request.Id, out var id))
-        {
             throw new RpcException(new Status(StatusCode.InvalidArgument, "The provided id is invalid."));
-        }
 
         return await mediaApi.ToggleMedia(id, request.Enabled, context.CancellationToken);
     }
@@ -50,9 +48,7 @@ public class MediaService(ILogger<MediaService> logger, IMediaApi mediaApi) : Me
         activity?.AddBaggage("MediaFormat", request.MediaFormat.ToString());
         logger.LogDebug("Requested transform media: {Id}", request.Id);
         if (!Guid.TryParse(request.Id, out var id))
-        {
             throw new RpcException(new Status(StatusCode.InvalidArgument, "The provided id is invalid."));
-        }
 
         var response = await mediaApi.TransformMedia(
             id,
@@ -83,12 +79,10 @@ public class MediaService(ILogger<MediaService> logger, IMediaApi mediaApi) : Me
                            request.Length,
                            context.CancellationToken
                        ))
-        {
             await responseStream.WriteAsync(
                 new PaginateMediaResponse { Entry = mediaEntry, Total = totalMedia },
                 context.CancellationToken
             );
-        }
     }
 
     private static TransformMediaState TransformStateToTransformMediaState(TransformState response)

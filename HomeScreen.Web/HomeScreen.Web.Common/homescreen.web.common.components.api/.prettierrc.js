@@ -1,5 +1,5 @@
-import config from '@homescreen/prettier-config' with { type: "json" };;
+import config from '@homescreen/prettier-config' with { type: 'json' };
 
 export default {
-  ...config
+    ...config,
 };

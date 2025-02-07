@@ -1,7 +1,7 @@
 <template>
   <div
     ref="element"
-    class="flex flex-row flex-wrap items-center justify-center gap-2 overflow-y-auto overflow-x-clip"
+    class="flex flex-row flex-wrap items-center justify-center gap-2 overflow-x-clip overflow-y-auto"
   >
     <GalleryImage v-for="image in images" :key="image.id" :image="image" />
   </div>
