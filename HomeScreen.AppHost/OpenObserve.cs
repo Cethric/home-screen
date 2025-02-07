@@ -4,20 +4,20 @@ public class OpenObserveResource(string name, ParameterResource user, ParameterR
     : ContainerResource(name), IResourceWithConnectionString
 {
     public const string ConnectionGrpcEndpoint = "grpc";
-    public const string ConnectionHttpEndpoint = "http";
+public const string ConnectionHttpEndpoint = "http";
 
-    private EndpointReference? _endpoint;
+private EndpointReference? _endpoint;
 
-    public ParameterResource UserParameter { get; } = user;
-    public ParameterResource PasswordParameter { get; } = password;
+public ParameterResource UserParameter { get; } = user;
+public ParameterResource PasswordParameter { get; } = password;
 
-    public EndpointReference EndpointReference => _endpoint ??= new EndpointReference(this, "http");
+public EndpointReference EndpointReference => _endpoint ??= new EndpointReference(this, "http");
 
-    public ReferenceExpression ConnectionStringExpression => ReferenceExpression.Create(
-        $"Endpoint={EndpointReference.Property(EndpointProperty.IPV4Host)}:{EndpointReference.Property(EndpointProperty.Port)}" +
-        $";Username={UserParameter}" +
-        $";Password={PasswordParameter}"
-    );
+public ReferenceExpression ConnectionStringExpression => ReferenceExpression.Create(
+    $"Endpoint={EndpointReference.Property(EndpointProperty.IPV4Host)}:{EndpointReference.Property(EndpointProperty.Port)}" +
+    $";Username={UserParameter}" +
+    $";Password={PasswordParameter}"
+);
 }
 
 public static class OpenObserve
