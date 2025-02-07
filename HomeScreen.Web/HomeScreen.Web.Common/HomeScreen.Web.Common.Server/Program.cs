@@ -142,7 +142,8 @@ static void ProcessRandomMediaMime(OperationProcessorContext context)
     {
         Schema = new JsonSchema
         {
-            Type = JsonObjectType.Object, Reference = context.Document.Definitions["MediaItem"]
+            Type = JsonObjectType.Object,
+            Reference = context.Document.Definitions["MediaItem"]
         }
     };
     response.Content.Clear();
@@ -153,7 +154,8 @@ static void ProcessRandomMediaMime(OperationProcessorContext context)
             {
                 Schema = new JsonSchema
                 {
-                    Type = JsonObjectType.Object, Reference = context.Document.Definitions["MediaItem"]
+                    Type = JsonObjectType.Object,
+                    Reference = context.Document.Definitions["MediaItem"]
                 }
             }
         );
@@ -179,7 +181,8 @@ static void ProcessFileMime(OperationProcessorContext context)
     {
         Schema = new JsonSchema
         {
-            Type = JsonObjectType.File, Reference = context.Document.Definitions["FileStreamHttpResult"]
+            Type = JsonObjectType.File,
+            Reference = context.Document.Definitions["FileStreamHttpResult"]
         }
     };
     response.Content.Clear();
@@ -190,7 +193,8 @@ static void ProcessFileMime(OperationProcessorContext context)
             {
                 Schema = new JsonSchema
                 {
-                    Type = JsonObjectType.File, Reference = context.Document.Definitions["FileStreamHttpResult"]
+                    Type = JsonObjectType.File,
+                    Reference = context.Document.Definitions["FileStreamHttpResult"]
                 }
             }
         );
