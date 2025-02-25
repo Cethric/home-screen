@@ -10,7 +10,7 @@
       "rollForward": false
     },
     "aspirate": {
-      "version": "8.0.7",
+      "version": "9.0.2",
       "commands": [
         "aspirate"
       ],
@@ -24,7 +24,7 @@
       "rollForward": false
     },
     "dotnet-ef": {
-      "version": "9.0.1",
+      "version": "9.0.2",
       "commands": [
         "dotnet-ef"
       ],

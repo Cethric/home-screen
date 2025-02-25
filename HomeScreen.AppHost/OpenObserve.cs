@@ -1,3 +1,6 @@
+using System.Text;
+using Microsoft.Extensions.Hosting;
+
 namespace HomeScreen.AppHost;
 
 public class OpenObserveResource(string name, ParameterResource user, ParameterResource password)
@@ -11,7 +14,7 @@ public class OpenObserveResource(string name, ParameterResource user, ParameterR
     public ParameterResource UserParameter { get; } = user;
     public ParameterResource PasswordParameter { get; } = password;
 
-    public EndpointReference EndpointReference => _endpoint ??= new EndpointReference(this, "http");
+    public EndpointReference EndpointReference => _endpoint ??= new EndpointReference(this, ConnectionHttpEndpoint);
 
     public ReferenceExpression ConnectionStringExpression => ReferenceExpression.Create(
         $"Endpoint={EndpointReference.Property(EndpointProperty.IPV4Host)}:{EndpointReference.Property(EndpointProperty.Port)}" +
@@ -22,6 +25,13 @@ public class OpenObserveResource(string name, ParameterResource user, ParameterR
 
 public static class OpenObserve
 {
+    private const string OtelServiceNameAnnotation = "otel-service-name";
+    private const string OtelServiceInstanceIdAnnotation = "otel-service-instance-id";
+    
+    private const string DashboardOtlpGrpcUrlVariableName = "DOTNET_DASHBOARD_OTLP_ENDPOINT_URL";
+    private const string DashboardOtlpHttpUrlVariableName = "DOTNET_DASHBOARD_OTLP_HTTP_ENDPOINT_URL";
+    private const string DashboardOtlpUrlDefaultValue = "http://host.docker.internal:18889";
+
     public static IResourceBuilder<OpenObserveResource> AddOpenObserve(
         this IDistributedApplicationBuilder builder,
         [ResourceName] string name,
@@ -50,8 +60,18 @@ public static class OpenObserve
             .WithImage("zinclabs/openobserve")
             .WithImageRegistry("public.ecr.aws")
             .WithImageTag("latest-simd")
-            .WithHttpEndpoint(port, 5080, OpenObserveResource.ConnectionHttpEndpoint)
-            .WithEndpoint(targetPort: 5081, scheme: "http", name: OpenObserveResource.ConnectionGrpcEndpoint)
+            .WithHttpEndpoint(
+                port,
+                targetPort: 5080,
+                env: "ZO_HTTP_PORT",
+                name: OpenObserveResource.ConnectionHttpEndpoint
+            )
+            .WithEndpoint(
+                targetPort: 5081,
+                env: "ZO_GRPC_PORT",
+                scheme: "http",
+                name: OpenObserveResource.ConnectionGrpcEndpoint
+            )
             .WithEnvironment(context =>
                 {
                     context.EnvironmentVariables["ZO_ROOT_USER_EMAIL"] = resource.UserParameter;
@@ -74,4 +94,100 @@ public static class OpenObserve
             .WithEnvironment("ZO_LOCAL_MODE", "true")
             .WithEnvironment("ZO_LOCAL_MODE_STORAGE", "disk")
             .WithVolume("/data");
+
+    private static void AddOtlpEnvironment(
+        IResource resource,
+        IHostEnvironment environment,
+        IResourceBuilder<OpenObserveResource> otelCollector
+    )
+    {
+        // Configure OpenTelemetry in projects using environment variables.
+        // https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/configuration/sdk-environment-variables.md
+
+        resource.Annotations.Add(
+            new EnvironmentCallbackAnnotation(context =>
+                {
+                    if (context.ExecutionContext.IsPublishMode)
+                        // REVIEW:  Do we want to set references to an imaginary otlp provider as a requirement?
+                        return;
+
+                    var dashboardOtlpGrpcUrl =
+                        otelCollector.Resource.GetEndpoint(OpenObserveResource.ConnectionGrpcEndpoint);
+                    var dashboardOtlpHttpUrl =
+                        otelCollector.Resource.GetEndpoint(OtelCollectorResource.OtelCollectorHttpEndpoint);
+
+                    // The dashboard can support OTLP/gRPC and OTLP/HTTP endpoints at the same time, but it can
+                    // only tell resources about one of the endpoints via environment variables.
+                    // If both OTLP/gRPC and OTLP/HTTP are available then prefer gRPC.
+                    if (string.IsNullOrWhiteSpace(dashboardOtlpGrpcUrl.Url) is false)
+                        SetOtelEndpointAndProtocol(context.EnvironmentVariables, dashboardOtlpGrpcUrl.Url, "grpc");
+                    else if (string.IsNullOrWhiteSpace(dashboardOtlpHttpUrl.Url) is false)
+                        SetOtelEndpointAndProtocol(
+                            context.EnvironmentVariables,
+                            dashboardOtlpHttpUrl.Url,
+                            "http/protobuf"
+                        );
+                    else
+                        // No endpoints provided to host. Use default value for URL.
+                        SetOtelEndpointAndProtocol(context.EnvironmentVariables, DashboardOtlpUrlDefaultValue, "grpc");
+
+                    context.EnvironmentVariables["OTEL_RESOURCE_ATTRIBUTES"] =
+                        $"service.instance.id={{{{- index .Annotations \"{OtelServiceInstanceIdAnnotation}\" -}}}}";
+                    context.EnvironmentVariables["OTEL_SERVICE_NAME"] =
+                        $"{{{{- index .Annotations \"{OtelServiceNameAnnotation}\" -}}}}";
+
+                    var passwordString =
+                        $"{otelCollector.Resource.UserParameter}:{otelCollector.Resource.PasswordParameter}";
+                    context.EnvironmentVariables["OTEL_EXPORTER_OTLP_HEADERS"] =
+                        $"Authorization=Bearer ${Convert.ToBase64String(Encoding.UTF8.GetBytes(passwordString))}";
+
+                    var bearer = Convert.ToBase64String(
+                        Encoding.UTF8.GetBytes(
+                            $"{otelCollector.Resource.UserParameter.Value}:{otelCollector.Resource.PasswordParameter.Value}"
+                        )
+                    );
+                    context.EnvironmentVariables["OTEL_EXPORTER_OTLP_HEADERS"] = $"Authorization=Bearer {bearer}";
+
+                    // Configure OTLP to quickly provide all data with a small delay in development.
+                    if (environment.IsDevelopment())
+                    {
+                        // Set a small batch schedule delay in development.
+                        // This reduces the delay that OTLP exporter waits to sends telemetry and makes the dashboard telemetry pages responsive.
+                        const string value = "1000"; // milliseconds
+                        context.EnvironmentVariables["OTEL_BLRP_SCHEDULE_DELAY"] = value;
+                        context.EnvironmentVariables["OTEL_BSP_SCHEDULE_DELAY"] = value;
+                        context.EnvironmentVariables["OTEL_METRIC_EXPORT_INTERVAL"] = value;
+
+                        // Configure trace sampler to send all traces to the dashboard.
+                        context.EnvironmentVariables["OTEL_TRACES_SAMPLER"] = "always_on";
+                        // Configure metrics to include exemplars.
+                        context.EnvironmentVariables["OTEL_METRICS_EXEMPLAR_FILTER"] = "trace_based";
+                    }
+                }
+            )
+        );
+        return;
+
+        static void SetOtelEndpointAndProtocol(
+            Dictionary<string, object> environmentVariables,
+            string url,
+            string protocol
+        )
+        {
+            environmentVariables["OTEL_EXPORTER_OTLP_ENDPOINT"] = new HostUrl(url);
+            environmentVariables["OTEL_EXPORTER_OTLP_PROTOCOL"] = protocol;
+        }
+    }
+
+    public static IResourceBuilder<T> WithOpenObserve<T>(
+        this IResourceBuilder<T> builder,
+        IResourceBuilder<OpenObserveResource> openObserve,
+        string? connectionName = null
+    ) where T : IResourceWithEnvironment
+    {
+        ArgumentNullException.ThrowIfNull(openObserve.Resource);
+        builder.WithReference(openObserve, connectionName);
+        AddOtlpEnvironment(builder.Resource, builder.ApplicationBuilder.Environment, openObserve);
+        return builder;
+    }
 }

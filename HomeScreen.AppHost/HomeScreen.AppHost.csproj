@@ -22,7 +22,7 @@
         <PackageReference Include="Aspire.Hosting.AppHost" Version="9.0.0"/>
         <PackageReference Include="Aspire.Hosting.Redis" Version="9.0.0"/>
         <PackageReference Include="Aspire.Hosting.SqlServer" Version="9.0.0"/>
-        <PackageReference Include="System.Text.Json" Version="9.0.1"/>
+        <PackageReference Include="System.Text.Json" Version="9.0.2" />
         <PackageReference Include="YamlDotNet" Version="16.3.0"/>
     </ItemGroup>
     <ItemGroup>
@@ -33,10 +33,5 @@
         <ProjectReference Include="..\HomeScreen.Web\HomeScreen.Web.Common\HomeScreen.Web.Common.Server\HomeScreen.Web.Common.Server.csproj"/>
         <ProjectReference Include="..\HomeScreen.Web\HomeScreen.Web.Dashboard\HomeScreen.Web.Dashboard.Server\HomeScreen.Web.Dashboard.Server.csproj"/>
         <ProjectReference Include="..\HomeScreen.Web\HomeScreen.Web.Slideshow\HomeScreen.Web.Slideshow.Server\HomeScreen.Web.Slideshow.Server.csproj"/>
-    </ItemGroup>
-    <ItemGroup>
-        <None Update="config.yaml">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
     </ItemGroup>
 </Project>

@@ -170,7 +170,7 @@ public static class OtelCollector
                     ? "otlphttp/aspire"
                     : "otlp/aspire";
 
-                var endpoint = openObserve.Resource.EndpointReference;
+                var endpoint = openObserve.GetEndpoint("http");
                 var host = endpoint.ContainerHost;
                 var port = await endpoint.Property(EndpointProperty.Port).GetValueAsync(ctx.CancellationToken);
 

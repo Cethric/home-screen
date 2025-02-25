@@ -28,7 +28,7 @@
         </PackageReference>
         <PackageReference Include="Grpc.AspNetCore" Version="2.67.0"/>
         <PackageReference Include="Microsoft.AspNetCore.SpaProxy">
-            <Version>9.0.1</Version>
+            <Version>9.0.2</Version>
         </PackageReference>
         <PackageReference Include="NSwag.MSBuild" Version="14.2.0">
             <PrivateAssets>all</PrivateAssets>

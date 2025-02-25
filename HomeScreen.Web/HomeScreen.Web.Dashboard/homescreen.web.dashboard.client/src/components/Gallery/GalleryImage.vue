@@ -6,11 +6,7 @@
 </template>
 
 <script lang="ts" setup>
-import {
-  type Image,
-  PolaroidModal,
-  useImageAspectSize,
-} from '@homescreen/web-common-components';
+import { type Image, PolaroidModal } from '@homescreen/web-common-components';
 import { computed, ref, toValue, watch } from 'vue';
 import {
   type MaybeElement,
@@ -42,22 +38,9 @@ watch(polaroidSize.height, (value) => {
   }
 });
 
-const size = useImageAspectSize({
-  image: props.image,
-  size: { width: 500, height: 500 },
-  minSize: { width: 0, height: 0 },
-});
-const aspectSize = computed(() => {
-  const { width, height } = toValue(size);
-  return { width: `${width + 16}px`, height: `${height + 75}px` };
-});
 const styledSize = computed(() => {
-  let { width, height } = toValue(aspectSize);
-  const { width: pWidth, height: pHeight } = toValue(polaroidImageSize);
-  if (pWidth.trim().length > 0 && pHeight.trim().length > 0) {
-    width = pWidth;
-    height = pHeight;
-  }
+  const { width, height } = toValue(polaroidImageSize);
+
   return {
     minWidth: width,
     minHeight: height,
