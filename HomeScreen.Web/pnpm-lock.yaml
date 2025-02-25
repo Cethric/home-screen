@@ -237,8 +237,8 @@ importers:
         version: 0.8.1
     devDependencies:
       '@hey-api/openapi-ts':
-        specifier: file:/Users/rogan/Development/openapi-ts/packages/openapi-ts/hey-api-openapi-ts-0.64.14.tgz
-        version: file:../../../Development/openapi-ts/packages/openapi-ts/hey-api-openapi-ts-0.64.14.tgz(typescript@5.7.3)
+        specifier: ^0.64.5
+        version: 0.64.5(typescript@5.7.3)
       '@homescreen/eslint-config':
         specifier: workspace:*
         version: link:../../HomeScreen.Web.Config/HomeScreen.Web.Config.Eslint
@@ -1101,9 +1101,8 @@ packages:
     resolution: {integrity: sha512-F6LSkttZcT/XiX3ydeDqTY3uRN3BLJMwyMTk4kg/ichZlKUp3+3Odv0WokSmXGSoZGTW/N66FROMYAm5NPdJlA==}
     engines: {node: '>= 16'}
 
-  '@hey-api/openapi-ts@file:../../../Development/openapi-ts/packages/openapi-ts/hey-api-openapi-ts-0.64.14.tgz':
-    resolution: {integrity: sha512-e2sM8K2wRnTt89qgdks5fGEFLRegi6CrMZP6Q77HSSqjxP6z+OtwNsivqY40fcpQ5RqkyUs7BI9tAbBkd+Pizw==, tarball: file:../../../Development/openapi-ts/packages/openapi-ts/hey-api-openapi-ts-0.64.14.tgz}
-    version: 0.64.14
+  '@hey-api/openapi-ts@0.64.5':
+    resolution: {integrity: sha512-Vl6QQbkb+TXPG/ihobCPj/13KFJPfnjTVljno+T18L2ywL8cRHDFYqi5356ktBixBuwK2cSJvKzxYR6TIMq+AA==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=22.11.0}
     hasBin: true
     peerDependencies:
@@ -2834,10 +2833,6 @@ packages:
     resolution: {integrity: sha512-7VT13fmjotKpGipCW9JEQAusEPE+Ei8nl6/g4FBAmIm0GOOLMua9NDDo/DWp0ZAxCr3cPq5ZpBqmPAQgDda2Pw==}
     engines: {node: '>= 8.10.0'}
 
-  chokidar@4.0.1:
-    resolution: {integrity: sha512-n8enUVCED/KVRQlab1hr3MVpcVMvxtZjmEa956u+4YijlmQED223XMSYj2tLuKvr4jcCTzNNMpQDUer72MMmzA==}
-    engines: {node: '>= 14.16.0'}
-
   chokidar@4.0.3:
     resolution: {integrity: sha512-Qgzu8kfBvo+cA4962jnP1KkS6Dop5NS6g7R5LFYJr4b8Ub94PPQXUksCw9PvXoeXPRRddRNC5C1JQUR2SMGtnA==}
     engines: {node: '>= 14.16.0'}
@@ -4466,10 +4461,6 @@ packages:
     resolution: {integrity: sha512-hOS089on8RduqdbhvQ5Z37A0ESjsqz6qnRcffsMU3495FuTdqSm+7bhJ29JvIOsBDEEnan5DPu9t3To9VRlMzA==}
     engines: {node: '>=8.10.0'}
 
-  readdirp@4.0.2:
-    resolution: {integrity: sha512-yDMz9g+VaZkqBYS/ozoBJwaBhTbZo3UNYQHNRw1D3UFQB8oHB4uS/tAODO+ZLjGWmUbKnIlOWO+aaIiAxrUWHA==}
-    engines: {node: '>= 14.16.0'}
-
   readdirp@4.1.2:
     resolution: {integrity: sha512-GDhwkLfywWL2s6vEjyhri+eXmfH6j1L7JE27WhqLeYzoh/A3DBaYGEj2H/HFZCn/kMfim73FXxEJTw06WtxQwg==}
     engines: {node: '>= 14.18.0'}
@@ -5942,7 +5933,7 @@ snapshots:
       '@types/json-schema': 7.0.15
       js-yaml: 4.1.0
 
-  '@hey-api/openapi-ts@file:../../../Development/openapi-ts/packages/openapi-ts/hey-api-openapi-ts-0.64.14.tgz(typescript@5.7.3)':
+  '@hey-api/openapi-ts@0.64.5(typescript@5.7.3)':
     dependencies:
       '@hey-api/json-schema-ref-parser': 1.0.2
       c12: 2.0.1
@@ -8600,7 +8591,7 @@ snapshots:
 
   c12@2.0.1:
     dependencies:
-      chokidar: 4.0.1
+      chokidar: 4.0.3
       confbox: 0.1.8
       defu: 6.1.4
       dotenv: 16.4.5
@@ -8695,14 +8686,9 @@ snapshots:
       fsevents: 2.3.3
     optional: true
 
-  chokidar@4.0.1:
-    dependencies:
-      readdirp: 4.0.2
-
   chokidar@4.0.3:
     dependencies:
       readdirp: 4.1.2
-    optional: true
 
   chownr@2.0.0: {}
 
@@ -10301,10 +10287,7 @@ snapshots:
       picomatch: 2.3.1
     optional: true
 
-  readdirp@4.0.2: {}
-
-  readdirp@4.1.2:
-    optional: true
+  readdirp@4.1.2: {}
 
   recast@0.23.9:
     dependencies:

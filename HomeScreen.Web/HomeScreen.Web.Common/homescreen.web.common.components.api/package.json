@@ -13,7 +13,7 @@
     "@hey-api/client-fetch": "^0.8.1"
   },
   "devDependencies": {
-    "@hey-api/openapi-ts": "file:/Users/rogan/Development/openapi-ts/packages/openapi-ts/hey-api-openapi-ts-0.64.14.tgz",
+    "@hey-api/openapi-ts": "^0.64.5",
     "@homescreen/eslint-config": "workspace:*",
     "@homescreen/prettier-config": "workspace:*",
     "@tsconfig/node22": "^22.0.0",
