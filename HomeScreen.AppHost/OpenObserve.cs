@@ -7,27 +7,27 @@ public class OpenObserveResource(string name, ParameterResource user, ParameterR
     : ContainerResource(name), IResourceWithConnectionString
 {
     public const string ConnectionGrpcEndpoint = "grpc";
-    public const string ConnectionHttpEndpoint = "http";
+public const string ConnectionHttpEndpoint = "http";
 
-    private EndpointReference? _endpoint;
+private EndpointReference? _endpoint;
 
-    public ParameterResource UserParameter { get; } = user;
-    public ParameterResource PasswordParameter { get; } = password;
+public ParameterResource UserParameter { get; } = user;
+public ParameterResource PasswordParameter { get; } = password;
 
-    public EndpointReference EndpointReference => _endpoint ??= new EndpointReference(this, ConnectionHttpEndpoint);
+public EndpointReference EndpointReference => _endpoint ??= new EndpointReference(this, ConnectionHttpEndpoint);
 
-    public ReferenceExpression ConnectionStringExpression => ReferenceExpression.Create(
-        $"Endpoint={EndpointReference.Property(EndpointProperty.IPV4Host)}:{EndpointReference.Property(EndpointProperty.Port)}" +
-        $";Username={UserParameter}" +
-        $";Password={PasswordParameter}"
-    );
+public ReferenceExpression ConnectionStringExpression => ReferenceExpression.Create(
+    $"Endpoint={EndpointReference.Property(EndpointProperty.IPV4Host)}:{EndpointReference.Property(EndpointProperty.Port)}" +
+    $";Username={UserParameter}" +
+    $";Password={PasswordParameter}"
+);
 }
 
 public static class OpenObserve
 {
     private const string OtelServiceNameAnnotation = "otel-service-name";
     private const string OtelServiceInstanceIdAnnotation = "otel-service-instance-id";
-    
+
     private const string DashboardOtlpGrpcUrlVariableName = "DOTNET_DASHBOARD_OTLP_ENDPOINT_URL";
     private const string DashboardOtlpHttpUrlVariableName = "DOTNET_DASHBOARD_OTLP_HTTP_ENDPOINT_URL";
     private const string DashboardOtlpUrlDefaultValue = "http://host.docker.internal:18889";
