@@ -42,7 +42,7 @@
     "qrcode": "^1.5.4",
     "seedrandom": "^3.0.5",
     "sortablejs": "^1.15.6",
-    "universal-cookie": "^7.2.2",
+    "universal-cookie": "^8.0.0",
     "uuid": "^11.1.0",
     "vue": "^3.5.13",
     "web-streams-polyfill": "^4.1.0"
