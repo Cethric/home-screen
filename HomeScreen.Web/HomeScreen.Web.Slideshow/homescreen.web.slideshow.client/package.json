@@ -28,7 +28,7 @@
     "@tediousjs/connection-string": "^0.6.0",
     "@vueuse/components": "^12.7.0",
     "@vueuse/core": "^12.7.0",
-    "@vueuse/integrations": "^12.7.0",
+    "@vueuse/integrations": "^13.1.0",
     "@vueuse/motion": "^2.2.6",
     "async-validator": "^4.2.5",
     "change-case": "^5.4.4",
