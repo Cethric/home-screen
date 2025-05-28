@@ -26,7 +26,7 @@
     "@fortawesome/vue-fontawesome": "^3.0.8",
     "@homescreen/web-common-components": "workspace:*",
     "@tediousjs/connection-string": "^0.6.0",
-    "@vueuse/components": "^12.7.0",
+    "@vueuse/components": "^13.3.0",
     "@vueuse/core": "^12.7.0",
     "@vueuse/integrations": "^12.7.0",
     "@vueuse/motion": "^2.2.6",
