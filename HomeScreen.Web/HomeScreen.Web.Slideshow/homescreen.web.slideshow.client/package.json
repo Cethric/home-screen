@@ -78,7 +78,7 @@
     "vite-bundle-visualizer": "^1.2.1",
     "vite-plugin-vue-devtools": "^7.7.2",
     "vitest": "^3.0.7",
-    "vue-tsc": "^2.2.4"
+    "vue-tsc": "^3.0.3"
   },
   "engines": {
     "node": ">=20",
