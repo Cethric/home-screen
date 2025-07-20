@@ -10,8 +10,8 @@
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.7"/>
         <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.7"/>
         <PackageReference Include="System.Linq.Async" Version="6.0.3"/>
-        <PackageReference Include="Magick.NET.Core" Version="14.6.0"/>
-        <PackageReference Include="Magick.NET-Q16-HDRI-AnyCPU" Version="14.6.0"/>
+        <PackageReference Include="Magick.NET.Core" Version="14.7.0" />
+        <PackageReference Include="Magick.NET-Q16-HDRI-AnyCPU" Version="14.7.0" />
         <PackageReference Include="MetadataExtractor" Version="2.9.0-rc2"/>
     </ItemGroup>
 
