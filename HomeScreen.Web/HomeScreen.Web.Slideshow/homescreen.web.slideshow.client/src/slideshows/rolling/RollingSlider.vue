@@ -46,16 +46,16 @@ import {
   type Direction,
   Directions,
   type Image,
-} from '@homescreen/web-common-components';
-import { useElementSize, useRafFn, useWindowSize } from '@vueuse/core';
-import { reactiveTransform } from '@vueuse/motion';
-import { computed, ref, toValue } from 'vue';
+} from "@homescreen/web-common-components";
+import { useElementSize, useRafFn, useWindowSize } from "@vueuse/core";
+import { reactiveTransform } from "@vueuse/motion";
+import { computed, ref, toValue } from "vue";
 import {
   type RollingDirection,
   RollingDirections,
-} from '@/components/properties';
-import { range } from '@/helpers/random';
-import RollingSlide from '@/slideshows/rolling/RollingSlide.vue';
+} from "@/components/properties";
+import { range } from "@/helpers/random";
+import RollingSlide from "@/slideshows/rolling/RollingSlide.vue";
 
 const props = withDefaults(
   defineProps<{

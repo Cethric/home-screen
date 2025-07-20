@@ -26,21 +26,21 @@ import {
   Directions,
   type Image,
   type WeatherForecast,
-} from '@homescreen/web-common-components';
-import { v4 as uuid } from 'uuid';
-import { computed } from 'vue';
-import { DateTimeWeatherComboAsync } from '@/components/DateTimeWeatherComboAsync';
+} from "@homescreen/web-common-components";
+import { v4 as uuid } from "uuid";
+import { computed } from "vue";
+import { DateTimeWeatherComboAsync } from "@/components/DateTimeWeatherComboAsync";
 import {
   DateTimeWeatherComboKinds,
   RollingDirections,
-} from '@/components/properties';
-import { choice } from '@/helpers/random';
-import FullscreenMainLoader from '@/slideshows/fullscreen/FullscreenMainLoader.vue';
-import RollingSlider from '@/slideshows/rolling/RollingSlider.vue';
+} from "@/components/properties";
+import { choice } from "@/helpers/random";
+import FullscreenMainLoader from "@/slideshows/fullscreen/FullscreenMainLoader.vue";
+import RollingSlider from "@/slideshows/rolling/RollingSlider.vue";
 
 const props = withDefaults(
   defineProps<{
-    images: Record<Image['id'], Image>;
+    images: Record<Image["id"], Image>;
     weatherForecast: WeatherForecast;
     direction?: Direction;
     count?: number;

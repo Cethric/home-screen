@@ -20,9 +20,9 @@ import {
   type MediaItem,
   transformMediaItemToImage,
   type WeatherForecast,
-} from '@homescreen/web-common-components';
-import { useAsyncState, useIntervalFn } from '@vueuse/core';
-import { useNProgress } from '@vueuse/integrations';
+} from "@homescreen/web-common-components";
+import { useAsyncState, useIntervalFn } from "@vueuse/core";
+import { useNProgress } from "@vueuse/integrations";
 import {
   computed,
   nextTick,
@@ -30,10 +30,10 @@ import {
   onMounted,
   ref,
   toValue,
-} from 'vue';
-import FullscreenMainLoader from '@/slideshows/fullscreen/FullscreenMainLoader.vue';
-import { useCurrentSlideshow } from '@/slideshows/useCurrentSlideshow';
-import type { Slideshow } from './properties';
+} from "vue";
+import FullscreenMainLoader from "@/slideshows/fullscreen/FullscreenMainLoader.vue";
+import { useCurrentSlideshow } from "@/slideshows/useCurrentSlideshow";
+import type { Slideshow } from "./properties";
 
 const props = defineProps<{
   activeSlideshow: Slideshow;
@@ -45,8 +45,8 @@ const { currentSlideshow, currentTotal, currentCount } = useCurrentSlideshow({
 });
 
 const images = ref<Image[]>([]);
-const imageIds = computed<Record<Image['id'], Image>>(() =>
-  images.value.reduce<Record<Image['id'], Image>>((p, c) => {
+const imageIds = computed<Record<Image["id"], Image>>(() =>
+  images.value.reduce<Record<Image["id"], Image>>((p, c) => {
     p[c.id] = c;
     return p;
   }, {}),
@@ -76,7 +76,7 @@ const { execute, isReady } = useAsyncState(
     try {
       media = mediaApi.random(currentTotal.value, signal);
     } catch (e) {
-      console.error('Failed to load images', e);
+      console.error("Failed to load images", e);
     }
     for await (const item of media) {
       signal?.throwIfAborted();
@@ -87,16 +87,16 @@ const { execute, isReady } = useAsyncState(
         if (duplicateIndex >= 0) {
           if (images.value.length >= currentTotal.value) {
             const removed = images.value.splice(duplicateIndex, 1);
-            console.log('Removed duplicate image', removed);
+            console.log("Removed duplicate image", removed);
           } else {
-            console.warn('Duplicate image found, skipping', item);
+            console.warn("Duplicate image found, skipping", item);
             ++loaded;
             progress.value = loaded / currentTotal.value;
             continue;
           }
         } else if (images.value.length >= currentTotal.value) {
           const removed = images.value.pop();
-          console.log('Removed image', removed);
+          console.log("Removed image", removed);
         }
         await nextTick(() => {
           images.value.push(
@@ -107,7 +107,7 @@ const { execute, isReady } = useAsyncState(
         });
       }
     }
-    console.log('loaded images', toValue(images));
+    console.log("loaded images", toValue(images));
 
     isLoading.value = false;
   },
@@ -120,12 +120,12 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
-  abort.value.abort('Navigated away from page');
+  abort.value.abort("Navigated away from page");
 });
 
 useIntervalFn(
   () => {
-    abort.value.abort('Interval reached');
+    abort.value.abort("Interval reached");
     abort.value = new AbortController();
     execute(0, abort.value.signal);
   },

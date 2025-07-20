@@ -23,13 +23,13 @@
 </template>
 
 <script lang="ts" setup>
-import { type Image, PolaroidModal } from '@homescreen/web-common-components';
-import { useIntervalFn } from '@vueuse/core';
-import { computed, ref } from 'vue';
+import { type Image, PolaroidModal } from "@homescreen/web-common-components";
+import { useIntervalFn } from "@vueuse/core";
+import { computed, ref } from "vue";
 
 const props = withDefaults(
   defineProps<{
-    images: Record<Image['id'], Image>;
+    images: Record<Image["id"], Image>;
     intervalSeconds?: number;
     length: number;
     offset: number;
@@ -48,8 +48,8 @@ const imageIds = computed(() =>
     props.length + props.length * (props.offset - 1),
   ),
 );
-const currentId = ref<Image['id']>(imageIds.value[index.value]);
-const nextId = ref<Image['id']>(
+const currentId = ref<Image["id"]>(imageIds.value[index.value]);
+const nextId = ref<Image["id"]>(
   imageIds.value[(index.value + 1) % props.length],
 );
 
@@ -57,7 +57,7 @@ const { pause, resume } = useIntervalFn(() => {
   index.value = (index.value + 1) % (props.length ?? 1);
   currentId.value = imageIds.value[index.value];
   nextId.value = imageIds.value[(index.value + 1) % props.length];
-  console.log('Next image', index.value, currentId.value, nextId.value);
+  console.log("Next image", index.value, currentId.value, nextId.value);
 }, props.intervalSeconds * 1000);
 
 const activeItems = computed(() =>

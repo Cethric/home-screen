@@ -65,7 +65,16 @@
         </ModalDialog>
       </template>
     </ModalDialog>
-    <div v-else class="aspect-(--imageAspect) h-auto rounded-md object-contain drop-shadow-md" :style="{'--imageAspect': image.aspectRatio, maxWidth: `${size}px`, minWidth: `${size}px`, width: `${size}px`}" />
+    <div
+      v-else
+      class="aspect-(--imageAspect) h-auto rounded-md object-contain drop-shadow-md"
+      :style="{
+        '--imageAspect': image.aspectRatio,
+        maxWidth: `${size}px`,
+        minWidth: `${size}px`,
+        width: `${size}px`,
+      }"
+    />
   </div>
 </template>
 
@@ -78,9 +87,9 @@ import {
   LeafletMapAsync,
   ModalDialog,
   PolaroidCard,
-} from '@homescreen/web-common-components';
-import { useElementVisibility } from '@vueuse/core';
-import { ref, toValue } from 'vue';
+} from "@homescreen/web-common-components";
+import { useElementVisibility } from "@vueuse/core";
+import { ref, toValue } from "vue";
 
 const props = defineProps<{
   image: Image;

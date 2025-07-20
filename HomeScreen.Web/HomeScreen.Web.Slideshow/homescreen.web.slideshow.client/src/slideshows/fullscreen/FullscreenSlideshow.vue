@@ -57,16 +57,16 @@ import {
   type Image,
   PolaroidModal,
   type WeatherForecast,
-} from '@homescreen/web-common-components';
-import { useDateFormat, useIntervalFn, useNow } from '@vueuse/core';
-import { computed, ref, watch } from 'vue';
-import FullscreenMainLoader from '@/slideshows/fullscreen/FullscreenMainLoader.vue';
+} from "@homescreen/web-common-components";
+import { useDateFormat, useIntervalFn, useNow } from "@vueuse/core";
+import { computed, ref, watch } from "vue";
+import FullscreenMainLoader from "@/slideshows/fullscreen/FullscreenMainLoader.vue";
 
 const size = window.innerWidth * devicePixelRatio;
 
 const props = withDefaults(
   defineProps<{
-    images: Record<Image['id'], Image>;
+    images: Record<Image["id"], Image>;
     intervalSeconds?: number;
     weatherForecast: WeatherForecast;
     direction?: Direction;
@@ -82,12 +82,12 @@ const length = computed(() => Object.keys(props.images).length);
 const hasImages = computed(() => length.value > 4);
 
 const now = useNow();
-const timeFormat = useDateFormat(now, 'HH:mm');
-const dayFormat = useDateFormat(now, 'MMMM Do YYYY');
+const timeFormat = useDateFormat(now, "HH:mm");
+const dayFormat = useDateFormat(now, "MMMM Do YYYY");
 
 const index = ref<number>(0);
-const currentId = ref<Image['id']>();
-const nextId = ref<Image['id']>();
+const currentId = ref<Image["id"]>();
+const nextId = ref<Image["id"]>();
 
 watch(hasImages, (val, last) => {
   if (val && val !== last) {

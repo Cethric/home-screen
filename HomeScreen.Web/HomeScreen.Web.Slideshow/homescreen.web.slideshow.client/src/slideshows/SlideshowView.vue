@@ -15,15 +15,15 @@
 </template>
 
 <script async lang="ts" setup>
-import { faHome } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { useBrowserLocation, useIntervalFn } from '@vueuse/core';
-import { ref } from 'vue';
-import { injectConfig } from '@/domain/client/config';
-import { loadWeather } from '@/domain/client/weather';
-import { choice } from '@/helpers/random';
-import { type Slideshow, Slideshows } from '@/slideshows/properties';
-import SlideshowContainer from '@/slideshows/SlideshowContainer.vue';
+import { faHome } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { useBrowserLocation, useIntervalFn } from "@vueuse/core";
+import { ref } from "vue";
+import { injectConfig } from "@/domain/client/config";
+import { loadWeather } from "@/domain/client/weather";
+import { choice } from "@/helpers/random";
+import { type Slideshow, Slideshows } from "@/slideshows/properties";
+import SlideshowContainer from "@/slideshows/SlideshowContainer.vue";
 
 const location = useBrowserLocation({});
 const activeSlideshow = ref<Slideshow>(choice(Object.values(Slideshows)));
@@ -32,13 +32,13 @@ const forecast = await loadWeather();
 
 useIntervalFn(
   () => {
-    const path = location.value.pathname?.replace('/', '');
+    const path = location.value.pathname?.replace("/", "");
     if (Object.values(Slideshows).includes(path as Slideshows)) {
       activeSlideshow.value = path as Slideshow;
     } else {
       activeSlideshow.value = choice(Object.values(Slideshows));
     }
-    console.log('Loading slideshow variant', activeSlideshow.value);
+    console.log("Loading slideshow variant", activeSlideshow.value);
   },
   15 * 60 * 1000,
   { immediateCallback: true },

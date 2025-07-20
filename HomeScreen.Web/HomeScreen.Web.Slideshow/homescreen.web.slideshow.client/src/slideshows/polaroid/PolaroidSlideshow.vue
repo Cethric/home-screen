@@ -30,18 +30,18 @@ import {
   type PolaroidImage,
   TransformedPolaroidModal,
   type WeatherForecast,
-} from '@homescreen/web-common-components';
-import { useIntervalFn } from '@vueuse/core';
-import seedrandom from 'seedrandom';
-import { computed, ref, watch } from 'vue';
-import { DateTimeWeatherComboAsync } from '@/components/DateTimeWeatherComboAsync';
-import { DateTimeWeatherComboKinds } from '@/components/properties';
-import { range, rangeRNG } from '@/helpers/random';
-import FullscreenMainLoader from '@/slideshows/fullscreen/FullscreenMainLoader.vue';
+} from "@homescreen/web-common-components";
+import { useIntervalFn } from "@vueuse/core";
+import seedrandom from "seedrandom";
+import { computed, ref, watch } from "vue";
+import { DateTimeWeatherComboAsync } from "@/components/DateTimeWeatherComboAsync";
+import { DateTimeWeatherComboKinds } from "@/components/properties";
+import { range, rangeRNG } from "@/helpers/random";
+import FullscreenMainLoader from "@/slideshows/fullscreen/FullscreenMainLoader.vue";
 
 const props = withDefaults(
   defineProps<{
-    images: Record<Image['id'], Image>;
+    images: Record<Image["id"], Image>;
     intervalSeconds?: number;
     weatherForecast: WeatherForecast;
     direction?: Direction;
@@ -70,7 +70,7 @@ const makeItem = (image: Image) => {
 
 const head = ref<number>(0);
 const tail = ref<number>(0);
-const slice = ref<Image['id'][]>([]);
+const slice = ref<Image["id"][]>([]);
 
 const makeSlice = () => {
   const keys = Object.keys(props.images);
@@ -82,7 +82,7 @@ const makeSlice = () => {
 
 watch(hasImages, (val, last) => {
   if (val && val !== last) {
-    console.log('Update start images');
+    console.log("Update start images");
     const start = range(0, length.value);
     head.value = (start + props.count) % length.value;
     tail.value = start;

@@ -34,8 +34,8 @@ import {
   type Direction,
   Directions,
   type Image,
-} from '@homescreen/web-common-components';
-import RollingSlideModal from '@/slideshows/rolling/RollingSlideModal.vue';
+} from "@homescreen/web-common-components";
+import RollingSlideModal from "@/slideshows/rolling/RollingSlideModal.vue";
 
 defineProps<{
   images: Image[];
