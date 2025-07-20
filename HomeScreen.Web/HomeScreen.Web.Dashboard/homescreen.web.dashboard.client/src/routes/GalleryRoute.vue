@@ -13,11 +13,11 @@ import {
   injectComponentMediaClient,
   type MediaItem,
   transformMediaItemToImage,
-} from '@homescreen/web-common-components';
-import { useInfiniteScroll } from '@vueuse/core';
-import { useNProgress } from '@vueuse/integrations';
-import { ref } from 'vue';
-import GalleryImage from '@/components/Gallery/GalleryImage.vue';
+} from "@homescreen/web-common-components";
+import { useInfiniteScroll } from "@vueuse/core";
+import { useNProgress } from "@vueuse/integrations";
+import { ref } from "vue";
+import GalleryImage from "@/components/Gallery/GalleryImage.vue";
 
 const mediaApi = injectComponentMediaClient();
 const images = ref<Image[]>([]);
@@ -33,7 +33,7 @@ const element = ref<HTMLDivElement | null>(null);
 useInfiniteScroll(
   element,
   async () => {
-    console.log('Loading more images');
+    console.log("Loading more images");
     isLoading.value = true;
     progress.value = 0;
 
@@ -45,7 +45,7 @@ useInfiniteScroll(
         const transformed = transformMediaItemToImage(
           item.mediaItem as Required<MediaItem>,
         );
-        console.log('Loaded image', item.mediaItem, transformed);
+        console.log("Loaded image", item.mediaItem, transformed);
         images.value.push(transformed);
         progress.value = ++loaded / 20;
       }

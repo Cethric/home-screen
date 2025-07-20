@@ -29,8 +29,8 @@
 </template>
 
 <script lang="ts" setup>
-import NavLink from '@/components/Header/NavLink.vue';
-import { injectConfig } from '@/domain/client/config';
+import NavLink from "@/components/Header/NavLink.vue";
+import { injectConfig } from "@/domain/client/config";
 
 const config = injectConfig();
 </script>

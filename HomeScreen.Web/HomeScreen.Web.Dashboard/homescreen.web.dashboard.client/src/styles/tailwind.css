@@ -3,5 +3,5 @@
 
 body,
 #app {
-  @apply bg-gray-900;
+    @apply bg-gray-900;
 }
