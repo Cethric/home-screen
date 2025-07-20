@@ -1,4 +1,4 @@
-﻿using HomeScreen.Service.Media.Common;
+using HomeScreen.Service.Media.Common;
 using HomeScreen.Service.Media.Infrastructure.Media;
 
 namespace HomeScreen.Service.Media;
