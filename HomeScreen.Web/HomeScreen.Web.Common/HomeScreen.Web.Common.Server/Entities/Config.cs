@@ -1,4 +1,4 @@
-﻿namespace HomeScreen.Web.Common.Server.Entities;
+namespace HomeScreen.Web.Common.Server.Entities;
 
 public record Config
 {

@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using HomeScreen.ServiceDefaults;
 using HomeScreen.Web.Common.Server.Entities;
 
@@ -11,12 +11,12 @@ public class ConfigApi(
 {
     private static ActivitySource ActivitySource => new(nameof(ConfigApi));
 
-    public Task<Config> ResolveConfig(CancellationToken cancellationToken = default)
-    {
-        using var activity = ActivitySource.StartActivity();
+public Task<Config> ResolveConfig(CancellationToken cancellationToken = default)
+{
+    using var activity = ActivitySource.StartActivity();
 
-        return Task.FromResult(
-            new Config{}
-        );
-    }
+    return Task.FromResult(
+        new Config { }
+    );
+}
 }
