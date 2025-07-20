@@ -1,5 +1,11 @@
 <template>
-  <div class="card" :class="{'card-side card-lg': direction === Directions.horizontal, 'drop-shadow-lg': !flat}">
+  <div
+    class="card"
+    :class="{
+      'card-side card-lg': direction === Directions.horizontal,
+      'drop-shadow-lg': !flat,
+    }"
+  >
     <figure>
       <HSImage
         :id="image.id"
@@ -24,9 +30,9 @@
 </template>
 
 <script lang="ts" setup>
-import HSImage from '@/components/HSImage/HSImage.vue';
-import { type Direction, Directions } from '@/components/properties';
-import type { Image } from '@/helpers/image';
+import HSImage from "@/components/HSImage/HSImage.vue";
+import { type Direction, Directions } from "@/components/properties";
+import type { Image } from "@/helpers/image";
 
 withDefaults(
   defineProps<{

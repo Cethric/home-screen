@@ -9,9 +9,9 @@
 </template>
 
 <script async setup lang="ts">
-import { MediaTransformOptionsFormat } from '@homescreen/web-common-components-api';
-import { computed } from 'vue';
-import { loadImage } from '@/helpers/computedMedia.ts';
+import { MediaTransformOptionsFormat } from "@homescreen/web-common-components-api";
+import { computed } from "vue";
+import { loadImage } from "@/helpers/computedMedia.ts";
 
 const props = defineProps<{
   id: string;
@@ -31,15 +31,15 @@ const srcset = await loadImage(
 const type = computed(() => {
   switch (props.format) {
     case MediaTransformOptionsFormat.JPEG:
-      return 'image/jpeg';
+      return "image/jpeg";
     case MediaTransformOptionsFormat.JPEG_XL:
-      return 'image/jxl';
+      return "image/jxl";
     case MediaTransformOptionsFormat.WEB_P:
-      return 'image/webp';
+      return "image/webp";
     case MediaTransformOptionsFormat.AVIF:
-      return 'image/avif';
+      return "image/avif";
     case MediaTransformOptionsFormat.PNG:
-      return 'image/png';
+      return "image/png";
   }
 });
 </script>

@@ -5,7 +5,7 @@
       '--imageAspect': aspectRatio,
       '--color': color,
       maxWidth: `${deviceSize}px`,
-      maxHeight: '85dvh'
+      maxHeight: '85dvh',
     }"
     :class="{ 'rounded-2xl': rounded }"
   >
@@ -67,12 +67,15 @@
           :class="$attrs['class']"
         />
         <template #fallback>
-          <div class="flex items-center justify-center aspect-(--imageAspect) size-auto bg-(--color)" :style="{
-      '--imageAspect': aspectRatio,
-      '--color': color,
-      'width': `${deviceSize}px`,
-      maxHeight: '90dvh'
-      }">
+          <div
+            class="flex items-center justify-center aspect-(--imageAspect) size-auto bg-(--color)"
+            :style="{
+              '--imageAspect': aspectRatio,
+              '--color': color,
+              width: `${deviceSize}px`,
+              maxHeight: '90dvh',
+            }"
+          >
             <LoadingSpinner variant="primary" />
           </div>
         </template>
@@ -82,12 +85,12 @@
 </template>
 
 <script setup lang="ts">
-import { MediaTransformOptionsFormat } from '@homescreen/web-common-components-api';
-import { computed } from 'vue';
-import HSImageImg from '@/components/HSImage/HSImageImg.vue';
-import HSImageSource from '@/components/HSImage/HSImageSource.vue';
-import LoadingSpinner from '@/components/LoadingSpinner/LoadingSpinner.vue';
-import type { Image } from '@/helpers/image';
+import { MediaTransformOptionsFormat } from "@homescreen/web-common-components-api";
+import { computed } from "vue";
+import HSImageImg from "@/components/HSImage/HSImageImg.vue";
+import HSImageSource from "@/components/HSImage/HSImageSource.vue";
+import LoadingSpinner from "@/components/LoadingSpinner/LoadingSpinner.vue";
+import type { Image } from "@/helpers/image";
 
 const props = withDefaults(
   defineProps<Image & { size: number; rounded: boolean }>(),

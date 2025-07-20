@@ -5,8 +5,8 @@
     :style="{
       '--imageAspect': aspectRatio,
       '--color': color,
-      'width': `${size}px`,
-      maxHeight: '85dvh'
+      width: `${size}px`,
+      maxHeight: '85dvh',
     }"
     :alt="alt"
     :src="srcset"
@@ -20,10 +20,10 @@
 </template>
 
 <script async setup lang="ts">
-import { MediaTransformOptionsFormat } from '@homescreen/web-common-components-api';
-import { computed } from 'vue';
-import { loadImage } from '@/helpers/computedMedia.ts';
-import type { Image } from '@/helpers/image';
+import { MediaTransformOptionsFormat } from "@homescreen/web-common-components-api";
+import { computed } from "vue";
+import { loadImage } from "@/helpers/computedMedia.ts";
+import type { Image } from "@/helpers/image";
 
 const props = defineProps<
   Image & {
@@ -47,7 +47,7 @@ const alt = computed(
   () =>
     props.location?.name ||
     (props.dateTime.isValid
-      ? `Taken at ${props.dateTime.toFormat('MMMM Do YYYY HH:mm')}`
-      : ''),
+      ? `Taken at ${props.dateTime.toFormat("MMMM Do YYYY HH:mm")}`
+      : ""),
 );
 </script>

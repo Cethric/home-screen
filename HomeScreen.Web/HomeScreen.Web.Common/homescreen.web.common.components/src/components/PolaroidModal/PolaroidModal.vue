@@ -10,7 +10,11 @@
         class="cursor-pointer bg-neutral"
       >
         <template #title="{ image }">
-          {{ image.dateTime.isValid ? image.dateTime.toFormat('DDDD TTT') : JSON.stringify(image) }}
+          {{
+            image.dateTime.isValid
+              ? image.dateTime.toFormat("DDDD TTT")
+              : JSON.stringify(image)
+          }}
         </template>
         <template #details="{ image }">
           <p class="text-center">
@@ -20,7 +24,7 @@
       </PolaroidCard>
     </template>
     <template #header>
-      <h3 class="text-center">{{ image.dateTime.toFormat('DDDD TTT') }}</h3>
+      <h3 class="text-center">{{ image.dateTime.toFormat("DDDD TTT") }}</h3>
     </template>
     <template #default>
       <ModalDialog>
@@ -47,7 +51,7 @@
           </PolaroidCard>
         </template>
         <template #header>
-          <h3 class="text-center">{{ image.dateTime.toFormat('DDDD TTT') }}</h3>
+          <h3 class="text-center">{{ image.dateTime.toFormat("DDDD TTT") }}</h3>
         </template>
         <template #default>
           <HSImage
@@ -67,12 +71,12 @@
 </template>
 
 <script lang="ts" setup>
-import HSImage from '@/components/HSImage/HSImage.vue';
-import { LeafletMapAsync } from '@/components/LeafletMap/LeafletMapAsync';
-import ModalDialog from '@/components/ModalDialog/ModalDialog.vue';
-import PolaroidCard from '@/components/PolaroidCard/PolaroidCard.vue';
-import { Directions } from '@/components/properties';
-import type { Image } from '@/helpers/image';
+import HSImage from "@/components/HSImage/HSImage.vue";
+import { LeafletMapAsync } from "@/components/LeafletMap/LeafletMapAsync";
+import ModalDialog from "@/components/ModalDialog/ModalDialog.vue";
+import PolaroidCard from "@/components/PolaroidCard/PolaroidCard.vue";
+import { Directions } from "@/components/properties";
+import type { Image } from "@/helpers/image";
 
 withDefaults(
   defineProps<{

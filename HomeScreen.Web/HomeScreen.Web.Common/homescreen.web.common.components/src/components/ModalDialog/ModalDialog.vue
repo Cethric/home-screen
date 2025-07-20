@@ -8,7 +8,10 @@
     >
       <div class="modal-box max-w-fit">
         <form method="dialog">
-          <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" type="submit">
+          <button
+            class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
+            type="submit"
+          >
             <FontAwesomeIcon :icon="faClose" />
             <span class="sr-only">Close Dialog</span>
           </button>
@@ -32,9 +35,9 @@
 </template>
 
 <script lang="ts" setup>
-import { faClose } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { nextTick, ref } from 'vue';
+import { faClose } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { nextTick, ref } from "vue";
 
 const emits = defineEmits<{ show: []; hide: [] }>();
 const isOpen = ref<boolean>(false);
@@ -44,7 +47,7 @@ const openDialog = () => {
   isOpen.value = true;
   nextTick(() => {
     dialog.value?.showModal();
-    emits('show');
+    emits("show");
   });
 };
 

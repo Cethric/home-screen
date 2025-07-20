@@ -3,12 +3,9 @@
     :class="[
       'btn',
       {
-        'btn-neutral':
-          variant === undefined,
-        'btn-primary':
-          variant === Variants.primary,
-        'btn-secondary':
-          variant === Variants.secondary,
+        'btn-neutral': variant === undefined,
+        'btn-primary': variant === Variants.primary,
+        'btn-secondary': variant === Variants.secondary,
       },
     ]"
   >
@@ -17,7 +14,7 @@
 </template>
 
 <script lang="ts" setup>
-import { type Variant, Variants } from '@/components/properties';
+import { type Variant, Variants } from "@/components/properties";
 
 defineProps<{ variant?: Variant }>();
 </script>
