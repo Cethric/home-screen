@@ -14,6 +14,7 @@
     >
       <PolaroidModal
         :image="images[imageId]"
+        :max-size="size"
         @pause="() => pause()"
         @resume="() => resume()"
       />
@@ -22,9 +23,9 @@
 </template>
 
 <script lang="ts" setup>
+import { type Image, PolaroidModal } from '@homescreen/web-common-components';
 import { useIntervalFn } from '@vueuse/core';
 import { computed, ref } from 'vue';
-import { type Image, PolaroidModal } from '@homescreen/web-common-components';
 
 const props = withDefaults(
   defineProps<{
@@ -37,6 +38,8 @@ const props = withDefaults(
     intervalSeconds: 24,
   },
 );
+
+const size = window.innerWidth - 300;
 
 const index = ref<number>(0);
 const imageIds = computed(() =>

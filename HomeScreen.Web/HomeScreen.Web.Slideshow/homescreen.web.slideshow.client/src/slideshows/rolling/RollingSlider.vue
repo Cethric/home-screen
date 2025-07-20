@@ -13,7 +13,7 @@
     :style="{ transform }"
   >
     <RollingSlide
-      :key="`first-${imageSize.width}-${imageSize.height}`"
+      :key="`first-${imageSize}`"
       :direction="direction"
       :image-size="imageSize"
       :images="images.slice(0, images.length)"
@@ -22,7 +22,7 @@
     />
 
     <RollingSlide
-      :key="`second-${imageSize.width}-${imageSize.height}`"
+      :key="`second-${imageSize}`"
       :direction="direction"
       :image-size="imageSize"
       :images="images"
@@ -31,7 +31,7 @@
     />
 
     <RollingSlide
-      :key="`third-${imageSize.width}-${imageSize.height}`"
+      :key="`third-${imageSize}`"
       :direction="direction"
       :image-size="imageSize"
       :images="images.slice(images.length)"
@@ -47,13 +47,13 @@ import {
   Directions,
   type Image,
 } from '@homescreen/web-common-components';
+import { useElementSize, useRafFn, useWindowSize } from '@vueuse/core';
+import { reactiveTransform } from '@vueuse/motion';
+import { computed, ref, toValue } from 'vue';
 import {
   type RollingDirection,
   RollingDirections,
 } from '@/components/properties';
-import { computed, ref, toValue } from 'vue';
-import { useElementSize, useRafFn, useWindowSize } from '@vueuse/core';
-import { reactiveTransform } from '@vueuse/motion';
 import { range } from '@/helpers/random';
 import RollingSlide from '@/slideshows/rolling/RollingSlide.vue';
 
@@ -124,18 +124,6 @@ const { pause, resume } = useRafFn(
 const windowSize = useWindowSize();
 const imageSize = computed(() => {
   const windowWidth = toValue(windowSize.width);
-  const windowHeight = toValue(windowSize.height);
-  return {
-    width: Math.trunc(
-      props.direction === Directions.vertical
-        ? (windowWidth / props.count) * 0.95
-        : (windowHeight / props.count) * 0.95,
-    ),
-    height: Math.trunc(
-      props.direction === Directions.vertical
-        ? (windowWidth / props.count) * 0.95
-        : (windowHeight / props.count) * 0.45,
-    ),
-  };
+  return (windowWidth / props.count) * 0.95;
 });
 </script>

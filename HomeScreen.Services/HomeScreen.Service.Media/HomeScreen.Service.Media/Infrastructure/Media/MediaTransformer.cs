@@ -4,9 +4,10 @@ using ImageMagick;
 
 namespace HomeScreen.Service.Media.Infrastructure.Media;
 
-public class MediaTransformer(ILogger<MediaTransformer> logger, IMediaPaths mediaPaths) : IMediaTransformer
+public class MediaTransformer(ILogger<MediaTransformer> logger, IMediaTransformPath mediaTransformPath)
+    : IMediaTransformer
 {
-    private static ActivitySource ActivitySource => new(nameof(MediaHasher));
+    private static ActivitySource ActivitySource => new(nameof(MediaTransformer));
 
     public async Task<FileInfo> GetTransformedMedia(
         Database.MediaDb.Entities.MediaEntry mediaEntry,
@@ -15,7 +16,7 @@ public class MediaTransformer(ILogger<MediaTransformer> logger, IMediaPaths medi
     )
     {
         using var activity = ActivitySource.StartActivity();
-        var transformedInfo = mediaPaths.GetCachePath(options, mediaEntry.OriginalHash);
+        var transformedInfo = mediaTransformPath.GetCachePath(options, mediaEntry.OriginalHash);
         activity?.AddBaggage("MediaId", mediaEntry.MediaId.ToString("D"));
         activity?.AddBaggage("OriginalFile", mediaEntry.OriginalFile);
         activity?.AddBaggage("TransformedName", transformedInfo.FullName);
@@ -62,7 +63,7 @@ public class MediaTransformer(ILogger<MediaTransformer> logger, IMediaPaths medi
         image.Alpha(AlphaOption.Remove);
         image.Thumbnail(uint.Max(50, options.Width / 3), uint.Max(50, options.Height / 3));
         image.MedianFilter(4);
-        image.Blur(0, 5);
+        image.Blur(4, 5);
         image.Resize(options.Width, options.Height);
         logger.LogTrace(
             "Blurred Image {TransformPath} to size {Width}x{Height} - requested {RequestedWidth}x{RequestedHeight}",
@@ -77,7 +78,7 @@ public class MediaTransformer(ILogger<MediaTransformer> logger, IMediaPaths medi
     private void TransformImage(MagickImage image, FileInfo transformedInfo, MediaTransformOptions options)
     {
         using var activity = ActivitySource.StartActivity();
-        image.FilterType = options is { Width: < 150 } or { Height: < 150 } ? FilterType.Box : FilterType.CubicSpline;
+        image.FilterType = options is { Width: < 150 } or { Height: < 150 } ? FilterType.Box : FilterType.MagicKernelSharp2021;
 
         logger.LogTrace(
             "Resizing Image {TransformPath} to max size {Width}x{Height}",
@@ -91,6 +92,7 @@ public class MediaTransformer(ILogger<MediaTransformer> logger, IMediaPaths medi
         image.ColorSpace = ColorSpace.Rec709YCbCr;
         image.ColorType = ColorType.TrueColor;
         image.Quality = 95;
+        image.Density = new Density(120, DensityUnit.PixelsPerInch);
         image.Enhance();
         image.SetAttribute("hdr:write-gain-map", true);
         image.SetProfile(ColorProfile.ColorMatchRGB, ColorTransformMode.HighRes);

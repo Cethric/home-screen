@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using HomeScreen.Service.Weather;
 using HomeScreen.Service.Weather.Generated.Clients;
 using HomeScreen.Service.Weather.Generated.Entities;
@@ -7,9 +8,13 @@ using HomeScreen.ServiceDefaults;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults(GitVersionInformation.InformationalVersion);
+builder
+    .Services.AddControllers()
+    .AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
 // Add services to the container.
 builder.Services.AddGrpc();
+builder.Services.AddGrpcHealthChecks();
 
 builder.Services.AddHttpClient("OpenMeteoClient");
 builder.Services.AddScoped<IOpenMeteoClient, OpenMeteoClient>(sp =>
@@ -21,8 +26,11 @@ var app = builder.Build();
 
 app.MapDefaultEndpoints();
 
+app.UseHttpsRedirection();
+
 // Configure the HTTP request pipeline.
 app.MapGrpcService<WeatherService>();
+app.MapGrpcHealthChecksService();
 app.MapGet(
     "/",
     () =>

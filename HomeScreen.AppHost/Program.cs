@@ -1,4 +1,3 @@
-using HomeScreen.AppHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Projects;
@@ -19,27 +18,20 @@ var commonAddress = builder.AddParameter("CommonAddress");
 var dashboardAddress = builder.AddParameter("DashboardAddress");
 var slideshowAddress = builder.AddParameter("SlideshowAddress");
 
-var openObserveEmail = builder.AddParameter("OpenObserveEmail");
-var openObservePassword = builder.AddParameter("OpenObservePassword", true);
-
-var openObserve = builder.AddOpenObserve("OpenObserve", openObserveEmail, openObservePassword).WithDataVolume();
-
 var redis = builder
     .AddRedis("homescreen-redis")
+    .WithOtlpExporter()
     .WithImageTag("latest")
-    .WithOpenObserve(openObserve)
-    .WaitFor(openObserve)
     .WithDataVolume()
     .WithPersistence();
 
 var sqlServer = builder
     .AddSqlServer("homescreen-sqlserver", mssqlPassword)
+    .WithOtlpExporter()
     .WithImageTag("2022-latest")
     .WithImageRegistry("mcr.microsoft.com")
     .WithImage("mssql/server")
     .WithContainerRuntimeArgs("--cap-add=SYS_PTRACE", "--platform=linux/amd64")
-    .WithOpenObserve(openObserve)
-    .WaitFor(openObserve)
     .WithDataVolume();
 
 var mediaDb = sqlServer.AddDatabase("homescreen-media");
@@ -47,17 +39,15 @@ var dashboardDb = sqlServer.AddDatabase("homescreen-dashboard");
 
 var mediaMigration = builder
     .AddProject<HomeScreen_Database_MediaDb_Migrations>("homescreen-media-migrations")
+    .WithOtlpExporter()
     .WithReference(mediaDb)
-    .WithOpenObserve(openObserve)
-    .WaitFor(openObserve)
     .WaitFor(mediaDb);
 
 var location = builder
     .AddProject<HomeScreen_Service_Location>("homescreen-service-location")
+    .WithOtlpExporter()
     .AsHttp2Service()
     .WithReference(redis)
-    .WithOpenObserve(openObserve)
-    .WaitFor(openObserve)
     .WaitFor(redis)
     .WithEnvironment("MappingService", mappingService)
     .WithEnvironment("AZURE_MAPS_SUBSCRIPTION_KEY", mapsKey)
@@ -66,12 +56,24 @@ var location = builder
 
 var media = builder
     .AddProject<HomeScreen_Service_Media>("homescreen-service-media")
+    .WithOtlpExporter()
     .AsHttp2Service()
     .WithReference(redis)
     .WithReference(mediaDb)
+    .WaitFor(redis)
+    .WaitFor(mediaDb)
+    .WaitForCompletion(mediaMigration)
+    .WithEnvironment("MediaSourceDir", mediaSource)
+    .WithEnvironment("MediaCacheDir", mediaCache)
+    .WithAnnotation(new ContainerMountAnnotation("cache", "/cache", ContainerMountType.Volume, false))
+    .WithAnnotation(new ContainerMountAnnotation("media", "/media", ContainerMountType.Volume, true));
+
+var mediaWorker = builder
+    .AddProject<HomeScreen_Service_Media_Worker>("homescreen-service-media-worker")
+    .WithOtlpExporter()
+    .WithReference(redis)
+    .WithReference(mediaDb)
     .WithReference(location)
-    .WithOpenObserve(openObserve)
-    .WaitFor(openObserve)
     .WaitFor(redis)
     .WaitFor(mediaDb)
     .WaitFor(location)
@@ -83,51 +85,49 @@ var media = builder
 
 var weather = builder
     .AddProject<HomeScreen_Service_Weather>("homescreen-service-weather")
+    .WithOtlpExporter()
     .AsHttp2Service()
     .WithReference(redis)
-    .WithOpenObserve(openObserve)
-    .WaitFor(openObserve)
     .WaitFor(redis);
 
 var common = builder
     .AddProject<HomeScreen_Web_Common_Server>("homescreen-web-common-server")
+    .WithOtlpExporter()
     .AsHttp2Service()
     .WithReference(redis)
     .WithReference(weather)
     .WithReference(media)
-    .WithReference(openObserve)
-    .WithOpenObserve(openObserve)
-    .WaitFor(openObserve)
-    .WaitFor(openObserve)
     .WaitFor(media)
+    .WaitFor(mediaWorker)
     .WaitFor(weather)
-    .WaitFor(redis);
+    .WaitFor(redis)
+    .WithHttpHealthCheck("/alive");
 
 var dashboard = builder
     .AddProject<HomeScreen_Web_Dashboard_Server>("homescreen-web-dashboard-server")
+    .WithOtlpExporter()
     .AsHttp2Service()
     .WithReference(redis)
     .WithReference(dashboardDb)
     .WithReference(common)
-    .WithOpenObserve(openObserve)
-    .WaitFor(openObserve)
     .WaitFor(redis)
     .WaitFor(dashboardDb)
     .WaitFor(common)
     .WithEnvironment("CommonAddress", commonAddress)
-    .WithEnvironment("SlideshowAddress", slideshowAddress);
+    .WithEnvironment("SlideshowAddress", slideshowAddress)
+    .WithHttpHealthCheck("/alive");
 
 var slideshow = builder
     .AddProject<HomeScreen_Web_Slideshow_Server>("homescreen-web-slideshow-server")
+    .WithOtlpExporter()
     .AsHttp2Service()
     .WithReference(redis)
     .WithReference(common)
-    .WithOpenObserve(openObserve)
-    .WaitFor(openObserve)
     .WaitFor(redis)
     .WaitFor(common)
     .WithEnvironment("CommonAddress", commonAddress)
-    .WithEnvironment("DashboardAddress", dashboardAddress);
+    .WithEnvironment("DashboardAddress", dashboardAddress)
+    .WithHttpHealthCheck("/alive");
 
 slideshow.WithReference(dashboard);
 dashboard.WithReference(slideshow);

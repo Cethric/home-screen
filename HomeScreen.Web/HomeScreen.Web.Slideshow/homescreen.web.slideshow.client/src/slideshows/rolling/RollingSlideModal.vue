@@ -23,7 +23,7 @@
           :enabled="image.enabled"
           :portrait="image.portrait"
           :rounded="false"
-          :size="256"
+          :size="size / 2"
           class="hover:shadow-inner active:drop-shadow-lg"
           v-bind="props"
         />
@@ -65,13 +65,12 @@
         </ModalDialog>
       </template>
     </ModalDialog>
-    <div v-else class="hidden-box rounded-md object-contain drop-shadow-md" />
+    <div v-else class="aspect-(--imageAspect) h-auto rounded-md object-contain drop-shadow-md" :style="{'--imageAspect': image.aspectRatio, maxWidth: `${size}px`, minWidth: `${size}px`, width: `${size}px`}" />
   </div>
 </template>
 
 <script async lang="ts" setup>
 import {
-  type ComputedMediaSize,
   type Direction,
   Directions,
   HSImage,
@@ -81,37 +80,20 @@ import {
   PolaroidCard,
 } from '@homescreen/web-common-components';
 import { useElementVisibility } from '@vueuse/core';
-import { computed, ref, toValue } from 'vue';
+import { ref, toValue } from 'vue';
 
 const props = defineProps<{
   image: Image;
   direction: Direction;
-  imageSize: ComputedMediaSize;
+  imageSize: number;
 }>();
 
 const emits = defineEmits<{ pause: []; resume: [] }>();
 
 const sliderModal = ref<HTMLElement>();
 const isVisible = useElementVisibility(sliderModal, {
-  threshold: [1e-1],
+  threshold: 1,
 });
 
-const size =
-  props.direction === Directions.horizontal
-    ? toValue(props.imageSize).height
-    : toValue(props.imageSize).width;
-
-const imageWidth = computed(
-  () => size * (props.image.portrait ? 1 : props.image.aspectRatio),
-);
-const imageHeight = computed(
-  () => size * (props.image.portrait ? props.image.aspectRatio : 1),
-);
+const size = toValue(props.imageSize);
 </script>
-
-<style lang="scss" scoped>
-.hidden-box {
-  width: calc(1px * v-bind(imageWidth));
-  height: calc(1px * v-bind(imageHeight));
-}
-</style>

@@ -3,48 +3,38 @@
     <dialog
       v-if="isOpen"
       ref="dialog"
-      class="fixed inset-0 z-50 m-0 h-dvh w-dvw border-none p-0 outline-none open:grid"
+      class="modal"
       @close="() => emits('hide')"
     >
-      <div
-        class="z-50 m-auto flex size-fit flex-col justify-center rounded-2xl bg-neutral-200/45 px-2 drop-shadow-lg backdrop-blur"
-      >
-        <header class="flex flex-row items-center justify-between">
-          <div class="flex grow flex-row items-center justify-start">
-            <slot name="header-start" />
-          </div>
-          <div class="flex grow flex-row items-center justify-center">
-            <slot name="header-center" />
-          </div>
-          <div class="flex grow flex-row items-center justify-end">
-            <slot name="header-end" />
-            <button
-              class="border-none p-2 text-2xl text-stone-800 outline-none hover:border-none hover:text-stone-900 focus:border-none active:text-stone-950"
-              @click="closeDialog"
-            >
-              <FontAwesomeIcon :icon="faClose" />
-              <span class="sr-only">Close Dialog</span>
-            </button>
-          </div>
+      <div class="modal-box max-w-fit">
+        <form method="dialog">
+          <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" type="submit">
+            <FontAwesomeIcon :icon="faClose" />
+            <span class="sr-only">Close Dialog</span>
+          </button>
+        </form>
+        <header>
+          <slot name="header" @click="closeDialog" />
         </header>
-        <main
-          class="max-w-modal flex flex-col items-center justify-center overflow-auto pt-2"
-        >
+        <main>
           <slot name="default" @click="closeDialog" />
         </main>
-        <footer class="flex flex-row pt-2">
+        <footer class="modal-action">
           <slot name="footer" @click="closeDialog" />
         </footer>
       </div>
+      <form method="dialog" class="modal-backdrop">
+        <button type="submit">close</button>
+      </form>
     </dialog>
   </teleport>
   <slot name="activator" @click="openDialog" />
 </template>
 
 <script lang="ts" setup>
-import { nextTick, ref } from 'vue';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { faClose } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { nextTick, ref } from 'vue';
 
 const emits = defineEmits<{ show: []; hide: [] }>();
 const isOpen = ref<boolean>(false);
@@ -65,15 +55,3 @@ const closeDialog = () => {
   });
 };
 </script>
-
-<style lang="css" scoped>
-@reference "../../styles/tailwind.css";
-
-dialog {
-  background: none;
-
-  &::backdrop {
-    @apply bg-stone-900/75 backdrop-blur-sm;
-  }
-}
-</style>

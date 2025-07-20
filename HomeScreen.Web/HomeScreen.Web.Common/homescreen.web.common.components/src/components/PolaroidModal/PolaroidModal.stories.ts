@@ -7,8 +7,12 @@ const meta: Meta<typeof PolaroidModal> = {
   tags: ['autodocs'],
   args: {
     image: picsumImage(800, 600, false, 2),
+    maxSize: 800,
   },
   argTypes: {
+    maxSize: {
+      type: { name: 'number' },
+    },
     image: {
       name: 'object',
       value: {

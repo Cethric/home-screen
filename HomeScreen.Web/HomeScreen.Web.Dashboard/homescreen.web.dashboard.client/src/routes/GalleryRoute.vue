@@ -8,14 +8,15 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue';
 import {
   type Image,
   injectComponentMediaClient,
+  type MediaItem,
   transformMediaItemToImage,
 } from '@homescreen/web-common-components';
-import { useNProgress } from '@vueuse/integrations';
 import { useInfiniteScroll } from '@vueuse/core';
+import { useNProgress } from '@vueuse/integrations';
+import { ref } from 'vue';
 import GalleryImage from '@/components/Gallery/GalleryImage.vue';
 
 const mediaApi = injectComponentMediaClient();
@@ -41,7 +42,9 @@ useInfiniteScroll(
     let loaded = 0;
     for await (const item of media) {
       if (item.mediaItem) {
-        const transformed = transformMediaItemToImage(item.mediaItem);
+        const transformed = transformMediaItemToImage(
+          item.mediaItem as Required<MediaItem>,
+        );
         console.log('Loaded image', item.mediaItem, transformed);
         images.value.push(transformed);
         progress.value = ++loaded / 20;

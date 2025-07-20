@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk.Worker">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <UserSecretsId>dotnet-HomeScreen.Service.Media.Worker-cba40179-78a2-45cf-9d1e-36de0e76eb43</UserSecretsId>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.7"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="GitVersion.MsBuild" Version="6.3.0">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <ProjectReference Include="..\..\..\HomeScreen.Database\HomeScreen.Database.MediaDb\HomeScreen.Database.MediaDb.csproj"/>
+        <ProjectReference Include="..\..\..\HomeScreen.ServiceDefaults\HomeScreen.ServiceDefaults.csproj"/>
+        <ProjectReference Include="..\..\HomeScreen.Service.Location\HomeScreen.Service.Location.Client\HomeScreen.Service.Location.Client.csproj"/>
+        <ProjectReference Include="..\HomeScreen.Service.Media.Common\HomeScreen.Service.Media.Common.csproj" />
+    </ItemGroup>
+</Project>

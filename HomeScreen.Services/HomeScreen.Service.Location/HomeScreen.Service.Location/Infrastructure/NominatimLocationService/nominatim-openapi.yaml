@@ -191,7 +191,7 @@ components:
       type: string
       enum: [ "xml", "json", "jsonv2", "geojson", "geocodejson" ]
     NumberBoolean:
-      type: number
+      type: integer
       format: int32
       enum: [ 0, 1 ]
       minimum: 0

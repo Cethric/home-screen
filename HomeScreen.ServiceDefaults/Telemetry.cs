@@ -50,7 +50,12 @@ public static class Telemetry
             .WithTracing(tracing =>
                 {
                     tracing
-                        .AddAspNetCoreInstrumentation()
+                        .AddAspNetCoreInstrumentation(tracing =>
+                            // Don't trace requests to the health endpoint to avoid filling the dashboard with noise
+                            tracing.Filter = httpContext =>
+                                !(httpContext.Request.Path.StartsWithSegments("/health") ||
+                                  httpContext.Request.Path.StartsWithSegments("/alive"))
+                        )
                         .AddHttpClientInstrumentation()
                         .AddGrpcClientInstrumentation()
                         .AddEntityFrameworkCoreInstrumentation();

@@ -1,18 +1,21 @@
 <template>
   <div
-    class="hs-image aspect-(--imageAspect) drop-shadow-md"
+    class="aspect-(--imageAspect) size-auto bg-(--color) drop-shadow-md"
     :style="{
       '--imageAspect': aspectRatio,
+      '--color': color,
+      maxWidth: `${deviceSize}px`,
+      maxHeight: '85dvh'
     }"
     :class="{ 'rounded-2xl': rounded }"
   >
-    <picture class="flex size-full">
+    <picture>
       <Suspense>
         <HSImageSource
           :id="id"
           :width="imageWidth"
           :height="imageHeight"
-          :format="MediaTransformOptionsFormat.Avif"
+          :format="MediaTransformOptionsFormat.AVIF"
         />
       </Suspense>
       <Suspense>
@@ -20,7 +23,7 @@
           :id="id"
           :width="imageWidth"
           :height="imageHeight"
-          :format="MediaTransformOptionsFormat.JpegXl"
+          :format="MediaTransformOptionsFormat.JPEG_XL"
         />
       </Suspense>
       <Suspense>
@@ -28,7 +31,7 @@
           :id="id"
           :width="imageWidth"
           :height="imageHeight"
-          :format="MediaTransformOptionsFormat.WebP"
+          :format="MediaTransformOptionsFormat.WEB_P"
         />
       </Suspense>
       <Suspense>
@@ -36,7 +39,7 @@
           :id="id"
           :width="imageWidth"
           :height="imageHeight"
-          :format="MediaTransformOptionsFormat.Png"
+          :format="MediaTransformOptionsFormat.PNG"
         />
       </Suspense>
       <Suspense>
@@ -44,13 +47,14 @@
           :id="id"
           :width="imageWidth"
           :height="imageHeight"
-          :format="MediaTransformOptionsFormat.Jpeg"
+          :format="MediaTransformOptionsFormat.JPEG"
         />
       </Suspense>
       <Suspense>
         <HSImageImg
           :width="imageWidth"
           :height="imageHeight"
+          :size="deviceSize"
           :id="id"
           :date-time="dateTime"
           :location="location"
@@ -63,7 +67,14 @@
           :class="$attrs['class']"
         />
         <template #fallback>
-          <LoadingSpinner variant="primary" />
+          <div class="flex items-center justify-center aspect-(--imageAspect) size-auto bg-(--color)" :style="{
+      '--imageAspect': aspectRatio,
+      '--color': color,
+      'width': `${deviceSize}px`,
+      maxHeight: '90dvh'
+      }">
+            <LoadingSpinner variant="primary" />
+          </div>
         </template>
       </Suspense>
     </picture>
@@ -71,12 +82,12 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
 import { MediaTransformOptionsFormat } from '@homescreen/web-common-components-api';
-import { type Image } from '@/helpers/image';
+import { computed } from 'vue';
 import HSImageImg from '@/components/HSImage/HSImageImg.vue';
 import HSImageSource from '@/components/HSImage/HSImageSource.vue';
 import LoadingSpinner from '@/components/LoadingSpinner/LoadingSpinner.vue';
+import type { Image } from '@/helpers/image';
 
 const props = withDefaults(
   defineProps<Image & { size: number; rounded: boolean }>(),
@@ -87,6 +98,8 @@ const color = computed(
   () => `rgb(${props.colour.red}, ${props.colour.green}, ${props.colour.blue})`,
 );
 
+const deviceSize = props.size / window.devicePixelRatio;
+
 const imageWidth = computed(
   () => props.size * (props.portrait ? 1 : props.aspectRatio),
 );
@@ -94,17 +107,3 @@ const imageHeight = computed(
   () => props.size * (props.portrait ? props.aspectRatio : 1),
 );
 </script>
-
-<style scoped lang="css">
-.hs-image {
-  max-width: calc(1px * v-bind(imageWidth));
-  max-height: calc(1px * v-bind(imageHeight));
-  min-width: calc(1px * v-bind(imageWidth));
-  min-height: calc(1px * v-bind(imageHeight));
-
-  width: 100%;
-  height: auto;
-
-  background-color: v-bind(color);
-}
-</style>

@@ -1,4 +1,4 @@
 @charset "UTF-8";
 @import "./tailwind.css";
-@import "./animate.css";
 @import "leaflet/dist/leaflet.css";
+@import "animate.css/animate.css";

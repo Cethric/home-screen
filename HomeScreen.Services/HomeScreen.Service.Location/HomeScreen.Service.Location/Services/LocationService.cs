@@ -20,14 +20,14 @@ public class LocationService(
     {
         using var activity = ActivitySource.StartActivity("SearchForLocation", ActivityKind.Client);
         activity?.AddBaggage("request", request.ToString());
-        logger.LogDebug("Searching for location {Latitude}, {Longitude}", request.Latitude, request.Longitude);
+        logger.LogInformation("Searching for location {Latitude}, {Longitude}", request.Latitude, request.Longitude);
 
         var key = $"location-{request.Longitude:.03f}-{request.Latitude:.03f}";
         var label = await distributedCache.GetStringAsync(key, context.CancellationToken);
         if (!string.IsNullOrEmpty(label))
         {
             activity?.AddEvent(new ActivityEvent("Cached Location")).AddBaggage("value", label);
-            logger.LogDebug(
+            logger.LogInformation(
                 "Using cached address for {Longitude}, {Latitude}, {Altitude} - {FormattedAddress}",
                 request.Longitude,
                 request.Latitude,
@@ -47,7 +47,7 @@ public class LocationService(
         if (string.Equals(result, ILocationApi.UnknownLocation, StringComparison.OrdinalIgnoreCase))
         {
             activity?.AddEvent(new ActivityEvent("Unknown Location"));
-            logger.LogDebug(
+            logger.LogInformation(
                 "Unknown location {Latitude}, {Longitude}, {Altitude}",
                 request.Latitude,
                 request.Longitude,
@@ -57,7 +57,7 @@ public class LocationService(
         else
         {
             activity?.AddEvent(new ActivityEvent("Location Found")).AddBaggage("value", result);
-            logger.LogDebug(
+            logger.LogInformation(
                 "Found location {Latitude}, {Longitude}, {Altitude} => {Location}",
                 request.Latitude,
                 request.Longitude,

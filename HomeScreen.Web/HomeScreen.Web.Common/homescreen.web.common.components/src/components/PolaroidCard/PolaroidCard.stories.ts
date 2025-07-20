@@ -1,18 +1,22 @@
 import type { Meta, StoryObj } from '@storybook/vue3';
+import { picsumImage } from '@/stories/helpers';
 import { Directions } from '../properties';
 import PolaroidCard from './PolaroidCard.vue';
-import { picsumImage } from '@/stories/helpers';
 
 const meta: Meta<typeof PolaroidCard> = {
   component: PolaroidCard,
   tags: ['autodocs'],
   args: {
     image: picsumImage(800, 600, false, 2),
+    maxSize: 800,
   },
   argTypes: {
     direction: {
       options: Object.values(Directions),
       type: { name: 'enum', value: Object.values(Directions) },
+    },
+    maxSize: {
+      type: { name: 'number' },
     },
     image: {
       type: {
@@ -61,6 +65,7 @@ export const Portrait: PolaroidCardStory = {
   }),
   args: {
     image: picsumImage(600, 800, true, 2),
+    maxSize: 600,
   },
 };
 
@@ -72,7 +77,7 @@ export const Horizontal: PolaroidCardStory = {
       return { args };
     },
   }),
-  args: { direction: Directions.horizontal },
+  args: { direction: Directions.horizontal, maxSize: 800 },
 };
 
 export const Vertical: PolaroidCardStory = {
@@ -83,5 +88,5 @@ export const Vertical: PolaroidCardStory = {
       return { args };
     },
   }),
-  args: { direction: Directions.vertical },
+  args: { direction: Directions.vertical, maxSize: 800 },
 };

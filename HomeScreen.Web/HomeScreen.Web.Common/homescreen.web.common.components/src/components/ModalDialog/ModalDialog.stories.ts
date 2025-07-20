@@ -13,7 +13,7 @@ type ModalDialogStory = StoryObj<typeof ModalDialog>;
 export const Default: ModalDialogStory = {
   render: (args) => ({
     template:
-      '<ModalDialog v-bind="args"><template #default><p>Hello, World!</p></template><template #activator="props"><button v-bind="props">Activator</button></template></ModalDialog>',
+      '<ModalDialog v-bind="args"><template #header-center>Header Center</template><template #default><p>Hello, World!</p></template><template #activator="props"><button class="btn btn-neutral" v-bind="props">Activator</button></template></ModalDialog>',
     components: { ModalDialog },
     setup() {
       return { args };

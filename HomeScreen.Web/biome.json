@@ -1,0 +1,127 @@
+{
+  "root": true,
+  "$schema": "https://biomejs.dev/schemas/2.1.1/schema.json",
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true,
+    "root": "../.git/"
+  },
+  "files": {
+    "ignoreUnknown": true,
+    "includes": [
+      "HomeScreen.Web.Common/homescreen.web.common.components/src/**/*",
+      "HomeScreen.Web.Common/homescreen.web.common.components.api/src/**/*",
+      "HomeScreen.Web.Dashboard/homescreen.web.dashboard.client/src/**/*",
+      "HomeScreen.Web.Slideshow/homescreen.web.slideshow.client/src/**/*"
+    ],
+    "experimentalScannerIgnores": [
+      "bin",
+      "obj",
+      "dist",
+      "HomeScreen.Web.Slideshow.Server",
+      "HomeScreen.Web.Dashboard.Server",
+      "HomeScreen.Web.Common.Server"
+    ]
+  },
+  "formatter": {
+    "enabled": true,
+    "indentStyle": "space"
+  },
+  "linter": {
+    "enabled": true,
+    "domains": {
+      "vue": "all"
+    },
+    "rules": {
+      "recommended": true
+    }
+  },
+  "javascript": {
+    "formatter": {
+      "quoteStyle": "single"
+    }
+  },
+  "assist": {
+    "enabled": true,
+    "actions": {
+      "source": {
+        "organizeImports": "on"
+      }
+    }
+  },
+  "overrides": [
+    {
+      "includes": ["**/*.vue"],
+      "linter": {
+        "rules": {
+          "correctness": {
+            "noUnusedImports": "off",
+            "noUnusedVariables": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["**/shims-vue.d.ts"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noExplicitAny": "off"
+          },
+          "complexity": {
+            "noBannedTypes": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["**/homescreen-slideshow-api.ts"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noAssignInExpressions": "off",
+            "noExplicitAny": "off"
+          },
+          "style": { "useTemplate": "off" },
+          "complexity": { "useLiteralKeys": "off", "useOptionalChain": "off" },
+          "correctness": {
+            "noUnusedImports": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["**/homescreen-dashboard-api.ts"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noAssignInExpressions": "off",
+            "noExplicitAny": "off"
+          },
+          "style": { "useTemplate": "off" },
+          "complexity": { "useLiteralKeys": "off", "useOptionalChain": "off" },
+          "correctness": {
+            "noUnusedImports": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["**/generated/**/*.ts"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noExplicitAny": "off"
+          },
+          "complexity": {
+            "noUselessSwitchCase": "off"
+          },
+          "style": {
+            "noNonNullAssertion": "off"
+          }
+        }
+      }
+    }
+  ]
+}

@@ -31,7 +31,6 @@
 
 <script lang="ts" setup>
 import {
-  type ComputedMediaSize,
   type Direction,
   Directions,
   type Image,
@@ -41,7 +40,7 @@ import RollingSlideModal from '@/slideshows/rolling/RollingSlideModal.vue';
 defineProps<{
   images: Image[];
   direction: Direction;
-  imageSize: ComputedMediaSize;
+  imageSize: number;
 }>();
 
 const emits = defineEmits<{ pause: []; resume: [] }>();

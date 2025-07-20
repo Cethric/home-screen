@@ -1,5 +1,5 @@
 import { DateTime } from 'luxon';
-import { type Image } from '@/helpers/image';
+import type { Image } from '@/helpers/image';
 
 export const picsumImage = (
   width: number,

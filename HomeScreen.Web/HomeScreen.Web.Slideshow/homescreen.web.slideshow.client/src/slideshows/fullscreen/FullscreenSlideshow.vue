@@ -27,6 +27,7 @@
       >
         <PolaroidModal
           :image="images[imageId]"
+          :max-size="size"
           @pause="() => pause()"
           @resume="() => resume()"
         />
@@ -54,17 +55,14 @@
 import {
   type Direction,
   type Image,
-  openobserveRum,
   PolaroidModal,
   type WeatherForecast,
 } from '@homescreen/web-common-components';
-import { computed, onBeforeMount, ref, watch } from 'vue';
 import { useDateFormat, useIntervalFn, useNow } from '@vueuse/core';
+import { computed, ref, watch } from 'vue';
 import FullscreenMainLoader from '@/slideshows/fullscreen/FullscreenMainLoader.vue';
 
-onBeforeMount(() => {
-  openobserveRum.startView('FullscreenSlideshow');
-});
+const size = window.innerWidth * devicePixelRatio;
 
 const props = withDefaults(
   defineProps<{
@@ -93,6 +91,7 @@ const nextId = ref<Image['id']>();
 
 watch(hasImages, (val, last) => {
   if (val && val !== last) {
+    index.value = 0;
     currentId.value = Object.keys(props.images)[index.value];
     nextId.value = Object.keys(props.images)[(index.value + 1) % length.value];
   }

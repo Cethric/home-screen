@@ -1,7 +1,6 @@
 using System.Text.Json.Serialization;
 using HomeScreen.Database.MediaDb;
 using HomeScreen.Service.Media;
-using HomeScreen.Service.Media.Configuration;
 using HomeScreen.Service.Media.Endpoints;
 using HomeScreen.Service.Media.Entities;
 using HomeScreen.Service.Media.Services;
@@ -19,19 +18,10 @@ builder.AddServiceDefaults(GitVersionInformation.InformationalVersion);
 builder.AddMediaDb();
 builder.AddInfrastructure();
 
-builder.Services.AddSingleton(
-    new MediaDirectories
-    {
-        MediaSourceDir =
-            builder.Configuration.GetValue<string>("MediaSourceDir") ??
-            Path.Combine(Path.GetTempPath(), "DashHome", "Source"),
-        MediaCacheDir = builder.Configuration.GetValue<string>("MediaCacheDir") ??
-                        Path.Combine(Path.GetTempPath(), "DashHome", "Cache")
-    }
-);
-
 // Add services to the container.
 builder.Services.AddGrpc(options => { options.EnableDetailedErrors = true; });
+builder.Services.AddGrpcHealthChecks();
+
 builder.Services.AddEndpointsApiExplorer();
 builder
     .Services.AddControllers()
@@ -123,6 +113,7 @@ app.UseHttpsRedirection();
 // Configure the HTTP request pipeline.
 app.MapControllers();
 app.MapGrpcService<MediaService>();
+app.MapGrpcHealthChecksService();
 app.MapGet(
     "/",
     () =>

@@ -1,10 +1,13 @@
 import { fileURLToPath, URL } from 'node:url';
 import { defineConfig, UserConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
+import tailwind from '@tailwindcss/vite';
 import fs from 'node:fs';
 import { env } from 'node:process';
 import path from 'node:path';
 import child_process from 'node:child_process';
+import vueDevTools from 'vite-plugin-vue-devtools';
+import http2Proxy from '@cpsoinos/vite-plugin-http2-proxy'
 
 const makeServerConfig = (): UserConfig['server'] => {
     let keyFilePath: string | undefined = undefined;
@@ -14,7 +17,7 @@ const makeServerConfig = (): UserConfig['server'] => {
             ? `${env.APPDATA}/ASP.NET/https`
             : `${env.HOME}/.aspnet/dev-certs`;
 
-    const certificateName = 'homescreen.web.slideshow.client';
+    const certificateName = 'homescreen.web.dashboard.client';
     certFilePath = path.join(baseFolder, `${certificateName}.pem`);
     keyFilePath = path.join(baseFolder, `${certificateName}.key`);
 
@@ -68,7 +71,7 @@ const makeServerConfig = (): UserConfig['server'] => {
 // https://vitejs.dev/config/
 export default defineConfig(({ command }) => {
     return {
-        plugins: [vue()],
+        plugins: [vue(), vueDevTools({ launchEditor: 'webstorm' }), tailwind(), http2Proxy({ quiet: true })],
         build: {
             rollupOptions: {
                 output: {

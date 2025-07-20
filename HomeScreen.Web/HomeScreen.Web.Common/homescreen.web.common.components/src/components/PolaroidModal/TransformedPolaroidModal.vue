@@ -8,10 +8,10 @@
     )
     rotate(calc(${item.rotation} * 1deg))`,
     }"
-    class="absolute size-fit"
+    class="absolute"
     @pause="() => emits('pause')"
     @resume="() => emits('resume')"
-    :max-size="600"
+    :max-size="750"
   />
 </template>
 

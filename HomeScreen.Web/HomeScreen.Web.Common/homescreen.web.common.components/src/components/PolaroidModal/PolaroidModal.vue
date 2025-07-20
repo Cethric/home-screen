@@ -7,20 +7,20 @@
         :class="$attrs['class']"
         :style="$attrs['style']"
         :max-size="maxSize"
+        class="cursor-pointer bg-neutral"
       >
+        <template #title="{ image }">
+          {{ image.dateTime.isValid ? image.dateTime.toFormat('DDDD TTT') : JSON.stringify(image) }}
+        </template>
         <template #details="{ image }">
           <p class="text-center">
-            {{ image.dateTime.isValid ? image.dateTime.toFormat('DDDD') : '' }}
-            &nbsp;
-            {{ image.dateTime.isValid ? image.dateTime.toFormat('TTT') : '' }}
+            {{ image.location?.name }}
           </p>
         </template>
       </PolaroidCard>
     </template>
-    <template #header-center>
-      {{ image.dateTime.toFormat('DDDD') }}
-      &nbsp;
-      {{ image.dateTime.toFormat('TTT') }}
+    <template #header>
+      <h3 class="text-center">{{ image.dateTime.toFormat('DDDD TTT') }}</h3>
     </template>
     <template #default>
       <ModalDialog>
@@ -29,24 +29,25 @@
             :direction="Directions.horizontal"
             :flat="true"
             :image="image"
-            :max-size="fullSize"
+            :max-size="size"
             v-bind="props"
           >
+            <template #title="{ image }">
+              {{ image.location?.name }}
+            </template>
             <template #details="{ image }">
               <LeafletMapAsync
                 v-if="image.location?.latitude && image.location?.longitude"
                 :latitude="image.location.latitude"
                 :longitude="image.location.longitude"
-                :tooltip="image.location.name"
+                :tooltip="image.location.name.split(',')[0]"
               />
-              <p v-else>No location recorded {{ JSON.stringify(image) }}</p>
+              <p class="text-center" v-else>No location recorded</p>
             </template>
           </PolaroidCard>
         </template>
-        <template #header-center>
-          {{ image.dateTime.isValid ? image.dateTime.toFormat('DDDD') : '' }}
-          &nbsp;
-          {{ image.dateTime.isValid ? image.dateTime.toFormat('TTT') : '' }}
+        <template #header>
+          <h3 class="text-center">{{ image.dateTime.toFormat('DDDD TTT') }}</h3>
         </template>
         <template #default>
           <HSImage
@@ -66,23 +67,21 @@
 </template>
 
 <script lang="ts" setup>
-import { Directions } from '@/components/properties';
-import { LeafletMapAsync } from '@/components/LeafletMap/LeafletMapAsync';
-import PolaroidCard from '@/components/PolaroidCard/PolaroidCard.vue';
-import ModalDialog from '@/components/ModalDialog/ModalDialog.vue';
-import { type Image } from '@/helpers/image';
 import HSImage from '@/components/HSImage/HSImage.vue';
-import { useImageSize } from '@/helpers/size';
+import { LeafletMapAsync } from '@/components/LeafletMap/LeafletMapAsync';
+import ModalDialog from '@/components/ModalDialog/ModalDialog.vue';
+import PolaroidCard from '@/components/PolaroidCard/PolaroidCard.vue';
+import { Directions } from '@/components/properties';
+import type { Image } from '@/helpers/image';
 
-const props = withDefaults(
+withDefaults(
   defineProps<{
     image: Image;
     maxSize?: number;
   }>(),
-  { maxSize: 0 },
+  { maxSize: 250 },
 );
 const emits = defineEmits<{ resume: []; pause: [] }>();
 
-const { size } = useImageSize({ image: props.image, maxSize: props.maxSize });
-const { size: fullSize } = useImageSize({ image: props.image });
+const size = window.innerWidth * devicePixelRatio;
 </script>

@@ -7,30 +7,28 @@
     "build": "run-p build:clear build:js",
     "build:clear": "rimraf dist/",
     "build:js": "tsc -p tsconfig.json",
-    "generate-api": "openapi-ts --file ./openapi-ts.config.ts"
+    "generate-api": "openapi-ts --file ./openapi-ts.config.ts",
+    "check": "biome check",
+    "check:write": "biome check --write"
   },
-  "dependencies": {
-    "@hey-api/client-fetch": "^0.8.1"
-  },
+  "dependencies": {},
   "devDependencies": {
-    "@hey-api/openapi-ts": "^0.64.5",
-    "@homescreen/eslint-config": "workspace:*",
-    "@homescreen/prettier-config": "workspace:*",
-    "@tsconfig/node22": "^22.0.0",
-    "@types/luxon": "^3.4.2",
-    "@types/node": "^22.13.5",
-    "eslint": "^9.21.0",
-    "luxon": "^3.5.0",
-    "npm-run-all2": "^7.0.2",
-    "prettier": "^3.5.2",
+    "@hey-api/openapi-ts": "^0.78.3",
+    "@tsconfig/node22": "^22.0.2",
+    "@types/luxon": "^3.6.2",
+    "@types/node": "^24.0.13",
+    "globals": "^16.3.0",
+    "luxon": "^3.7.1",
+    "npm-run-all2": "^8.0.4",
     "rimraf": "^6.0.1",
-    "typescript": "^5.7.3",
-    "vue": "^3.5.13",
-    "zod": "^3.24.2"
+    "typescript": "^5.8.3",
+    "vue": "^3.5.17",
+    "zod": "^4.0.5"
   },
   "peerDependencies": {
     "luxon": "^3.5.0",
-    "vue": "^3.5.13"
+    "vue": "^3.5.13",
+    "zod": "^4.0.5"
   },
   "engines": {
     "node": ">=20",

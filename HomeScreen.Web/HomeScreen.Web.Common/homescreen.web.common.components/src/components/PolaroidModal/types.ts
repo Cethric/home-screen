@@ -1,4 +1,4 @@
-import { type Image } from '@/helpers/image';
+import type { Image } from '@/helpers/image';
 
 export interface PolaroidImage {
   image: Image;

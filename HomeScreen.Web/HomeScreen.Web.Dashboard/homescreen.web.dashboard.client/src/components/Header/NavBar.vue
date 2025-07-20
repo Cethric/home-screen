@@ -10,7 +10,7 @@
           Dashboard
         </NavLink>
         <NavLink
-          :to="config.slideshowUrl"
+          :to="config?.slideshowUrl ?? ''"
           active-class="text-stone-200 hover:text-stone-100"
           inactive-class="text-stone-300 hover:text-stone-50"
         >

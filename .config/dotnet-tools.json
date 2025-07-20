@@ -3,28 +3,28 @@
   "isRoot": true,
   "tools": {
     "nswag.consolecore": {
-      "version": "14.2.0",
+      "version": "14.4.0",
       "commands": [
         "nswag"
       ],
       "rollForward": false
     },
     "aspirate": {
-      "version": "9.0.2",
+      "version": "9.1.0",
       "commands": [
         "aspirate"
       ],
       "rollForward": false
     },
     "gitversion.tool": {
-      "version": "6.1.0",
+      "version": "6.3.0",
       "commands": [
         "dotnet-gitversion"
       ],
       "rollForward": false
     },
     "dotnet-ef": {
-      "version": "9.0.2",
+      "version": "9.0.7",
       "commands": [
         "dotnet-ef"
       ],

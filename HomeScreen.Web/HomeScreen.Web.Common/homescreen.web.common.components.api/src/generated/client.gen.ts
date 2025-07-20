@@ -2,11 +2,11 @@
 
 import type { ClientOptions } from './types.gen';
 import {
-    type ClientOptions as DefaultClientOptions,
-    type Config,
-    createClient,
-    createConfig
-} from '@hey-api/client-fetch';
+  type Config,
+  type ClientOptions as DefaultClientOptions,
+  createClient,
+  createConfig,
+} from './client';
 
 /**
  * The `createClientConfig()` function will be called on client initialization
@@ -17,12 +17,12 @@ import {
  * to ensure your client always has the correct values.
  */
 export type CreateClientConfig<T extends DefaultClientOptions = ClientOptions> =
-    (
-        override?: Config<DefaultClientOptions & T>,
-    ) => Config<Required<DefaultClientOptions> & T>;
+  (
+    override?: Config<DefaultClientOptions & T>,
+  ) => Config<Required<DefaultClientOptions> & T>;
 
 export const client = createClient(
-    createConfig<ClientOptions>({
-        baseUrl: 'http://localhost:5298',
-    }),
+  createConfig<ClientOptions>({
+    baseUrl: 'http://localhost:5298',
+  }),
 );

@@ -30,7 +30,7 @@
 
 <script lang="ts" setup>
 import { computed } from 'vue';
-import { type RouterLinkProps } from 'vue-router';
+import type { RouterLinkProps } from 'vue-router';
 
 defineOptions({
   inheritAttrs: false,

@@ -1,5 +1,5 @@
 <template>
-  <div class="size-80">
+  <div class="size-11/12">
     <l-map
       ref="map"
       v-model:zoom="zoom"
@@ -21,7 +21,7 @@
 <script lang="ts" setup>
 import { centroid, point } from '@turf/turf';
 import { LGeoJson, LMap, LTileLayer, LTooltip } from '@vue-leaflet/vue-leaflet';
-import { computed } from 'vue';
+import { computed, toValue } from 'vue';
 
 const zoom = defineModel({ default: 15 });
 const props = defineProps<{
@@ -31,5 +31,5 @@ const props = defineProps<{
 }>();
 
 const location = computed(() => point([props.longitude, props.latitude], {}));
-const centre = computed(() => centroid(location.value));
+const centre = computed(() => centroid(toValue(location)));
 </script>

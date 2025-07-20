@@ -1,18 +1,18 @@
 <template>
   <div ref="galleryImage" class="flex size-auto items-center justify-center">
-    <PolaroidModal v-if="isVisible" ref="polaroidModal" :image="image" />
+    <PolaroidModal v-if="isVisible" ref="polaroidModal" :image="image" :maxSize="450" />
     <div v-else :style="styledSize" />
   </div>
 </template>
 
 <script lang="ts" setup>
 import { type Image, PolaroidModal } from '@homescreen/web-common-components';
-import { computed, ref, toValue, watch } from 'vue';
 import {
   type MaybeElement,
   useElementSize,
   useElementVisibility,
 } from '@vueuse/core';
+import { computed, ref, toValue, watch } from 'vue';
 
 const props = defineProps<{ image: Image }>();
 

@@ -42,3 +42,9 @@ export default meta;
 type HSImageStory = StoryObj<typeof HSImage>;
 
 export const Default: HSImageStory = {};
+
+export const Portrait: HSImageStory = {
+  args: {
+    ...picsumImage(600, 800, true, 8),
+  },
+};

@@ -25,23 +25,18 @@ import {
   type Direction,
   Directions,
   type Image,
-  openobserveRum,
   type WeatherForecast,
 } from '@homescreen/web-common-components';
-import { computed, onBeforeMount } from 'vue';
-import RollingSlider from '@/slideshows/rolling/RollingSlider.vue';
+import { v4 as uuid } from 'uuid';
+import { computed } from 'vue';
+import { DateTimeWeatherComboAsync } from '@/components/DateTimeWeatherComboAsync';
 import {
   DateTimeWeatherComboKinds,
   RollingDirections,
 } from '@/components/properties';
-import { v4 as uuid } from 'uuid';
 import { choice } from '@/helpers/random';
 import FullscreenMainLoader from '@/slideshows/fullscreen/FullscreenMainLoader.vue';
-import { DateTimeWeatherComboAsync } from '@/components/DateTimeWeatherComboAsync';
-
-onBeforeMount(() => {
-  openobserveRum.startView('RollingSlideshow');
-});
+import RollingSlider from '@/slideshows/rolling/RollingSlider.vue';
 
 const props = withDefaults(
   defineProps<{

@@ -95,6 +95,7 @@
       "dictionaryBaseType": "Dictionary",
       "classStyle": "Record",
       "jsonLibrary": "SystemTextJson",
+      "jsonPolymorphicSerializationStyle": "NJsonSchema",
       "generateDefaultValues": true,
       "generateDataAnnotations": true,
       "excludedTypeNames": [],

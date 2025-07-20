@@ -74,11 +74,8 @@ public class MediaService(ILogger<MediaService> logger, IMediaApi mediaApi) : Me
         activity?.AddBaggage("Offset", request.Offset.ToString());
         activity?.AddBaggage("Length", request.Length.ToString());
         logger.LogDebug("Requested media pagination: {Offset}, {Length}", request.Offset, request.Length);
-        await foreach (var (mediaEntry, totalMedia) in mediaApi.GetPaginatedMedia(
-                           request.Offset,
-                           request.Length,
-                           context.CancellationToken
-                       ))
+        var entries = mediaApi.GetPaginatedMedia(request.Offset, request.Length, context.CancellationToken);
+        await foreach (var (mediaEntry, totalMedia) in entries)
             await responseStream.WriteAsync(
                 new PaginateMediaResponse { Entry = mediaEntry, Total = totalMedia },
                 context.CancellationToken

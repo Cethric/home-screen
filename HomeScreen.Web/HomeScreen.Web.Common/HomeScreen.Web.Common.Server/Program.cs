@@ -23,7 +23,6 @@ builder.Services.ConfigureHttpJsonOptions(options =>
     }
 );
 builder.AddServiceDefaults(GitVersionInformation.InformationalVersion);
-builder.AddOpenObserve("OpenObserve");
 
 builder.Services.AddEndpointsApiExplorer();
 builder
@@ -74,6 +73,8 @@ builder.Services.AddGrpcClient<MediaGrpcClient>(
             .FirstOrDefault()!.Value!
     )
 );
+builder.AddGrpcHealthCheck("homescreen-service-media");
+
 builder.Services.AddGrpcClient<WeatherGrpcClient>(
     "homescreen-service-weather",
     c => c.Address = new Uri(
@@ -85,6 +86,8 @@ builder.Services.AddGrpcClient<WeatherGrpcClient>(
             .FirstOrDefault()!.Value!
     )
 );
+builder.AddGrpcHealthCheck("homescreen-service-weather");
+
 builder.Services.AddHttpClient(
     "MediaDownloader",
     client =>
@@ -112,6 +115,7 @@ builder.Services.AddScoped<IConfigApi, ConfigApi>();
 builder.Services.AddCors();
 
 var app = builder.Build();
+app.MapDefaultEndpoints();
 app.RegisterConfigEndpoints();
 app.RegisterMediaEndpoints();
 app.RegisterWeatherEndpoints();

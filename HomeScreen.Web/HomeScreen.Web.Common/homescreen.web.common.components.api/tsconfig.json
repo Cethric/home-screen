@@ -24,7 +24,5 @@
       "DOM.AsyncIterable"
     ]
   },
-  "include": [
-    "src/**/*"
-  ]
+  "include": ["src/**/*"]
 }

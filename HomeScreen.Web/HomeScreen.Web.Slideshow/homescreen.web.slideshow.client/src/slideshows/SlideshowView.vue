@@ -15,15 +15,15 @@
 </template>
 
 <script async lang="ts" setup>
-import SlideshowContainer from '@/slideshows/SlideshowContainer.vue';
+import { faHome } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { useBrowserLocation, useIntervalFn } from '@vueuse/core';
 import { ref } from 'vue';
-import { type Slideshow, Slideshows } from '@/slideshows/properties';
-import { choice } from '@/helpers/random';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { faHome } from '@fortawesome/free-solid-svg-icons';
-import { loadWeather } from '@/domain/client/weather';
 import { injectConfig } from '@/domain/client/config';
+import { loadWeather } from '@/domain/client/weather';
+import { choice } from '@/helpers/random';
+import { type Slideshow, Slideshows } from '@/slideshows/properties';
+import SlideshowContainer from '@/slideshows/SlideshowContainer.vue';
 
 const location = useBrowserLocation({});
 const activeSlideshow = ref<Slideshow>(choice(Object.values(Slideshows)));
@@ -47,6 +47,8 @@ useIntervalFn(
 const config = injectConfig();
 
 const navigateToDashboard = () => {
-  window.location.assign(config.dashboardUrl);
+  if (config?.dashboardUrl) {
+    window.location.assign(config.dashboardUrl);
+  }
 };
 </script>

@@ -13,16 +13,16 @@
 </template>
 
 <script lang="ts" setup>
-import { type Slideshow } from './properties';
 import {
   Directions,
   type Image,
   injectComponentMediaClient,
   type MediaItem,
-  openobserveRum,
   transformMediaItemToImage,
   type WeatherForecast,
 } from '@homescreen/web-common-components';
+import { useAsyncState, useIntervalFn } from '@vueuse/core';
+import { useNProgress } from '@vueuse/integrations';
 import {
   computed,
   nextTick,
@@ -32,9 +32,8 @@ import {
   toValue,
 } from 'vue';
 import FullscreenMainLoader from '@/slideshows/fullscreen/FullscreenMainLoader.vue';
-import { useNProgress } from '@vueuse/integrations';
-import { useAsyncState, useIntervalFn } from '@vueuse/core';
 import { useCurrentSlideshow } from '@/slideshows/useCurrentSlideshow';
+import type { Slideshow } from './properties';
 
 const props = defineProps<{
   activeSlideshow: Slideshow;
@@ -47,10 +46,10 @@ const { currentSlideshow, currentTotal, currentCount } = useCurrentSlideshow({
 
 const images = ref<Image[]>([]);
 const imageIds = computed<Record<Image['id'], Image>>(() =>
-  images.value.reduce(
-    (p: Record<Image['id'], Image>, c: Image) => ({ ...p, [c['id']]: c }),
-    {},
-  ),
+  images.value.reduce<Record<Image['id'], Image>>((p, c) => {
+    p[c.id] = c;
+    return p;
+  }, {}),
 );
 
 const abort = ref<AbortController>(new AbortController());
@@ -65,10 +64,6 @@ const mediaApi = injectComponentMediaClient();
 const { execute, isReady } = useAsyncState(
   async (signal?: AbortSignal) => {
     console.log(`Loading ${currentTotal.value} images`);
-    openobserveRum.addAction('change-view', {
-      total: toValue(currentTotal),
-      slideshow: toValue(props.activeSlideshow),
-    });
     isLoading.value = true;
     progress.value = 0.0;
 
@@ -76,21 +71,13 @@ const { execute, isReady } = useAsyncState(
       images.value = [];
     });
     let loaded = 0;
-    openobserveRum.addTiming('media-loaded');
     let media: AsyncGenerator<MediaItem | undefined> =
       (async function* () {})();
     try {
       media = mediaApi.random(currentTotal.value, signal);
     } catch (e) {
       console.error('Failed to load images', e);
-      openobserveRum.addError(e, {
-        total: toValue(currentTotal),
-        slideshow: toValue(currentSlideshow),
-      });
     }
-    openobserveRum.addTiming('media-loaded');
-
-    openobserveRum.addTiming('media-processed');
     for await (const item of media) {
       signal?.throwIfAborted();
       if (item && item.id !== undefined) {
@@ -112,13 +99,14 @@ const { execute, isReady } = useAsyncState(
           console.log('Removed image', removed);
         }
         await nextTick(() => {
-          images.value.push(transformMediaItemToImage(item as MediaItem));
+          images.value.push(
+            transformMediaItemToImage(item as Required<MediaItem>),
+          );
           ++loaded;
           progress.value = loaded / currentTotal.value;
         });
       }
     }
-    openobserveRum.addTiming('media-processed');
     console.log('loaded images', toValue(images));
 
     isLoading.value = false;

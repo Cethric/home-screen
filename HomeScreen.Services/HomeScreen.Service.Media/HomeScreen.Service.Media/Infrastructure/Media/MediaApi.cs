@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using HomeScreen.Database.MediaDb.Contexts;
 using HomeScreen.Service.Media.Entities;
@@ -6,15 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HomeScreen.Service.Media.Infrastructure.Media;
 
-public class MediaApi(
-    ILogger<MediaApi> logger,
-    IMediaPaths mediaPaths,
-    IMediaHasher mediaHasher,
-    IMediaProcessor mediaProcessor,
-    IMediaTransformer mediaTransformer,
-    IMediaDateTimeProcessor mediaDateTimeProcessor,
-    MediaDbContext context
-) : IMediaApi
+public class MediaApi(ILogger<MediaApi> logger, IMediaTransformer mediaTransformer, MediaDbContext context) : IMediaApi
 {
     private static ActivitySource ActivitySource => new(nameof(MediaApi));
 
@@ -26,34 +18,26 @@ public class MediaApi(
         using var activity = ActivitySource.StartActivity();
         activity?.AddBaggage("Count", count.ToString());
         logger.LogInformation("GetRandomMedia Start {Count}", count);
-        var disabled = context.MediaEntries.Where(entry => !entry.Enabled).Select(entry => entry.OriginalFile);
-        var files = await mediaPaths
-            .GetRawFiles()
-            .ToAsyncEnumerable()
-            .ExceptBy(disabled.ToAsyncEnumerable(), f => f.FullName, cancellationToken: cancellationToken)
-            .SelectAwaitWithCancellation(async (file, cancellation) =>
-                {
-                    var hash = await mediaHasher.HashMedia(file, cancellation);
-                    return (file, hash);
-                }
-            )
-            .ToArrayAsync(cancellationToken)
-            .ConfigureAwait(false);
-        logger.LogInformation("Found {FileCount} total images, randomly selecting {Count} images", files.Length, count);
+        var enabled = await context.MediaEntries.Where(entry => entry.Enabled).ToArrayAsync(cancellationToken);
+        logger.LogInformation(
+            "Found {FileCount} total images, randomly selecting {Count} images",
+            enabled.Length,
+            count
+        );
 
-        if (files.Length == 0)
+        if (enabled.Length == 0)
         {
             logger.LogDebug("GetRandomMedia Exit {Count}", count);
             yield break;
         }
 
-        var randomEntries = EnumerateMedia(
-                Random.Shared.GetItems(files, (int)Math.Min(count, files.Length)),
-                cancellationToken
-            )
-            .ConfigureAwait(false);
-
-        await foreach (var entry in randomEntries) yield return entry;
+        var entries = Random
+            .Shared.GetItems(enabled, (int)Math.Min(count, enabled.LongLength))
+            .Select(TransformMediaEntry);
+        foreach (var entry in entries)
+        {
+            yield return entry;
+        }
 
         logger.LogDebug("GetRandomMedia End {Count}", count);
     }
@@ -125,94 +109,25 @@ public class MediaApi(
         activity?.AddBaggage("Length", requestLength.ToString());
         logger.LogDebug("GetPaginatedMedia Start {Offset}, {Length}", requestOffset, requestLength);
         cancellationToken.ThrowIfCancellationRequested();
-        var rawFiles = await mediaPaths
-            .GetRawFiles()
+
+        var total = await context.MediaEntries.LongCountAsync(cancellationToken);
+
+        var entries = context
+            .MediaEntries.OrderBy(e => e.CapturedUtc)
+            .Skip(requestOffset)
+            .Take(requestLength)
             .ToAsyncEnumerable()
-            .SelectAwaitWithCancellation(async (file, cancellation) =>
-                {
-                    var hash = await mediaHasher.HashMedia(file, cancellation);
-                    var (dateTimeOffset, offset) =
-                        await mediaDateTimeProcessor.MediaCaptureDate(file, hash, cancellation);
-                    var unix = dateTimeOffset.ToOffset(offset).ToUnixTimeMilliseconds();
-                    return (file, hash, unix);
-                }
-            )
-            .OrderBy(item => item.unix)
-            .Select(item => (item.file, item.hash))
-            .ToListAsync(cancellationToken);
-        var total = rawFiles.Count;
-        if (total == 0)
-        {
-            logger.LogDebug("GetPaginatedMedia End {Offset}, {Length}", requestOffset, requestLength);
-            yield break;
-        }
+            .Select(TransformMediaEntry)
+            .AsAsyncEnumerable();
 
-        var files = rawFiles.Skip(requestOffset).Take(requestLength).ToList();
-        if (files.Count == 0)
+        await foreach (var entry in entries.WithCancellation(cancellationToken))
         {
-            logger.LogDebug("GetPaginatedMedia End {Offset}, {Length}", requestOffset, requestLength);
-            yield break;
+            using var enumeratorActivity = ActivitySource.StartActivity();
+            enumeratorActivity?.AddBaggage("Id", entry.Id);
+            yield return (entry, (ulong)total);
         }
-
-        await foreach (var entry in EnumerateMedia(files, cancellationToken))
-            yield return (entry, (ulong)rawFiles.Count);
 
         logger.LogDebug("GetPaginatedMedia End {Offset}, {Length}", requestOffset, requestLength);
-    }
-
-    private async IAsyncEnumerable<MediaEntry> EnumerateMedia(
-        IList<(FileInfo, string)> mediaEntries,
-        [EnumeratorCancellation] CancellationToken cancellationToken
-    )
-    {
-        using var activity = ActivitySource.StartActivity();
-        logger.LogTrace("EnumerateMedia Start");
-        cancellationToken.ThrowIfCancellationRequested();
-
-        if (mediaEntries.Count == 0)
-        {
-            logger.LogTrace("EnumerateMedia End");
-            yield break;
-        }
-
-        var entries = await context
-            .MediaEntries.Where(entry => mediaEntries.Select(media => media.Item2).Contains(entry.OriginalHash))
-            .ToListAsync(cancellationToken)
-            .ConfigureAwait(false);
-        foreach (var entry in entries)
-        {
-            using var enumeratorActivity = ActivitySource.StartActivity();
-            enumeratorActivity?.AddBaggage("FileName", entry.OriginalFile);
-            enumeratorActivity?.AddBaggage("Hash", entry.OriginalHash);
-
-            logger.LogInformation("EnumerateMedia Existing Item {FileName}", entry.OriginalFile);
-            yield return TransformMediaEntry(entry);
-        }
-
-
-        var excludedIDs = new HashSet<string>(entries.Select(p => p.OriginalHash)).ToAsyncEnumerable();
-        var newMediaEntries = mediaEntries
-            .ToAsyncEnumerable()
-            .WhereAwaitWithCancellation(async (entry, cancellation) =>
-                !await excludedIDs.ContainsAsync(entry.Item2, cancellation)
-            )
-            .ConfigureAwait(false);
-
-        await foreach (var (file, hash) in newMediaEntries)
-        {
-            using var enumeratorActivity = ActivitySource.StartActivity();
-            enumeratorActivity?.AddBaggage("FileName", file.FullName);
-            enumeratorActivity?.AddBaggage("Hash", hash);
-
-            var entry = await mediaProcessor.ProcessMediaEntry(file, hash, cancellationToken).ConfigureAwait(false);
-            await context.MediaEntries.AddAsync(entry, cancellationToken).ConfigureAwait(false);
-
-            await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-            logger.LogInformation("EnumerateMedia New Item {FileName}", file.Name);
-            yield return TransformMediaEntry(entry);
-        }
-
-        logger.LogTrace("EnumerateMedia End");
     }
 
     private static MediaEntry TransformMediaEntry(Database.MediaDb.Entities.MediaEntry entry) =>

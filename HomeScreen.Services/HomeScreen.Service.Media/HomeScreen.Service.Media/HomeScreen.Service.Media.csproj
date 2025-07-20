@@ -24,28 +24,29 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="GitVersion.MsBuild" Version="6.1.0">
+        <PackageReference Include="GitVersion.MsBuild" Version="6.3.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Grpc.AspNetCore" Version="2.67.0"/>
-        <PackageReference Include="Magick.NET.Core" Version="14.4.0"/>
-        <PackageReference Include="Magick.NET-Q16-HDRI-AnyCPU" Version="14.4.0"/>
+        <PackageReference Include="Grpc.AspNetCore" Version="2.71.0" />
+        <PackageReference Include="Grpc.AspNetCore.HealthChecks" Version="2.71.0" />
+        <PackageReference Include="Magick.NET.Core" Version="14.6.0" />
+        <PackageReference Include="Magick.NET-Q16-HDRI-AnyCPU" Version="14.6.0" />
         <PackageReference Include="MetadataExtractor" Version="2.9.0-rc2"/>
-        <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="9.0.2" />
-        <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.2" />
-        <PackageReference Include="NSwag.MSBuild" Version="14.2.0">
+        <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="9.0.7" />
+        <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.22.1" />
+        <PackageReference Include="NSwag.MSBuild" Version="14.4.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="System.Linq.Async" Version="6.0.1"/>
+        <PackageReference Include="System.Linq.Async" Version="6.0.3" />
         <PackageReference Include="System.Private.Uri" Version="4.3.2"/>
     </ItemGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\..\..\HomeScreen.Database\HomeScreen.Database.MediaDb\HomeScreen.Database.MediaDb.csproj"/>
         <ProjectReference Include="..\..\..\HomeScreen.ServiceDefaults\HomeScreen.ServiceDefaults.csproj"/>
-        <ProjectReference Include="..\..\HomeScreen.Service.Location\HomeScreen.Service.Location.Proto\HomeScreen.Service.Location.Proto.csproj"/>
+        <ProjectReference Include="..\HomeScreen.Service.Media.Common\HomeScreen.Service.Media.Common.csproj" />
         <ProjectReference Include="..\HomeScreen.Service.Media.Proto\HomeScreen.Service.Media.Proto.csproj"/>
     </ItemGroup>
 

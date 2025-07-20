@@ -5,7 +5,7 @@ import fs from 'node:fs';
 import { env } from 'node:process';
 import path from 'node:path';
 import child_process from 'node:child_process';
-import { parseConnectionString } from '@tediousjs/connection-string';
+import { parse as parseConnectionString } from '@tediousjs/connection-string';
 import tailwindcss from '@tailwindcss/vite';
 import vueDevTools from 'vite-plugin-vue-devtools';
 
@@ -33,9 +33,9 @@ const makeServerConfig = (): UserConfig['server'] => {
                     certFilePath,
                     '--format',
                     'Pem',
-                    '--no-password',
+                    '--no-password'
                 ],
-                { stdio: 'inherit' },
+                { stdio: 'inherit' }
             ).status
         ) {
             throw new Error('Could not create certificate.');
@@ -57,12 +57,11 @@ const makeServerConfig = (): UserConfig['server'] => {
     }
     if (env.ConnectionStrings__OtelCollector) {
         const connection = parseConnectionString(
-            env.ConnectionStrings__OtelCollector,
-        ) as { endpointhttp: string };
-        otel_endpoint = connection.endpointhttp.substring(
-            0,
-            connection.endpointhttp.indexOf('EndpointGrpc='),
+            env.ConnectionStrings__OtelCollector
         );
+        if (connection.has('EndpointGrpc')) {
+            otel_endpoint = connection.get('EndpointGrpc')!;
+        }
     }
 
     console.log('Otel Endpoint:', otel_endpoint);
@@ -72,21 +71,21 @@ const makeServerConfig = (): UserConfig['server'] => {
             '/api': {
                 target: target,
                 changeOrigin: true,
-                secure: false,
+                secure: false
             },
             '/otel': {
                 target: `http://${otel_endpoint}`,
                 changeOrigin: true,
                 secure: false,
-                rewrite: (path) => path.replace(/^\/otel/, ''),
-            },
+                rewrite: (path) => path.replace(/^\/otel/, '')
+            }
         },
         port: 5173,
         https: {
             key: fs.readFileSync(keyFilePath),
-            cert: fs.readFileSync(certFilePath),
+            cert: fs.readFileSync(certFilePath)
         },
-        host: true,
+        host: true
     };
 };
 
@@ -96,7 +95,7 @@ export default defineConfig(({ command }) => {
         plugins: [
             vue(),
             vueDevTools({ launchEditor: 'webstorm' }),
-            tailwindcss(),
+            tailwindcss()
         ],
         build: {
             rollupOptions: {
@@ -106,7 +105,7 @@ export default defineConfig(({ command }) => {
                             '@fortawesome/free-brands-svg-icons',
                             '@fortawesome/free-regular-svg-icons',
                             '@fortawesome/free-solid-svg-icons',
-                            '@fortawesome/vue-fontawesome',
+                            '@fortawesome/vue-fontawesome'
                         ],
                         vueuse: [
                             '@vueuse/components',
@@ -123,20 +122,20 @@ export default defineConfig(({ command }) => {
                             'nprogress',
                             'qrcode',
                             'sortablejs',
-                            'universal-cookie',
+                            'universal-cookie'
                         ],
                         vue: ['vue'],
                         luxon: ['luxon'],
-                        components: ['@homescreen/web-common-components'],
-                    },
-                },
-            },
+                        components: ['@homescreen/web-common-components']
+                    }
+                }
+            }
         },
         resolve: {
             alias: {
-                '@': fileURLToPath(new URL('./src', import.meta.url)),
-            },
+                '@': fileURLToPath(new URL('./src', import.meta.url))
+            }
         },
-        server: command === 'serve' ? makeServerConfig() : {},
+        server: command === 'serve' ? makeServerConfig() : {}
     } satisfies UserConfig;
 });

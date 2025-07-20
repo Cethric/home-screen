@@ -26,7 +26,7 @@ public class NominatimLocationApi(ILogger<NominatimLocationApi> logger, INominat
             latitude,
             longitude,
             OutputFormat.Jsonv2,
-            zoom: 13,
+            zoom: 15,
             cancellationToken: cancellationToken
         );
         if (response.StatusCode == StatusCodes.Status200OK && !string.IsNullOrWhiteSpace(response.Result.Display_name))

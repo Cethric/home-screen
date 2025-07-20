@@ -41,20 +41,15 @@
 </template>
 
 <script lang="ts" setup>
-import {
-  type Direction,
-  type Image,
-  openobserveRum,
-  type WeatherForecast,
+import type {
+  Direction,
+  Image,
+  WeatherForecast,
 } from '@homescreen/web-common-components';
-import { computed, onBeforeMount } from 'vue';
 import { useDateFormat, useNow } from '@vueuse/core';
+import { computed } from 'vue';
 import FullscreenMainLoader from '@/slideshows/fullscreen/FullscreenMainLoader.vue';
 import GridItem from '@/slideshows/grid/GridItem.vue';
-
-onBeforeMount(() => {
-  openobserveRum.startView('GridSlideshow');
-});
 
 const props = withDefaults(
   defineProps<{

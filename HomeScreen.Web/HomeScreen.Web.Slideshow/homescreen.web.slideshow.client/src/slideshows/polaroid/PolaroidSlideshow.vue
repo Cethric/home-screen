@@ -24,25 +24,20 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, onBeforeMount, ref, watch } from 'vue';
 import {
   type Direction,
   type Image,
-  openobserveRum,
   type PolaroidImage,
   TransformedPolaroidModal,
   type WeatherForecast,
 } from '@homescreen/web-common-components';
 import { useIntervalFn } from '@vueuse/core';
-import { range, rangeRNG } from '@/helpers/random';
-import { DateTimeWeatherComboKinds } from '@/components/properties';
 import seedrandom from 'seedrandom';
-import FullscreenMainLoader from '@/slideshows/fullscreen/FullscreenMainLoader.vue';
+import { computed, ref, watch } from 'vue';
 import { DateTimeWeatherComboAsync } from '@/components/DateTimeWeatherComboAsync';
-
-onBeforeMount(() => {
-  openobserveRum.startView('PolaroidSlideshow');
-});
+import { DateTimeWeatherComboKinds } from '@/components/properties';
+import { range, rangeRNG } from '@/helpers/random';
+import FullscreenMainLoader from '@/slideshows/fullscreen/FullscreenMainLoader.vue';
 
 const props = withDefaults(
   defineProps<{
