@@ -18,9 +18,9 @@
     "bundle-analyze": "vite-bundle-visualizer -c vite.config.ts"
   },
   "dependencies": {
-    "@fortawesome/free-brands-svg-icons": "^6.7.2",
-    "@fortawesome/free-regular-svg-icons": "^6.7.2",
-    "@fortawesome/free-solid-svg-icons": "^6.7.2",
+    "@fortawesome/free-brands-svg-icons": "^7.0.0",
+    "@fortawesome/free-regular-svg-icons": "^7.0.0",
+    "@fortawesome/free-solid-svg-icons": "^7.0.0",
     "@fortawesome/vue-fontawesome": "^3.0.8",
     "@homescreen/web-common-components": "workspace:*",
     "@tediousjs/connection-string": "^1.0.0",
