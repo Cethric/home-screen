@@ -69,7 +69,7 @@ jobs:
         run: pnpm install
 
       - name: Determine Version
-        uses: gittools/actions/gitversion/execute@v3
+        uses: gittools/actions/gitversion/execute@v4
         with:
           useConfigFile: true
       #          updateAssemblyInfo: true
