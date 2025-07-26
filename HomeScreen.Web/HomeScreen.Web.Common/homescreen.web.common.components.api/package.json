@@ -4,8 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "run-p build:clear build:js",
-    "build:clear": "rimraf dist/",
+    "build": "run-p clean build:js",
+    "clean": "rimraf dist/",
     "build:js": "tsc -p tsconfig.json",
     "generate-api": "openapi-ts --file ./openapi-ts.config.ts",
     "check": "biome check",

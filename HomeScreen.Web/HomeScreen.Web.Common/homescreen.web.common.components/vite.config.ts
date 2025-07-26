@@ -38,7 +38,7 @@ export default defineConfig(() => {
 				formats: ["es"],
 				name: "web-common-components",
 				cssFileName: "web-common-components",
-                fileName: 'index.js',
+                fileName: 'index',
 			},
 			rollupOptions: {
 				external: ["vue", /@vueuse\/.*/, "luxon", /@fortawesome\/.*/, "zod"],

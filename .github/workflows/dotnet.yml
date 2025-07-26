@@ -70,12 +70,13 @@ jobs:
 
       - name: Determine Version
         uses: gittools/actions/gitversion/execute@v4
-        with:
-          useConfigFile: true
-      #          updateAssemblyInfo: true
 
-      - name: Build
+      - name: Build Server
         run: dotnet build --no-restore
+
+      - name: Build Client
+        working-directory: HomeScreen.Web
+        run: pnpm build
 
       - name: Test
         run: dotnet test --no-build --verbosity normal
