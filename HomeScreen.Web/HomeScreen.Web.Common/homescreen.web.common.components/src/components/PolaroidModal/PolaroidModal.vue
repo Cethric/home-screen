@@ -2,12 +2,12 @@
   <ModalDialog @hide="() => emits('resume')" @show="() => emits('pause')">
     <template #activator="props">
       <PolaroidCard
-        :image="image"
-        v-bind="props"
         :class="$attrs['class']"
-        :style="$attrs['style']"
+        :image="image"
         :max-size="maxSize"
+        :style="$attrs['style']"
         class="cursor-pointer bg-neutral text-neutral-100"
+        v-bind="props"
       >
         <template #title="{ image }">
           {{ image.dateTime.isValid ? image.dateTime.toFormat('DDDD TTT') : JSON.stringify(image) }}
@@ -42,7 +42,7 @@
                 :longitude="image.location.longitude"
                 :tooltip="image.location.name.split(',')[0]"
               />
-              <p class="text-center" v-else>No location recorded</p>
+              <p v-else class="text-center">No location recorded</p>
             </template>
           </PolaroidCard>
         </template>
@@ -52,11 +52,11 @@
         <template #default>
           <HSImage
             :id="image.id"
+            :aspect-ratio="image.aspectRatio"
+            :colour="image.colour"
             :date-time="image.dateTime"
             :enabled="image.enabled"
-            :aspect-ratio="image.aspectRatio"
             :portrait="image.portrait"
-            :colour="image.colour"
             :size="size"
             rounded
           />

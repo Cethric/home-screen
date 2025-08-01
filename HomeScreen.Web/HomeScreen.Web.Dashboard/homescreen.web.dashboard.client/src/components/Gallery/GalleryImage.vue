@@ -1,25 +1,25 @@
 <template>
   <div ref="galleryImage"
-       class="aspect-(--imageAspect) size-auto drop-shadow-md"
+       :class="{'opacity-60': !image.enabled}"
        :style="{
           '--imageAspect': image.aspectRatio,
           maxWidth: `${deviceSize}px`,
           minWidth: `${deviceSize}px`,
           maxHeight: '85dvh'
         }"
-       :class="{'opacity-60': !image.enabled}"
+       class="aspect-(--imageAspect) size-auto drop-shadow-md"
     >
     
     <polaroid-modal v-if="isVisible" :image="image" :maxSize="size" />
 
-    <div class="card" v-else>
-      <div class="aspect-(--imageAspect) size-auto bg-(--color) drop-shadow-md"
-           :style="{
+    <div v-else class="card">
+      <div :style="{
           '--imageAspect': image.aspectRatio,
           '--color': color,
           maxWidth: `${deviceSize}px`,
           maxHeight: '85dvh'
-        }" />
+        }"
+           class="aspect-(--imageAspect) size-auto bg-(--color) drop-shadow-md" />
       <div class="card-body">
         <h2 class="card-title wrap-break-word text-center">
           {{ image.dateTime.isValid ? image.dateTime.toFormat('DDDD TTT') : JSON.stringify(image) }}
@@ -31,7 +31,7 @@
     </div>
     
     <div class="absolute top-0 right-0 w-full h-fit z-99 bg-slate-700 p-1 hover:opacity-100 opacity-0 rounded-xl flex flex-row justify-between">
-      <input type="checkbox" :checked="image.enabled" @change="toggleMedia" class="toggle toggle-secondary" />
+      <input :checked="image.enabled" class="toggle toggle-secondary" type="checkbox" @change="toggleMedia" />
     </div>
     
   </div>

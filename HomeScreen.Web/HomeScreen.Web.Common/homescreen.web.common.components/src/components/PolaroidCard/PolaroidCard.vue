@@ -1,17 +1,17 @@
 <template>
-  <div class="card" :class="{'card-side card-lg': direction === Directions.horizontal, 'drop-shadow-lg': !flat}">
+  <div :class="{'card-side card-lg': direction === Directions.horizontal, 'drop-shadow-lg': !flat}" class="card">
     <figure>
       <HSImage
         :id="image.id"
+        :aspect-ratio="image.aspectRatio"
+        :colour="image.colour"
         :date-time="image.dateTime"
         :enabled="image.enabled"
-        :aspect-ratio="image.aspectRatio"
         :portrait="image.portrait"
-        :colour="image.colour"
         :size="maxSize"
+        class="cursor-pointer hover:shadow-inner active:drop-shadow-lg"
         rounded
         @click="() => emits('click')"
-        class="cursor-pointer hover:shadow-inner active:drop-shadow-lg"
       />
     </figure>
     <div class="card-body">
@@ -24,22 +24,22 @@
 </template>
 
 <script lang="ts" setup>
-import HSImage from '@/components/HSImage/HSImage.vue';
-import { type Direction, Directions } from '@/components/properties';
-import type { Image } from '@/helpers/image';
+import HSImage from "@/components/HSImage/HSImage.vue";
+import { type Direction, Directions } from "@/components/properties";
+import type { Image } from "@/helpers/image";
 
 withDefaults(
-  defineProps<{
-    direction?: Direction;
-    image: Image;
-    flat?: boolean;
-    maxSize?: number;
-  }>(),
-  {
-    direction: Directions.vertical,
-    flat: false,
-    maxSize: 800,
-  },
+	defineProps<{
+		direction?: Direction;
+		image: Image;
+		flat?: boolean;
+		maxSize?: number;
+	}>(),
+	{
+		direction: Directions.vertical,
+		flat: false,
+		maxSize: 800,
+	},
 );
 
 const emits = defineEmits<{ click: [] }>();

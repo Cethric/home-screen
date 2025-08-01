@@ -19,15 +19,15 @@
 </template>
 
 <script lang="ts" setup>
-import { centroid, point } from '@turf/turf';
-import { LGeoJson, LMap, LTileLayer, LTooltip } from '@vue-leaflet/vue-leaflet';
-import { computed, toValue } from 'vue';
+import { centroid, point } from "@turf/turf";
+import { LGeoJson, LMap, LTileLayer, LTooltip } from "@vue-leaflet/vue-leaflet";
+import { computed, toValue } from "vue";
 
 const zoom = defineModel({ default: 15 });
 const props = defineProps<{
-  latitude: number;
-  longitude: number;
-  tooltip: string;
+	latitude: number;
+	longitude: number;
+	tooltip: string;
 }>();
 
 const location = computed(() => point([props.longitude, props.latitude], {}));

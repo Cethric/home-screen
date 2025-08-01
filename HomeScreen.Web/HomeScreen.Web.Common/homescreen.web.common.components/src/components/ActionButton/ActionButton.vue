@@ -17,7 +17,7 @@
 </template>
 
 <script lang="ts" setup>
-import { type Variant, Variants } from '@/components/properties';
+import { type Variant, Variants } from "@/components/properties";
 
 defineProps<{ variant?: Variant }>();
 </script>

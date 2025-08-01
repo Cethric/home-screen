@@ -1,11 +1,11 @@
 {
-	"$schema": "https://biomejs.dev/schemas/2.1.1/schema.json",
+	"$schema": "https://biomejs.dev/schemas/2.1.2/schema.json",
 	"root": false,
 	"extends": "//",
-  "vcs": {
-    "root": "../../../.git/"
-  },
-  "files": {
+	"vcs": {
+		"root": "../../../.git/"
+	},
+	"files": {
 		"includes": [
 			"src/**/*.vue",
 			"src/**/*.ts",

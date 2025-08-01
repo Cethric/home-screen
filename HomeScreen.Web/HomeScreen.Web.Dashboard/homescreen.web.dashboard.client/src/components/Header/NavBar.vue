@@ -3,7 +3,7 @@
     <nav class="navbar bg-amber-800 shadow-sm">
       <div class="navbar-start">
         <div class="dropdown">
-          <button tabindex="0" type="button" @click="" class="btn btn-ghost">
+          <button class="btn btn-ghost" tabindex="0" type="button" @click="">
             <font-awesome-icon :icon="faBars"/>
           </button>
           <ul
@@ -13,7 +13,7 @@
             <nav-link :to="{name : 'Gallery'}" active-class="" inactive-class="">Gallery</nav-link>
           </ul>
         </div>
-        <nav-link :to="{name: 'Dashboard'}" class="btn btn-ghost text-xl" active-class="" inactive-class="">HomeScreen</nav-link>
+        <nav-link :to="{name: 'Dashboard'}" active-class="" class="btn btn-ghost text-xl" inactive-class="">HomeScreen</nav-link>
       </div>
     </nav>
   </header>

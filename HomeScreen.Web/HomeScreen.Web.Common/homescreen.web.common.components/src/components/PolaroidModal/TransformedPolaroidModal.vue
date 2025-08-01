@@ -1,6 +1,7 @@
 <template>
   <PolaroidModal
     :image="item.image"
+    :max-size="750"
     :style="{
       transform: `translate(
       calc(${item.left} * 1dvw),
@@ -11,16 +12,15 @@
     class="absolute"
     @pause="() => emits('pause')"
     @resume="() => emits('resume')"
-    :max-size="750"
   />
 </template>
 
 <script lang="ts" setup>
-import PolaroidModal from '@/components/PolaroidModal/PolaroidModal.vue';
-import type { PolaroidImage } from '@/components/PolaroidModal/types';
+import PolaroidModal from "@/components/PolaroidModal/PolaroidModal.vue";
+import type { PolaroidImage } from "@/components/PolaroidModal/types";
 
 defineProps<{
-  item: PolaroidImage;
+	item: PolaroidImage;
 }>();
 const emits = defineEmits<{ resume: []; pause: [] }>();
 </script>

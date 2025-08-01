@@ -65,34 +65,34 @@
         </ModalDialog>
       </template>
     </ModalDialog>
-    <div v-else class="aspect-(--imageAspect) h-auto rounded-md object-contain drop-shadow-md" :style="{'--imageAspect': image.aspectRatio, maxWidth: `${size}px`, minWidth: `${size}px`, width: `${size}px`}" />
+    <div v-else :style="{'--imageAspect': image.aspectRatio, maxWidth: `${size}px`, minWidth: `${size}px`, width: `${size}px`}" class="aspect-(--imageAspect) h-auto rounded-md object-contain drop-shadow-md" />
   </div>
 </template>
 
 <script async lang="ts" setup>
 import {
-  type Direction,
-  Directions,
-  HSImage,
-  type Image,
-  LeafletMapAsync,
-  ModalDialog,
-  PolaroidCard,
-} from '@homescreen/web-common-components';
-import { useElementVisibility } from '@vueuse/core';
-import { ref, toValue } from 'vue';
+	type Direction,
+	Directions,
+	HSImage,
+	type Image,
+	LeafletMapAsync,
+	ModalDialog,
+	PolaroidCard,
+} from "@homescreen/web-common-components";
+import { useElementVisibility } from "@vueuse/core";
+import { ref, toValue } from "vue";
 
 const props = defineProps<{
-  image: Image;
-  direction: Direction;
-  imageSize: number;
+	image: Image;
+	direction: Direction;
+	imageSize: number;
 }>();
 
 const emits = defineEmits<{ pause: []; resume: [] }>();
 
 const sliderModal = ref<HTMLElement>();
 const isVisible = useElementVisibility(sliderModal, {
-  threshold: 1,
+	threshold: 1,
 });
 
 const size = toValue(props.imageSize);

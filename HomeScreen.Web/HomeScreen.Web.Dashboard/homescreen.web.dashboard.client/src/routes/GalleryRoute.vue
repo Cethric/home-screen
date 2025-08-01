@@ -1,8 +1,8 @@
 <template>
   <div class="grow p-4">
-    <masonry-wall :items="images" :ssr-columns="1" :min-columns="1" :max-columns="6" :column-width="deviceSize" :gap="7" :key-mapper="itm=>itm.id">
+    <masonry-wall :column-width="deviceSize" :gap="7" :items="images" :key-mapper="itm=>itm.id" :max-columns="6" :min-columns="1" :ssr-columns="1">
       <template #default="{ item }">
-        <div class="p-4" :key="item.id">
+        <div :key="item.id" class="p-4">
           <gallery-image :image="item" :size="size" />
         </div>
       </template>
