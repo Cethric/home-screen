@@ -4,16 +4,38 @@
       <div class="navbar-start">
         <div class="dropdown">
           <button tabindex="0" type="button" @click="" class="btn btn-ghost">
-            <font-awesome-icon :icon="faBars"/>
+            <font-awesome-icon :icon="faBars" />
           </button>
           <ul
-            class="menu menu-sm dropdown-content bg-amber-800 rounded-box z-1 mt-3 w-52 p-2 shadow">
-            <nav-link :to="{name : 'Dashboard'}" active-class="" inactive-class="">Dashboard</nav-link>
-            <nav-link :to="config?.slideshowUrl ?? ''" active-class="" inactive-class="">Slideshow</nav-link>
-            <nav-link :to="{name : 'Gallery'}" active-class="" inactive-class="">Gallery</nav-link>
+            class="menu menu-sm dropdown-content bg-amber-800 rounded-box z-1 mt-3 w-52 p-2 shadow"
+          >
+            <nav-link
+              :to="{ name: 'Dashboard' }"
+              active-class=""
+              inactive-class=""
+              >Dashboard</nav-link
+            >
+            <nav-link
+              :to="config?.slideshowUrl ?? ''"
+              active-class=""
+              inactive-class=""
+              >Slideshow</nav-link
+            >
+            <nav-link
+              :to="{ name: 'Gallery' }"
+              active-class=""
+              inactive-class=""
+              >Gallery</nav-link
+            >
           </ul>
         </div>
-        <nav-link :to="{name: 'Dashboard'}" class="btn btn-ghost text-xl" active-class="" inactive-class="">HomeScreen</nav-link>
+        <nav-link
+          :to="{ name: 'Dashboard' }"
+          class="btn btn-ghost text-xl"
+          active-class=""
+          inactive-class=""
+          >HomeScreen</nav-link
+        >
       </div>
     </nav>
   </header>
