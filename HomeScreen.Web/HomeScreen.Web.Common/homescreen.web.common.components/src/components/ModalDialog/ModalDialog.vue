@@ -8,7 +8,10 @@
     >
       <div class="modal-box max-w-fit">
         <form method="dialog">
-          <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" type="submit">
+          <button
+            class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
+            type="submit"
+          >
             <FontAwesomeIcon :icon="faClose" />
             <span class="sr-only">Close Dialog</span>
           </button>
@@ -41,17 +44,17 @@ const isOpen = ref<boolean>(false);
 const dialog = ref<HTMLDialogElement>();
 
 const openDialog = () => {
-	isOpen.value = true;
-	nextTick(() => {
-		dialog.value?.showModal();
-		emits("show");
-	});
+  isOpen.value = true;
+  nextTick(() => {
+    dialog.value?.showModal();
+    emits("show");
+  });
 };
 
 const closeDialog = () => {
-	dialog.value?.close();
-	nextTick(() => {
-		isOpen.value = false;
-	});
+  dialog.value?.close();
+  nextTick(() => {
+    isOpen.value = false;
+  });
 };
 </script>

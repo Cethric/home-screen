@@ -5,7 +5,7 @@
       '--imageAspect': aspectRatio,
       '--color': color,
       maxWidth: `${deviceSize}px`,
-      maxHeight: '85dvh'
+      maxHeight: '85dvh',
     }"
     class="aspect-(--imageAspect) size-auto bg-(--color) drop-shadow-md"
   >
@@ -67,12 +67,15 @@
           :width="imageWidth"
         />
         <template #fallback>
-          <div :style="{
-      '--imageAspect': aspectRatio,
-      '--color': color,
-      'width': `${deviceSize}px`,
-      maxHeight: '90dvh'
-      }" class="flex items-center justify-center aspect-(--imageAspect) size-auto bg-(--color)">
+          <div
+            :style="{
+              '--imageAspect': aspectRatio,
+              '--color': color,
+              width: `${deviceSize}px`,
+              maxHeight: '90dvh',
+            }"
+            class="flex items-center justify-center aspect-(--imageAspect) size-auto bg-(--color)"
+          >
             <LoadingSpinner variant="primary" />
           </div>
         </template>
@@ -90,20 +93,20 @@ import LoadingSpinner from "@/components/LoadingSpinner/LoadingSpinner.vue";
 import type { Image } from "@/helpers/image";
 
 const props = withDefaults(
-	defineProps<Image & { size: number; rounded: boolean }>(),
-	{ rounded: false },
+  defineProps<Image & { size: number; rounded: boolean }>(),
+  { rounded: false },
 );
 
 const color = computed(
-	() => `rgb(${props.colour.red}, ${props.colour.green}, ${props.colour.blue})`,
+  () => `rgb(${props.colour.red}, ${props.colour.green}, ${props.colour.blue})`,
 );
 
 const deviceSize = props.size / window.devicePixelRatio;
 
 const imageWidth = computed(
-	() => props.size * (props.portrait ? 1 : props.aspectRatio),
+  () => props.size * (props.portrait ? 1 : props.aspectRatio),
 );
 const imageHeight = computed(
-	() => props.size * (props.portrait ? props.aspectRatio : 1),
+  () => props.size * (props.portrait ? props.aspectRatio : 1),
 );
 </script>

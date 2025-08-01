@@ -25,9 +25,9 @@ import { computed, toValue } from "vue";
 
 const zoom = defineModel({ default: 15 });
 const props = defineProps<{
-	latitude: number;
-	longitude: number;
-	tooltip: string;
+  latitude: number;
+  longitude: number;
+  tooltip: string;
 }>();
 
 const location = computed(() => point([props.longitude, props.latitude], {}));

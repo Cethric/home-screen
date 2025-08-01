@@ -3,12 +3,9 @@
     :class="[
       'btn',
       {
-        'btn-neutral':
-          variant === undefined,
-        'btn-primary':
-          variant === Variants.primary,
-        'btn-secondary':
-          variant === Variants.secondary,
+        'btn-neutral': variant === undefined,
+        'btn-primary': variant === Variants.primary,
+        'btn-secondary': variant === Variants.secondary,
       },
     ]"
   >

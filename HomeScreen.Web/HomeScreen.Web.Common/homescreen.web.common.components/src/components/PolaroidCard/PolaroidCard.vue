@@ -1,5 +1,11 @@
 <template>
-  <div :class="{'card-side card-lg': direction === Directions.horizontal, 'drop-shadow-lg': !flat}" class="card">
+  <div
+    :class="{
+      'card-side card-lg': direction === Directions.horizontal,
+      'drop-shadow-lg': !flat,
+    }"
+    class="card"
+  >
     <figure>
       <HSImage
         :id="image.id"
@@ -29,17 +35,17 @@ import { type Direction, Directions } from "@/components/properties";
 import type { Image } from "@/helpers/image";
 
 withDefaults(
-	defineProps<{
-		direction?: Direction;
-		image: Image;
-		flat?: boolean;
-		maxSize?: number;
-	}>(),
-	{
-		direction: Directions.vertical,
-		flat: false,
-		maxSize: 800,
-	},
+  defineProps<{
+    direction?: Direction;
+    image: Image;
+    flat?: boolean;
+    maxSize?: number;
+  }>(),
+  {
+    direction: Directions.vertical,
+    flat: false,
+    maxSize: 800,
+  },
 );
 
 const emits = defineEmits<{ click: [] }>();

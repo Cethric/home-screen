@@ -17,12 +17,12 @@ export * from "@/helpers/image";
 export * from "@/helpers/size";
 
 export {
-	PolaroidCard,
-	PolaroidModal,
-	TransformedPolaroidModal,
-	LeafletMap,
-	ModalDialog,
-	LoadingSpinner,
-	ActionButton,
-	HSImage,
+    PolaroidCard,
+    PolaroidModal,
+    TransformedPolaroidModal,
+    LeafletMap,
+    ModalDialog,
+    LoadingSpinner,
+    ActionButton,
+    HSImage,
 };
