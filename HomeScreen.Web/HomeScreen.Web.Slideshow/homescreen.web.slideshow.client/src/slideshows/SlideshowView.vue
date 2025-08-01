@@ -31,24 +31,24 @@ const activeSlideshow = ref<Slideshow>(choice(Object.values(Slideshows)));
 const forecast = await loadWeather();
 
 useIntervalFn(
-	() => {
-		const path = location.value.pathname?.replace("/", "");
-		if (Object.values(Slideshows).includes(path as Slideshows)) {
-			activeSlideshow.value = path as Slideshow;
-		} else {
-			activeSlideshow.value = choice(Object.values(Slideshows));
-		}
-		console.log("Loading slideshow variant", activeSlideshow.value);
-	},
-	15 * 60 * 1000,
-	{ immediateCallback: true },
+  () => {
+    const path = location.value.pathname?.replace("/", "");
+    if (Object.values(Slideshows).includes(path as Slideshows)) {
+      activeSlideshow.value = path as Slideshow;
+    } else {
+      activeSlideshow.value = choice(Object.values(Slideshows));
+    }
+    console.log("Loading slideshow variant", activeSlideshow.value);
+  },
+  15 * 60 * 1000,
+  { immediateCallback: true },
 );
 
 const config = injectConfig();
 
 const navigateToDashboard = () => {
-	if (config?.dashboardUrl) {
-		window.location.assign(config.dashboardUrl);
-	}
+  if (config?.dashboardUrl) {
+    window.location.assign(config.dashboardUrl);
+  }
 };
 </script>

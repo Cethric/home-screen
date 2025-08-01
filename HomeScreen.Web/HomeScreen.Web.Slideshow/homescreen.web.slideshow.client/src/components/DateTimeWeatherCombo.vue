@@ -62,13 +62,13 @@
 import type { WeatherForecast } from "@homescreen/web-common-components";
 import { useDateFormat, useNow } from "@vueuse/core";
 import {
-	type DateTimeWeatherComboKind,
-	DateTimeWeatherComboKinds,
+  type DateTimeWeatherComboKind,
+  DateTimeWeatherComboKinds,
 } from "@/components/properties";
 
 defineProps<{
-	weatherForecast: WeatherForecast;
-	kind: DateTimeWeatherComboKind;
+  weatherForecast: WeatherForecast;
+  kind: DateTimeWeatherComboKind;
 }>();
 
 const now = useNow();

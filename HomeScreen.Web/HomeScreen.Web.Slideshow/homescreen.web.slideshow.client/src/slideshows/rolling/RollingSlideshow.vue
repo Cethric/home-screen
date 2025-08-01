@@ -22,42 +22,42 @@
 
 <script lang="ts" setup>
 import {
-	type Direction,
-	Directions,
-	type Image,
-	type WeatherForecast,
+  type Direction,
+  Directions,
+  type Image,
+  type WeatherForecast,
 } from "@homescreen/web-common-components";
 import { v4 as uuid } from "uuid";
 import { computed } from "vue";
 import { DateTimeWeatherComboAsync } from "@/components/DateTimeWeatherComboAsync";
 import {
-	DateTimeWeatherComboKinds,
-	RollingDirections,
+  DateTimeWeatherComboKinds,
+  RollingDirections,
 } from "@/components/properties";
 import { choice } from "@/helpers/random";
 import FullscreenMainLoader from "@/slideshows/fullscreen/FullscreenMainLoader.vue";
 import RollingSlider from "@/slideshows/rolling/RollingSlider.vue";
 
 const props = withDefaults(
-	defineProps<{
-		images: Record<Image["id"], Image>;
-		weatherForecast: WeatherForecast;
-		direction?: Direction;
-		count?: number;
-		durationSeconds?: number;
-		total: number;
-	}>(),
-	{
-		direction: Directions.random,
-		count: 2,
-		durationSeconds: 24,
-	},
+  defineProps<{
+    images: Record<Image["id"], Image>;
+    weatherForecast: WeatherForecast;
+    direction?: Direction;
+    count?: number;
+    durationSeconds?: number;
+    total: number;
+  }>(),
+  {
+    direction: Directions.random,
+    count: 2,
+    durationSeconds: 24,
+  },
 );
 
 const actualDirection = computed(() =>
-	props.direction === Directions.random
-		? choice([Directions.vertical, Directions.horizontal])
-		: props.direction,
+  props.direction === Directions.random
+    ? choice([Directions.vertical, Directions.horizontal])
+    : props.direction,
 );
 
 const length = computed(() => Object.keys(props.images).length);
@@ -65,22 +65,22 @@ const size = computed(() => Math.ceil(length.value / props.count));
 const hasImages = computed(() => length.value >= props.total - 100);
 
 const images = computed(() =>
-	hasImages.value ? Object.values(props.images) : [],
+  hasImages.value ? Object.values(props.images) : [],
 );
 
 const imageGroups = computed(() =>
-	hasImages.value
-		? Array.from({ length: props.count }).map((_, idx) => ({
-				images: images.value.slice(
-					idx * size.value,
-					idx * size.value + size.value,
-				),
-				id: uuid(),
-				direction:
-					idx % 2 === 0
-						? RollingDirections.backward
-						: RollingDirections.forward,
-			}))
-		: [],
+  hasImages.value
+    ? Array.from({ length: props.count }).map((_, idx) => ({
+        images: images.value.slice(
+          idx * size.value,
+          idx * size.value + size.value,
+        ),
+        id: uuid(),
+        direction:
+          idx % 2 === 0
+            ? RollingDirections.backward
+            : RollingDirections.forward,
+      }))
+    : [],
 );
 </script>

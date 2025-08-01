@@ -28,39 +28,39 @@ import { useIntervalFn } from "@vueuse/core";
 import { computed, ref } from "vue";
 
 const props = withDefaults(
-	defineProps<{
-		images: Record<Image["id"], Image>;
-		intervalSeconds?: number;
-		length: number;
-		offset: number;
-	}>(),
-	{
-		intervalSeconds: 24,
-	},
+  defineProps<{
+    images: Record<Image["id"], Image>;
+    intervalSeconds?: number;
+    length: number;
+    offset: number;
+  }>(),
+  {
+    intervalSeconds: 24,
+  },
 );
 
 const size = window.innerWidth - 300;
 
 const index = ref<number>(0);
 const imageIds = computed(() =>
-	Object.keys(props.images).slice(
-		props.length * (props.offset - 1),
-		props.length + props.length * (props.offset - 1),
-	),
+  Object.keys(props.images).slice(
+    props.length * (props.offset - 1),
+    props.length + props.length * (props.offset - 1),
+  ),
 );
 const currentId = ref<Image["id"]>(imageIds.value[index.value]);
 const nextId = ref<Image["id"]>(
-	imageIds.value[(index.value + 1) % props.length],
+  imageIds.value[(index.value + 1) % props.length],
 );
 
 const { pause, resume } = useIntervalFn(() => {
-	index.value = (index.value + 1) % (props.length ?? 1);
-	currentId.value = imageIds.value[index.value];
-	nextId.value = imageIds.value[(index.value + 1) % props.length];
-	console.log("Next image", index.value, currentId.value, nextId.value);
+  index.value = (index.value + 1) % (props.length ?? 1);
+  currentId.value = imageIds.value[index.value];
+  nextId.value = imageIds.value[(index.value + 1) % props.length];
+  console.log("Next image", index.value, currentId.value, nextId.value);
 }, props.intervalSeconds * 1000);
 
 const activeItems = computed(() =>
-	currentId.value && nextId.value ? [currentId.value, nextId.value] : [],
+  currentId.value && nextId.value ? [currentId.value, nextId.value] : [],
 );
 </script>

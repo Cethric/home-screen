@@ -53,10 +53,10 @@
 
 <script lang="ts" setup>
 import {
-	type Direction,
-	type Image,
-	PolaroidModal,
-	type WeatherForecast,
+  type Direction,
+  type Image,
+  PolaroidModal,
+  type WeatherForecast,
 } from "@homescreen/web-common-components";
 import { useDateFormat, useIntervalFn, useNow } from "@vueuse/core";
 import { computed, ref, watch } from "vue";
@@ -65,18 +65,18 @@ import FullscreenMainLoader from "@/slideshows/fullscreen/FullscreenMainLoader.v
 const size = window.innerWidth * devicePixelRatio;
 
 const props = withDefaults(
-	defineProps<{
-		images: Record<Image["id"], Image>;
-		intervalSeconds?: number;
-		weatherForecast: WeatherForecast;
-		direction?: Direction;
-		count?: number;
-		total: number;
-	}>(),
-	{
-		count: 1,
-		intervalSeconds: 24,
-	},
+  defineProps<{
+    images: Record<Image["id"], Image>;
+    intervalSeconds?: number;
+    weatherForecast: WeatherForecast;
+    direction?: Direction;
+    count?: number;
+    total: number;
+  }>(),
+  {
+    count: 1,
+    intervalSeconds: 24,
+  },
 );
 const length = computed(() => Object.keys(props.images).length);
 const hasImages = computed(() => length.value > 4);
@@ -90,24 +90,24 @@ const currentId = ref<Image["id"]>();
 const nextId = ref<Image["id"]>();
 
 watch(hasImages, (val, last) => {
-	if (val && val !== last) {
-		index.value = 0;
-		currentId.value = Object.keys(props.images)[index.value];
-		nextId.value = Object.keys(props.images)[(index.value + 1) % length.value];
-	}
+  if (val && val !== last) {
+    index.value = 0;
+    currentId.value = Object.keys(props.images)[index.value];
+    nextId.value = Object.keys(props.images)[(index.value + 1) % length.value];
+  }
 });
 
 const { pause, resume } = useIntervalFn(() => {
-	if (hasImages.value) {
-		index.value = (index.value + 1) % (length.value ?? 1);
-		currentId.value = Object.keys(props.images)[index.value];
-		nextId.value = Object.keys(props.images)[(index.value + 1) % length.value];
-	}
+  if (hasImages.value) {
+    index.value = (index.value + 1) % (length.value ?? 1);
+    currentId.value = Object.keys(props.images)[index.value];
+    nextId.value = Object.keys(props.images)[(index.value + 1) % length.value];
+  }
 }, props.intervalSeconds * 1000);
 
 const activeItems = computed(() =>
-	currentId.value && nextId.value && hasImages.value
-		? [currentId.value, nextId.value]
-		: [],
+  currentId.value && nextId.value && hasImages.value
+    ? [currentId.value, nextId.value]
+    : [],
 );
 </script>
