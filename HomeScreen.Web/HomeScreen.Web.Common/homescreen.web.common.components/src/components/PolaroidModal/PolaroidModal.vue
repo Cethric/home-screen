@@ -7,13 +7,13 @@
         :class="$attrs['class']"
         :style="$attrs['style']"
         :max-size="maxSize"
-        class="cursor-pointer bg-neutral"
+        class="cursor-pointer bg-neutral text-neutral-100"
       >
         <template #title="{ image }">
           {{ image.dateTime.isValid ? image.dateTime.toFormat('DDDD TTT') : JSON.stringify(image) }}
         </template>
         <template #details="{ image }">
-          <p class="text-center">
+          <p class="text-center wrap-break-word max-w-md">
             {{ image.location?.name }}
           </p>
         </template>
@@ -67,19 +67,19 @@
 </template>
 
 <script lang="ts" setup>
-import HSImage from '@/components/HSImage/HSImage.vue';
-import { LeafletMapAsync } from '@/components/LeafletMap/LeafletMapAsync';
-import ModalDialog from '@/components/ModalDialog/ModalDialog.vue';
-import PolaroidCard from '@/components/PolaroidCard/PolaroidCard.vue';
-import { Directions } from '@/components/properties';
-import type { Image } from '@/helpers/image';
+import HSImage from "@/components/HSImage/HSImage.vue";
+import { LeafletMapAsync } from "@/components/LeafletMap/LeafletMapAsync";
+import ModalDialog from "@/components/ModalDialog/ModalDialog.vue";
+import PolaroidCard from "@/components/PolaroidCard/PolaroidCard.vue";
+import { Directions } from "@/components/properties";
+import type { Image } from "@/helpers/image";
 
 withDefaults(
-  defineProps<{
-    image: Image;
-    maxSize?: number;
-  }>(),
-  { maxSize: 250 },
+	defineProps<{
+		image: Image;
+		maxSize?: number;
+	}>(),
+	{ maxSize: 250 },
 );
 const emits = defineEmits<{ resume: []; pause: [] }>();
 

@@ -41,7 +41,8 @@
     "vite-plugin-vue-devtools": "^7.7.7",
     "vue": "^3.5.17",
     "vue-router": "^4.5.1",
-    "zod": "^4.0.5"
+    "zod": "^4.0.5",
+    "@yeger/vue-masonry-wall": "^5.0.21"
   },
   "devDependencies": {
     "@cpsoinos/vite-plugin-http2-proxy": "^0.1.0",
