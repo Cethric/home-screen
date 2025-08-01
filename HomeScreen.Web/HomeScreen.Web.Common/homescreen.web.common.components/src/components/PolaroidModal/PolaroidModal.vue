@@ -10,7 +10,11 @@
         class="cursor-pointer bg-neutral text-neutral-100"
       >
         <template #title="{ image }">
-          {{ image.dateTime.isValid ? image.dateTime.toFormat('DDDD TTT') : JSON.stringify(image) }}
+          {{
+            image.dateTime.isValid
+              ? image.dateTime.toFormat("DDDD TTT")
+              : JSON.stringify(image)
+          }}
         </template>
         <template #details="{ image }">
           <p class="text-center wrap-break-word max-w-md">
@@ -20,7 +24,7 @@
       </PolaroidCard>
     </template>
     <template #header>
-      <h3 class="text-center">{{ image.dateTime.toFormat('DDDD TTT') }}</h3>
+      <h3 class="text-center">{{ image.dateTime.toFormat("DDDD TTT") }}</h3>
     </template>
     <template #default>
       <ModalDialog>
@@ -47,7 +51,7 @@
           </PolaroidCard>
         </template>
         <template #header>
-          <h3 class="text-center">{{ image.dateTime.toFormat('DDDD TTT') }}</h3>
+          <h3 class="text-center">{{ image.dateTime.toFormat("DDDD TTT") }}</h3>
         </template>
         <template #default>
           <HSImage
@@ -75,11 +79,11 @@ import { Directions } from "@/components/properties";
 import type { Image } from "@/helpers/image";
 
 withDefaults(
-	defineProps<{
-		image: Image;
-		maxSize?: number;
-	}>(),
-	{ maxSize: 250 },
+  defineProps<{
+    image: Image;
+    maxSize?: number;
+  }>(),
+  { maxSize: 250 },
 );
 const emits = defineEmits<{ resume: []; pause: [] }>();
 
