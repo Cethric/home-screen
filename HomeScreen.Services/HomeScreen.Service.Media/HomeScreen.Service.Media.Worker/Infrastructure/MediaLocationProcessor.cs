@@ -23,7 +23,7 @@ public class MediaLocationProcessor(
     {
         using var activity = ActivitySource.StartActivity();
 
-        var gps = await mediaMetadataReader.LoadGPS(file, cancellationToken);
+        var gps = await mediaMetadataReader.LoadGps(file, cancellationToken);
 
         if (gps?.TryGetGeoLocation(out var geoLocation) is not true)
         {

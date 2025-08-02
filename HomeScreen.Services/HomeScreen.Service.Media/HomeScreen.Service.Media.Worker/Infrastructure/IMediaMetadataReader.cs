@@ -7,7 +7,7 @@ public interface IMediaMetadataReader
 {
     IReadOnlyList<Directory> LoadMetadata(FileInfo file);
 
-    Task<Directory?> LoadExif(FileInfo file, CancellationToken cancellationToken);
+    Task<ExifSubIfdDirectory?> LoadExif(FileInfo file, CancellationToken cancellationToken);
 
-    Task<GpsDirectory?> LoadGPS(FileInfo file, CancellationToken cancellationToken);
+    Task<GpsDirectory?> LoadGps(FileInfo file, CancellationToken cancellationToken);
 }

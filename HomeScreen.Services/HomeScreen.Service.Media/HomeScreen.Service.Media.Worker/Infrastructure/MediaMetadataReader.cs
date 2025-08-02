@@ -30,18 +30,19 @@ public class MediaMetadataReader(ILogger<MediaMetadataReader> logger) : IMediaMe
         return [];
     }
 
-    public async Task<Directory?> LoadExif(FileInfo file, CancellationToken cancellationToken)
+    public async Task<ExifSubIfdDirectory?> LoadExif(FileInfo file, CancellationToken cancellationToken)
     {
         using var activity = ActivitySource.StartActivity();
         var metadata = LoadMetadata(file);
         var exif = await metadata
             .ToAsyncEnumerable()
             .Where(data => string.Equals(data.Name, "Exif SubIfd", StringComparison.InvariantCultureIgnoreCase))
+            .Select(data => data as ExifSubIfdDirectory)
             .FirstOrDefaultAsync(cancellationToken);
         return exif;
     }
 
-    public async Task<GpsDirectory?> LoadGPS(FileInfo file, CancellationToken cancellationToken)
+    public async Task<GpsDirectory?> LoadGps(FileInfo file, CancellationToken cancellationToken)
     {
         using var activity = ActivitySource.StartActivity();
         var metadata = LoadMetadata(file);

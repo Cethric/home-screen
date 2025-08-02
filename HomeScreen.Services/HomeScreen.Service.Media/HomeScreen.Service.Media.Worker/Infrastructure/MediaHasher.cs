@@ -42,7 +42,7 @@ public class MediaHasher(ILogger<MediaHasher> logger) : IMediaHasher
         await using var fileStream = fileInfo.Open(FileMode.Open, FileAccess.Read);
         fileStream.Position = 0;
         var fileHash = await hasher.ComputeHashAsync(fileStream, cancellationToken);
-        var hash = BitConverter.ToString(fileHash).Replace("-", string.Empty);
+        var hash = Convert.ToHexString(fileHash);
         activity?.AddBaggage("Hash", hash);
         return hash;
     }
