@@ -71,28 +71,28 @@
 
 <script async lang="ts" setup>
 import {
-	type Direction,
-	Directions,
-	HSImage,
-	type Image,
-	LeafletMapAsync,
-	ModalDialog,
-	PolaroidCard,
-} from "@homescreen/web-common-components";
-import { useElementVisibility } from "@vueuse/core";
-import { ref, toValue } from "vue";
+  type Direction,
+  Directions,
+  HSImage,
+  type Image,
+  LeafletMapAsync,
+  ModalDialog,
+  PolaroidCard,
+} from '@homescreen/web-common-components';
+import { useElementVisibility } from '@vueuse/core';
+import { ref, toValue } from 'vue';
 
 const props = defineProps<{
-	image: Image;
-	direction: Direction;
-	imageSize: number;
+  image: Image;
+  direction: Direction;
+  imageSize: number;
 }>();
 
 const emits = defineEmits<{ pause: []; resume: [] }>();
 
 const sliderModal = ref<HTMLElement>();
 const isVisible = useElementVisibility(sliderModal, {
-	threshold: 1,
+  threshold: 1,
 });
 
 const size = toValue(props.imageSize);

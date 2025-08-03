@@ -2,11 +2,7 @@ export function random(): number {
   return Math.random();
 }
 
-export function rangeRNG(
-  min: number,
-  max: number,
-  random: () => number,
-): number {
+export function rangeRNG(min: number, max: number, random: () => number): number {
   return Math.trunc(random() * (max - min) + min);
 }
 

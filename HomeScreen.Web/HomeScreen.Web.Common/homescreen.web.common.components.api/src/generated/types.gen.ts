@@ -417,8 +417,7 @@ export type WeatherAll2Responses = {
   200: Array<DailyForecast>;
 };
 
-export type WeatherAll2Response =
-  WeatherAll2Responses[keyof WeatherAll2Responses];
+export type WeatherAll2Response = WeatherAll2Responses[keyof WeatherAll2Responses];
 
 export type ClientOptions = {
   baseUrl: 'http://localhost:5298' | (string & {});

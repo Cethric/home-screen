@@ -29,16 +29,16 @@
 </template>
 
 <script lang="ts" setup>
-import { computed } from "vue";
-import type { RouterLinkProps } from "vue-router";
+import { computed } from 'vue';
+import type { RouterLinkProps } from 'vue-router';
 
 defineOptions({
-	inheritAttrs: false,
+  inheritAttrs: false,
 });
 
 const props = defineProps<RouterLinkProps & { inactiveClass: string }>();
 
 const isExternalLink = computed(() => {
-	return typeof props.to === "string" && props.to.startsWith("http");
+  return typeof props.to === 'string' && props.to.startsWith('http');
 });
 </script>

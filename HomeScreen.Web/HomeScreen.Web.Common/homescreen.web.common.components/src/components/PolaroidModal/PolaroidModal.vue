@@ -67,19 +67,19 @@
 </template>
 
 <script lang="ts" setup>
-import HSImage from "@/components/HSImage/HSImage.vue";
-import { LeafletMapAsync } from "@/components/LeafletMap/LeafletMapAsync";
-import ModalDialog from "@/components/ModalDialog/ModalDialog.vue";
-import PolaroidCard from "@/components/PolaroidCard/PolaroidCard.vue";
-import { Directions } from "@/components/properties";
-import type { Image } from "@/helpers/image";
+import HSImage from '@/components/HSImage/HSImage.vue';
+import { LeafletMapAsync } from '@/components/LeafletMap/LeafletMapAsync';
+import ModalDialog from '@/components/ModalDialog/ModalDialog.vue';
+import PolaroidCard from '@/components/PolaroidCard/PolaroidCard.vue';
+import { Directions } from '@/components/properties';
+import type { Image } from '@/helpers/image';
 
 withDefaults(
-	defineProps<{
-		image: Image;
-		maxSize?: number;
-	}>(),
-	{ maxSize: 250 },
+  defineProps<{
+    image: Image;
+    maxSize?: number;
+  }>(),
+  { maxSize: 250 },
 );
 const emits = defineEmits<{ resume: []; pause: [] }>();
 

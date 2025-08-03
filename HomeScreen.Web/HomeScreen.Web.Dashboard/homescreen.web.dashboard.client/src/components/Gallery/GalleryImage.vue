@@ -38,34 +38,27 @@
 </template>
 
 <script lang="ts" setup>
-import {
-	type Image,
-	injectComponentMediaClient,
-	PolaroidModal,
-} from "@homescreen/web-common-components";
-import { useElementVisibility } from "@vueuse/core";
-import { computed, ref } from "vue";
+import { type Image, injectComponentMediaClient, PolaroidModal } from '@homescreen/web-common-components';
+import { useElementVisibility } from '@vueuse/core';
+import { computed, ref } from 'vue';
 
 const props = withDefaults(defineProps<{ image: Image; size: number }>(), {
-	size: 450,
+  size: 450,
 });
 
 const deviceSize = props.size / window.devicePixelRatio;
-const color = computed(
-	() =>
-		`rgb(${props.image.colour.red}, ${props.image.colour.green}, ${props.image.colour.blue})`,
-);
+const color = computed(() => `rgb(${props.image.colour.red}, ${props.image.colour.green}, ${props.image.colour.blue})`);
 
 const galleryImage = ref<HTMLDivElement>();
 const isVisible = useElementVisibility(galleryImage, {
-	threshold: [0],
+  threshold: [0],
 });
 
 const mediaApi = injectComponentMediaClient();
 
 function toggleMedia() {
-	mediaApi.toggle(props.image.id, !props.image.enabled).then(() => {
-		props.image.enabled = !props.image.enabled;
-	});
+  mediaApi.toggle(props.image.id, !props.image.enabled).then(() => {
+    props.image.enabled = !props.image.enabled;
+  });
 }
 </script>

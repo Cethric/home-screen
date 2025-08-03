@@ -32,26 +32,26 @@
 </template>
 
 <script lang="ts" setup>
-import { faClose } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import { nextTick, ref } from "vue";
+import { faClose } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { nextTick, ref } from 'vue';
 
 const emits = defineEmits<{ show: []; hide: [] }>();
 const isOpen = ref<boolean>(false);
 const dialog = ref<HTMLDialogElement>();
 
 const openDialog = () => {
-	isOpen.value = true;
-	nextTick(() => {
-		dialog.value?.showModal();
-		emits("show");
-	});
+  isOpen.value = true;
+  nextTick(() => {
+    dialog.value?.showModal();
+    emits('show');
+  });
 };
 
 const closeDialog = () => {
-	dialog.value?.close();
-	nextTick(() => {
-		isOpen.value = false;
-	});
+  dialog.value?.close();
+  nextTick(() => {
+    isOpen.value = false;
+  });
 };
 </script>

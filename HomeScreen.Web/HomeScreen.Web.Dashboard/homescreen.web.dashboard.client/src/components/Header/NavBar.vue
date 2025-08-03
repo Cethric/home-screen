@@ -20,10 +20,10 @@
 </template>
 
 <script lang="ts" setup>
-import { faBars } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import NavLink from "@/components/Header/NavLink.vue";
-import { injectConfig } from "@/domain/client/config";
+import { faBars } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import NavLink from '@/components/Header/NavLink.vue';
+import { injectConfig } from '@/domain/client/config';
 
 const config = injectConfig();
 </script>

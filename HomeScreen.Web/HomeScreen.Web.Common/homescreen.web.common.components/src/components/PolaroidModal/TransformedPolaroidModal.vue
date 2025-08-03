@@ -16,11 +16,11 @@
 </template>
 
 <script lang="ts" setup>
-import PolaroidModal from "@/components/PolaroidModal/PolaroidModal.vue";
-import type { PolaroidImage } from "@/components/PolaroidModal/types";
+import PolaroidModal from '@/components/PolaroidModal/PolaroidModal.vue';
+import type { PolaroidImage } from '@/components/PolaroidModal/types';
 
 defineProps<{
-	item: PolaroidImage;
+  item: PolaroidImage;
 }>();
 const emits = defineEmits<{ resume: []; pause: [] }>();
 </script>

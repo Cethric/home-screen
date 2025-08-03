@@ -59,19 +59,16 @@
 </template>
 
 <script lang="ts" setup>
-import type { WeatherForecast } from "@homescreen/web-common-components";
-import { useDateFormat, useNow } from "@vueuse/core";
-import {
-	type DateTimeWeatherComboKind,
-	DateTimeWeatherComboKinds,
-} from "@/components/properties";
+import type { WeatherForecast } from '@homescreen/web-common-components';
+import { useDateFormat, useNow } from '@vueuse/core';
+import { type DateTimeWeatherComboKind, DateTimeWeatherComboKinds } from '@/components/properties';
 
 defineProps<{
-	weatherForecast: WeatherForecast;
-	kind: DateTimeWeatherComboKind;
+  weatherForecast: WeatherForecast;
+  kind: DateTimeWeatherComboKind;
 }>();
 
 const now = useNow();
-const timeFormat = useDateFormat(now, "HH:mm");
-const dayFormat = useDateFormat(now, "MMMM Do YYYY");
+const timeFormat = useDateFormat(now, 'HH:mm');
+const dayFormat = useDateFormat(now, 'MMMM Do YYYY');
 </script>

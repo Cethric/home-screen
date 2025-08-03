@@ -24,22 +24,22 @@
 </template>
 
 <script lang="ts" setup>
-import HSImage from "@/components/HSImage/HSImage.vue";
-import { type Direction, Directions } from "@/components/properties";
-import type { Image } from "@/helpers/image";
+import HSImage from '@/components/HSImage/HSImage.vue';
+import { type Direction, Directions } from '@/components/properties';
+import type { Image } from '@/helpers/image';
 
 withDefaults(
-	defineProps<{
-		direction?: Direction;
-		image: Image;
-		flat?: boolean;
-		maxSize?: number;
-	}>(),
-	{
-		direction: Directions.vertical,
-		flat: false,
-		maxSize: 800,
-	},
+  defineProps<{
+    direction?: Direction;
+    image: Image;
+    flat?: boolean;
+    maxSize?: number;
+  }>(),
+  {
+    direction: Directions.vertical,
+    flat: false,
+    maxSize: 800,
+  },
 );
 
 const emits = defineEmits<{ click: [] }>();

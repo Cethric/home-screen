@@ -35,8 +35,7 @@
 @keyframes animate__stampIn {
   0% {
     opacity: 0;
-    transform: translate(var(--offset-dvw), var(--offset-dvh)) rotate(0)
-      scale(1.3);
+    transform: translate(var(--offset-dvw), var(--offset-dvh)) rotate(0) scale(1.3);
     animation-timing-function: cubic-bezier(0.59, 0, 1, 0.375);
   }
 
@@ -47,29 +46,25 @@
   100%,
   70% {
     opacity: 100;
-    transform: translate(var(--offset-dvw), var(--offset-dvh))
-      rotate(var(--rotate-deg)) scale(1);
+    transform: translate(var(--offset-dvw), var(--offset-dvh)) rotate(var(--rotate-deg)) scale(1);
   }
 
   90% {
     opacity: 100;
-    transform: translate(var(--offset-dvw), var(--offset-dvh))
-      rotate(calc(var(--rotate-deg) / 2)) scale(1.03);
+    transform: translate(var(--offset-dvw), var(--offset-dvh)) rotate(calc(var(--rotate-deg) / 2)) scale(1.03);
   }
 }
 
 @keyframes animate__shrinkOut {
   0% {
     opacity: 100;
-    transform: translate(var(--offset-dvw), var(--offset-dvh))
-      rotate(var(--rotate-deg)) scale(1);
+    transform: translate(var(--offset-dvw), var(--offset-dvh)) rotate(var(--rotate-deg)) scale(1);
     animation-timing-function: cubic-bezier(0, 0.59, 0.375, 1);
   }
 
   100% {
     opacity: 0;
-    transform: translate(var(--offset-dvw), var(--offset-dvh))
-      rotate(var(--rotate-deg)) scale(0.85);
+    transform: translate(var(--offset-dvw), var(--offset-dvh)) rotate(var(--rotate-deg)) scale(0.85);
     animation-timing-function: ease;
   }
 }

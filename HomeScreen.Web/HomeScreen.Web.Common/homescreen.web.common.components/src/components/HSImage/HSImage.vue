@@ -82,28 +82,19 @@
 </template>
 
 <script lang="ts" setup>
-import { MediaTransformOptionsFormat } from "@homescreen/web-common-components-api";
-import { computed } from "vue";
-import HSImageImg from "@/components/HSImage/HSImageImg.vue";
-import HSImageSource from "@/components/HSImage/HSImageSource.vue";
-import LoadingSpinner from "@/components/LoadingSpinner/LoadingSpinner.vue";
-import type { Image } from "@/helpers/image";
+import { MediaTransformOptionsFormat } from '@homescreen/web-common-components-api';
+import { computed } from 'vue';
+import HSImageImg from '@/components/HSImage/HSImageImg.vue';
+import HSImageSource from '@/components/HSImage/HSImageSource.vue';
+import LoadingSpinner from '@/components/LoadingSpinner/LoadingSpinner.vue';
+import type { Image } from '@/helpers/image';
 
-const props = withDefaults(
-	defineProps<Image & { size: number; rounded: boolean }>(),
-	{ rounded: false },
-);
+const props = withDefaults(defineProps<Image & { size: number; rounded: boolean }>(), { rounded: false });
 
-const color = computed(
-	() => `rgb(${props.colour.red}, ${props.colour.green}, ${props.colour.blue})`,
-);
+const color = computed(() => `rgb(${props.colour.red}, ${props.colour.green}, ${props.colour.blue})`);
 
 const deviceSize = props.size / window.devicePixelRatio;
 
-const imageWidth = computed(
-	() => props.size * (props.portrait ? 1 : props.aspectRatio),
-);
-const imageHeight = computed(
-	() => props.size * (props.portrait ? props.aspectRatio : 1),
-);
+const imageWidth = computed(() => props.size * (props.portrait ? 1 : props.aspectRatio));
+const imageHeight = computed(() => props.size * (props.portrait ? props.aspectRatio : 1));
 </script>

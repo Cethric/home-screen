@@ -30,17 +30,13 @@
 </template>
 
 <script lang="ts" setup>
-import {
-	type Direction,
-	Directions,
-	type Image,
-} from "@homescreen/web-common-components";
-import RollingSlideModal from "@/slideshows/rolling/RollingSlideModal.vue";
+import { type Direction, Directions, type Image } from '@homescreen/web-common-components';
+import RollingSlideModal from '@/slideshows/rolling/RollingSlideModal.vue';
 
 defineProps<{
-	images: Image[];
-	direction: Direction;
-	imageSize: number;
+  images: Image[];
+  direction: Direction;
+  imageSize: number;
 }>();
 
 const emits = defineEmits<{ pause: []; resume: [] }>();
