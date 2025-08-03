@@ -78,7 +78,7 @@ public class MediaTransformer(ILogger<MediaTransformer> logger, IMediaTransformP
     private void TransformImage(MagickImage image, FileInfo transformedInfo, MediaTransformOptions options)
     {
         using var activity = ActivitySource.StartActivity();
-        image.FilterType = options is { Width: < 150 } or { Height: < 150 } ? FilterType.Box : FilterType.MagicKernelSharp2021;
+        image.FilterType = options.Width > image.Width && options.Height > image.Height ? FilterType.Mitchell : FilterType.Lanczos2;
 
         logger.LogTrace(
             "Resizing Image {TransformPath} to max size {Width}x{Height}",

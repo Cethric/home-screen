@@ -31,31 +31,69 @@ public class MediaDateTimeProcessor(ILogger<MediaDateTimeProcessor> logger, IMed
         logger.LogDebug("Determining media date for {FileName}", file.FullName);
 
         var exif = await mediaMetadataReader.LoadExif(file, cancellationToken);
-        if (exif == null)
+        if (exif == null || !TryGetExifDateTimeOffset(file, exif, out var dateTime, out var offset))
         {
             return GetFileTime(file);
         }
 
-        // Try to get date from EXIF metadata, checking multiple tags in priority order
-        if (TryGetExifDateTime(exif, TagDateTimeOriginal, TagOffsetTimeOriginal, out var dateTime, out var offsetSpan))
+        logger.LogInformation("Using DateTime from EXIF for {FileName} - {DateTime} {Offset}", file.FullName, dateTime, offset);
+        return (dateTime, offset);
+    }
+
+    private bool TryGetExifDateTimeOffset(
+        FileInfo file,
+        ExifSubIfdDirectory exif,
+        out DateTimeOffset dateTime,
+        out TimeSpan offsetSpan
+    )
+    {
+        (dateTime, offsetSpan) = GetFileTime(file);
+        var parsed = false;
+
+        if (TryGetExifDateTime(exif, TagDateTime, TagOffsetTime, out var dateTimeOffset, out var offset))
         {
-            logger.LogDebug("Using DateTimeOriginal from EXIF for {FileName}", file.FullName);
-            return (dateTime, offsetSpan);
+            if (dateTime.UtcTicks > dateTimeOffset.UtcTicks)
+            {
+                dateTime = dateTimeOffset;
+                offsetSpan = offset;
+            }
+
+            parsed = true;
         }
 
-        if (TryGetExifDateTime(exif, TagDateTimeDigitized, TagOffsetTimeDigitized, out dateTime, out offsetSpan))
+        if (TryGetExifDateTime(
+                exif,
+                TagDateTimeDigitized,
+                TagOffsetTimeDigitized,
+                out var dateTimeOffsetDigitized,
+                out var offsetDigitized
+            ))
         {
-            logger.LogDebug("Using DateTimeDigitized from EXIF for {FileName}", file.FullName);
-            return (dateTime, offsetSpan);
+            if (dateTime.UtcTicks > dateTimeOffsetDigitized.UtcTicks)
+            {
+                dateTime = dateTimeOffsetDigitized;
+                offsetSpan = offsetDigitized;
+            }
+
+            parsed = true;
         }
 
-        if (!TryGetExifDateTime(exif, TagDateTime, TagOffsetTime, out dateTime, out offsetSpan))
+        if (!TryGetExifDateTime(
+                exif,
+                TagDateTimeOriginal,
+                TagOffsetTimeOriginal,
+                out var dateTimeOffsetOriginal,
+                out var offsetOriginal
+            ) ||
+            dateTime.UtcTicks <= dateTimeOffsetOriginal.UtcTicks)
         {
-            return GetFileTime(file);
+            return parsed;
         }
 
-        logger.LogDebug("Using DateTime from EXIF for {FileName}", file.FullName);
-        return (dateTime, offsetSpan);
+        dateTime = dateTimeOffsetOriginal;
+        offsetSpan = offsetOriginal;
+
+        return true;
     }
 
     private bool TryGetExifDateTime(
