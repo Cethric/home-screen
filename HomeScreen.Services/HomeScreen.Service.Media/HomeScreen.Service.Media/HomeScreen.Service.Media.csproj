@@ -30,6 +30,7 @@
         </PackageReference>
         <PackageReference Include="Grpc.AspNetCore" Version="2.71.0" />
         <PackageReference Include="Grpc.AspNetCore.HealthChecks" Version="2.71.0" />
+        <PackageReference Include="JetBrains.Annotations" Version="2025.2.0" />
         <PackageReference Include="Magick.NET.Core" Version="14.7.0" />
         <PackageReference Include="Magick.NET-Q16-HDRI-AnyCPU" Version="14.7.0" />
         <PackageReference Include="MetadataExtractor" Version="2.9.0-rc2"/>

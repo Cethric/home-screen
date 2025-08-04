@@ -13,6 +13,8 @@
         <ProductionBuildCommand>pnpm run build</ProductionBuildCommand>
         <CleanCommand>pnpm run clean</CleanCommand>
         <ShouldRunNpmInstall>false</ShouldRunNpmInstall>
+
+        <NpmInstallCheck>$(MSBuildProjectDirectory)\..\..\pnpm-lock.yaml</NpmInstallCheck>
     </PropertyGroup>
 
     <ItemGroup>
