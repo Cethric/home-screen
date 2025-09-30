@@ -48,7 +48,7 @@
 		"@cpsoinos/vite-plugin-http2-proxy": "^0.1.0",
 		"@tailwindcss/vite": "^4.1.11",
 		"@tsconfig/node22": "^22.0.2",
-		"@types/jsdom": "^21.1.7",
+		"@types/jsdom": "^27.0.0",
 		"@types/luxon": "^3.6.2",
 		"@types/node": "^24.0.13",
 		"@types/seedrandom": "^3.0.8",
