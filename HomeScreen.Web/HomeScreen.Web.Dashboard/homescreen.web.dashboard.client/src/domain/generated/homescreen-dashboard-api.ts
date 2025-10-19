@@ -7,246 +7,251 @@
 /* eslint-disable */
 // ReSharper disable InconsistentNaming
 
-import { DateTime, Duration } from "luxon";
+import { DateTime, Duration } from 'luxon';
 
 export interface IConfigClient {
-
-    config(signal?: AbortSignal): Promise<SwaggerResponse<Config>>;
+  config(signal?: AbortSignal): Promise<SwaggerResponse<Config>>;
 }
 
 export class ConfigClient implements IConfigClient {
-    private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
-    private baseUrl: string;
-    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+  private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
+  private baseUrl: string;
+  protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
 
-    constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
-        this.http = http ? http : window as any;
-        this.baseUrl = baseUrl ?? "";
+  constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
+    this.http = http ? http : (window as any);
+    this.baseUrl = baseUrl ?? '';
+  }
+
+  config(signal?: AbortSignal): Promise<SwaggerResponse<Config>> {
+    let url_ = this.baseUrl + '/api/config';
+    url_ = url_.replace(/[?&]$/, '');
+
+    let options_: RequestInit = {
+      method: 'GET',
+      signal,
+      headers: {
+        Accept: 'application/json',
+      },
+    };
+
+    return this.http.fetch(url_, options_).then((_response: Response) => {
+      return this.processConfig(_response);
+    });
+  }
+
+  protected processConfig(response: Response): Promise<SwaggerResponse<Config>> {
+    const status = response.status;
+    let _headers: any = {};
+    if (response.headers && response.headers.forEach) {
+      response.headers.forEach((v: any, k: any) => (_headers[k] = v));
     }
-
-    config(signal?: AbortSignal): Promise<SwaggerResponse<Config>> {
-        let url_ = this.baseUrl + "/api/config";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_: RequestInit = {
-            method: "GET",
-            signal,
-            headers: {
-                "Accept": "application/json"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processConfig(_response);
-        });
+    if (status === 200) {
+      return response.text().then((_responseText) => {
+        let result200: any = null;
+        let resultData200 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
+        result200 = Config.fromJS(resultData200);
+        return new SwaggerResponse(status, _headers, result200);
+      });
+    } else if (status === 404) {
+      return response.text().then((_responseText) => {
+        return throwException('A server side error occurred.', status, _responseText, _headers);
+      });
+    } else if (status !== 200 && status !== 204) {
+      return response.text().then((_responseText) => {
+        return throwException('An unexpected server error occurred.', status, _responseText, _headers);
+      });
     }
-
-    protected processConfig(response: Response): Promise<SwaggerResponse<Config>> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200) {
-            return response.text().then((_responseText) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = Config.fromJS(resultData200);
-            return new SwaggerResponse(status, _headers, result200);
-            });
-        } else if (status === 404) {
-            return response.text().then((_responseText) => {
-            return throwException("A server side error occurred.", status, _responseText, _headers);
-            });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<SwaggerResponse<Config>>(new SwaggerResponse(status, _headers, null as any));
-    }
+    return Promise.resolve<SwaggerResponse<Config>>(new SwaggerResponse(status, _headers, null as any));
+  }
 }
 
 export interface IWeatherForecastClient {
-
-    weatherForecast(signal?: AbortSignal): Promise<SwaggerResponse<WeatherForecast[]>>;
+  weatherForecast(signal?: AbortSignal): Promise<SwaggerResponse<WeatherForecast[]>>;
 }
 
 export class WeatherForecastClient implements IWeatherForecastClient {
-    private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
-    private baseUrl: string;
-    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+  private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
+  private baseUrl: string;
+  protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
 
-    constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
-        this.http = http ? http : window as any;
-        this.baseUrl = baseUrl ?? "";
+  constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
+    this.http = http ? http : (window as any);
+    this.baseUrl = baseUrl ?? '';
+  }
+
+  weatherForecast(signal?: AbortSignal): Promise<SwaggerResponse<WeatherForecast[]>> {
+    let url_ = this.baseUrl + '/WeatherForecast';
+    url_ = url_.replace(/[?&]$/, '');
+
+    let options_: RequestInit = {
+      method: 'GET',
+      signal,
+      headers: {
+        Accept: 'application/json',
+      },
+    };
+
+    return this.http.fetch(url_, options_).then((_response: Response) => {
+      return this.processWeatherForecast(_response);
+    });
+  }
+
+  protected processWeatherForecast(response: Response): Promise<SwaggerResponse<WeatherForecast[]>> {
+    const status = response.status;
+    let _headers: any = {};
+    if (response.headers && response.headers.forEach) {
+      response.headers.forEach((v: any, k: any) => (_headers[k] = v));
     }
-
-    weatherForecast(signal?: AbortSignal): Promise<SwaggerResponse<WeatherForecast[]>> {
-        let url_ = this.baseUrl + "/WeatherForecast";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_: RequestInit = {
-            method: "GET",
-            signal,
-            headers: {
-                "Accept": "application/json"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processWeatherForecast(_response);
-        });
-    }
-
-    protected processWeatherForecast(response: Response): Promise<SwaggerResponse<WeatherForecast[]>> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200) {
-            return response.text().then((_responseText) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            if (Array.isArray(resultData200)) {
-                result200 = [] as any;
-                for (let item of resultData200)
-                    result200!.push(WeatherForecast.fromJS(item));
-            }
-            else {
-                result200 = null as any;
-            }
-            return new SwaggerResponse(status, _headers, result200);
-            });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
+    if (status === 200) {
+      return response.text().then((_responseText) => {
+        let result200: any = null;
+        let resultData200 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
+        if (Array.isArray(resultData200)) {
+          result200 = [] as any;
+          for (let item of resultData200) result200!.push(WeatherForecast.fromJS(item));
+        } else {
+          result200 = null as any;
         }
-        return Promise.resolve<SwaggerResponse<WeatherForecast[]>>(new SwaggerResponse(status, _headers, null as any));
+        return new SwaggerResponse(status, _headers, result200);
+      });
+    } else if (status !== 200 && status !== 204) {
+      return response.text().then((_responseText) => {
+        return throwException('An unexpected server error occurred.', status, _responseText, _headers);
+      });
     }
+    return Promise.resolve<SwaggerResponse<WeatherForecast[]>>(new SwaggerResponse(status, _headers, null as any));
+  }
 }
 
 export class Config implements IConfig {
-    commonUrl!: string;
-    slideshowUrl!: string;
+  commonUrl!: string;
+  slideshowUrl!: string;
 
-    constructor(data?: IConfig) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
+  constructor(data?: IConfig) {
+    if (data) {
+      for (var property in data) {
+        if (Object.hasOwn(data, property)) (this as any)[property] = (data as any)[property];
+      }
     }
+  }
 
-    init(_data?: any) {
-        if (_data) {
-            this.commonUrl = _data["commonUrl"];
-            this.slideshowUrl = _data["slideshowUrl"];
-        }
+  init(_data?: any) {
+    if (_data) {
+      this.commonUrl = _data['commonUrl'];
+      this.slideshowUrl = _data['slideshowUrl'];
     }
+  }
 
-    static fromJS(data: any): Config {
-        data = typeof data === 'object' ? data : {};
-        let result = new Config();
-        result.init(data);
-        return result;
-    }
+  static fromJS(data: any): Config {
+    data = typeof data === 'object' ? data : {};
+    let result = new Config();
+    result.init(data);
+    return result;
+  }
 
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["commonUrl"] = this.commonUrl;
-        data["slideshowUrl"] = this.slideshowUrl;
-        return data;
-    }
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {};
+    data['commonUrl'] = this.commonUrl;
+    data['slideshowUrl'] = this.slideshowUrl;
+    return data;
+  }
 }
 
 export interface IConfig {
-    commonUrl: string;
-    slideshowUrl: string;
+  commonUrl: string;
+  slideshowUrl: string;
 }
 
 export class WeatherForecast implements IWeatherForecast {
-    date?: DateTime;
-    temperatureC?: number;
-    temperatureF?: number;
-    summary?: string | undefined;
+  date?: DateTime;
+  temperatureC?: number;
+  temperatureF?: number;
+  summary?: string | undefined;
 
-    constructor(data?: IWeatherForecast) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
+  constructor(data?: IWeatherForecast) {
+    if (data) {
+      for (var property in data) {
+        if (Object.hasOwn(data, property)) (this as any)[property] = (data as any)[property];
+      }
     }
+  }
 
-    init(_data?: any) {
-        if (_data) {
-            this.date = _data["date"] ? DateTime.fromISO(_data["date"].toString()) : undefined as any;
-            this.temperatureC = _data["temperatureC"];
-            this.temperatureF = _data["temperatureF"];
-            this.summary = _data["summary"];
-        }
+  init(_data?: any) {
+    if (_data) {
+      this.date = _data['date'] ? DateTime.fromISO(_data['date'].toString()) : (undefined as any);
+      this.temperatureC = _data['temperatureC'];
+      this.temperatureF = _data['temperatureF'];
+      this.summary = _data['summary'];
     }
+  }
 
-    static fromJS(data: any): WeatherForecast {
-        data = typeof data === 'object' ? data : {};
-        let result = new WeatherForecast();
-        result.init(data);
-        return result;
-    }
+  static fromJS(data: any): WeatherForecast {
+    data = typeof data === 'object' ? data : {};
+    let result = new WeatherForecast();
+    result.init(data);
+    return result;
+  }
 
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["date"] = this.date ? this.date.toFormat('yyyy-MM-dd') : undefined as any;
-        data["temperatureC"] = this.temperatureC;
-        data["temperatureF"] = this.temperatureF;
-        data["summary"] = this.summary;
-        return data;
-    }
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {};
+    data['date'] = this.date ? this.date.toFormat('yyyy-MM-dd') : (undefined as any);
+    data['temperatureC'] = this.temperatureC;
+    data['temperatureF'] = this.temperatureF;
+    data['summary'] = this.summary;
+    return data;
+  }
 }
 
 export interface IWeatherForecast {
-    date?: DateTime;
-    temperatureC?: number;
-    temperatureF?: number;
-    summary?: string | undefined;
+  date?: DateTime;
+  temperatureC?: number;
+  temperatureF?: number;
+  summary?: string | undefined;
 }
 
 export class SwaggerResponse<TResult> {
-    status: number;
-    headers: { [key: string]: any; };
-    result: TResult;
+  status: number;
+  headers: { [key: string]: any };
+  result: TResult;
 
-    constructor(status: number, headers: { [key: string]: any; }, result: TResult)
-    {
-        this.status = status;
-        this.headers = headers;
-        this.result = result;
-    }
+  constructor(status: number, headers: { [key: string]: any }, result: TResult) {
+    this.status = status;
+    this.headers = headers;
+    this.result = result;
+  }
 }
 
 export class ApiException extends Error {
-    override message: string;
-    status: number;
-    response: string;
-    headers: { [key: string]: any; };
-    result: any;
+  override message: string;
+  status: number;
+  response: string;
+  headers: { [key: string]: any };
+  result: any;
 
-    constructor(message: string, status: number, response: string, headers: { [key: string]: any; }, result: any) {
-        super();
+  constructor(message: string, status: number, response: string, headers: { [key: string]: any }, result: any) {
+    super();
 
-        this.message = message;
-        this.status = status;
-        this.response = response;
-        this.headers = headers;
-        this.result = result;
-    }
+    this.message = message;
+    this.status = status;
+    this.response = response;
+    this.headers = headers;
+    this.result = result;
+  }
 
-    protected isApiException = true;
+  protected isApiException = true;
 
-    static isApiException(obj: any): obj is ApiException {
-        return obj.isApiException === true;
-    }
+  static isApiException(obj: any): obj is ApiException {
+    return obj.isApiException === true;
+  }
 }
 
-function throwException(message: string, status: number, response: string, headers: { [key: string]: any; }, result?: any): any {
-    throw new ApiException(message, status, response, headers, result);
+function throwException(
+  message: string,
+  status: number,
+  response: string,
+  headers: { [key: string]: any },
+  result?: any,
+): any {
+  throw new ApiException(message, status, response, headers, result);
 }

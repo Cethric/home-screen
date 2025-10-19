@@ -12,15 +12,7 @@ docs/ReverseOutputXml.md
 docs/ReverseOutputXmlAddressparts.md
 docs/ReverseOutputXmlResult.md
 git_push.sh
-src/HomeScreen.OpenAPI.Nominatim.Test/Api/DefaultApiTests.cs
 src/HomeScreen.OpenAPI.Nominatim.Test/HomeScreen.OpenAPI.Nominatim.Test.csproj
-src/HomeScreen.OpenAPI.Nominatim.Test/Model/LayerTests.cs
-src/HomeScreen.OpenAPI.Nominatim.Test/Model/NumberBooleanTests.cs
-src/HomeScreen.OpenAPI.Nominatim.Test/Model/OutputFormatTests.cs
-src/HomeScreen.OpenAPI.Nominatim.Test/Model/ReverseOutputJsonTests.cs
-src/HomeScreen.OpenAPI.Nominatim.Test/Model/ReverseOutputXmlAddresspartsTests.cs
-src/HomeScreen.OpenAPI.Nominatim.Test/Model/ReverseOutputXmlResultTests.cs
-src/HomeScreen.OpenAPI.Nominatim.Test/Model/ReverseOutputXmlTests.cs
 src/HomeScreen.OpenAPI.Nominatim/Api/DefaultApi.cs
 src/HomeScreen.OpenAPI.Nominatim/Client/ApiClient.cs
 src/HomeScreen.OpenAPI.Nominatim/Client/ApiException.cs
