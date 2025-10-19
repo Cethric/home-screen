@@ -1,9 +1,11 @@
 ﻿using System.Diagnostics;
-using HomeScreen.Service.Location.Infrastructure.NominatimLocationService.Generated.Entities;
+using System.Net;
+using HomeScreen.OpenAPI.Nominatim.Api;
+using HomeScreen.OpenAPI.Nominatim.Model;
 
 namespace HomeScreen.Service.Location.Infrastructure.NominatimLocationService;
 
-public class NominatimLocationApi(ILogger<NominatimLocationApi> logger, INominatimClient nominatimClient) : ILocationApi
+public class NominatimLocationApi(ILogger<NominatimLocationApi> logger, IDefaultApi nominatimClient) : ILocationApi
 {
     private static ActivitySource ActivitySource => new(nameof(NominatimLocationApi));
 
@@ -22,24 +24,28 @@ public class NominatimLocationApi(ILogger<NominatimLocationApi> logger, INominat
             altitude
         );
 
-        var response = await nominatimClient.Reverse_phpAsync(
+        var response = await nominatimClient.ReverseGetWithHttpInfoAsync(
             latitude,
             longitude,
             OutputFormat.Jsonv2,
-            zoom: 15,
+            zoom: 16,
             cancellationToken: cancellationToken
         );
-        if (response.StatusCode == StatusCodes.Status200OK && !string.IsNullOrWhiteSpace(response.Result.Display_name))
+        if (response.StatusCode == HttpStatusCode.OK)
         {
-            logger.LogInformation(
-                "Found address for {Longitude}, {Latitude}, {Altitude}",
-                longitude,
-                latitude,
-                altitude
-            );
-            logger.LogInformation("Found Address {FormattedAddress}", response.Result.Display_name);
-            activity?.AddEvent(new ActivityEvent("Found Location")).AddBaggage("value", response.Result.Display_name);
-            return response.Result.Display_name;
+            var content = response.Data;
+            if (!string.IsNullOrEmpty(content.DisplayName))
+            {
+                logger.LogInformation(
+                    "Found address for {Longitude}, {Latitude}, {Altitude}",
+                    longitude,
+                    latitude,
+                    altitude
+                );
+                logger.LogInformation("Found Address {FormattedAddress}", content.DisplayName);
+                activity?.AddEvent(new ActivityEvent("Found Location")).AddBaggage("value", content.DisplayName);
+                return content.DisplayName;
+            }
         }
 
         activity?.AddEvent(new ActivityEvent("Unknown Location"));

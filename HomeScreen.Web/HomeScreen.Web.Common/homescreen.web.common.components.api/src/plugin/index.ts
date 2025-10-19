@@ -9,12 +9,12 @@ import {
 } from '../client';
 import { type Client, createClient, createConfig } from '../generated/client';
 
-export const ComponentClient: symbol = Symbol.for('ComponentClient');
+export const CommonClient: symbol = Symbol.for('CommonClient');
 export const CommonConfigClient: symbol = Symbol.for('CommonConfigClient');
 export const CommonMediaClient: symbol = Symbol.for('CommonMediaClient');
 export const CommonWeatherClient: symbol = Symbol.for('CommonWeatherClient');
 
-export const injectComponentClient = () => inject(ComponentClient) as Client;
+export const injectCommonClient = () => inject(CommonClient) as Client;
 export const injectComponentConfigClient = () => inject(CommonConfigClient) as IConfigClient;
 export const injectComponentMediaClient = () => inject(CommonMediaClient) as IMediaClient;
 export const injectComponentWeatherClient = () => inject(CommonWeatherClient) as IWeatherClient;
@@ -34,7 +34,7 @@ interface PluginProps {
 
 export const ComponentApiPlugin = {
   install(app, { client, config }) {
-    app.provide(ComponentClient, client);
+    app.provide(CommonClient, client);
     app.provide(CommonConfigClient, config);
     app.provide(CommonMediaClient, new MediaClient(client));
     app.provide(CommonWeatherClient, new WeatherClient(client));

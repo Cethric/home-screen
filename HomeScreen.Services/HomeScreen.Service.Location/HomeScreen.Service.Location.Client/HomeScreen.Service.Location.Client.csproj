@@ -7,7 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="JetBrains.Annotations" Version="2025.2.0" />
+      <PackageReference Include="JetBrains.Annotations" Version="2025.2.2" />
       <ProjectReference Include="..\HomeScreen.Service.Location.Proto\HomeScreen.Service.Location.Proto.csproj" />
       <PackageReference Include="Grpc.HealthCheck" Version="2.71.0" />
         <PackageReference Include="Grpc.Net.ClientFactory" Version="2.71.0" />

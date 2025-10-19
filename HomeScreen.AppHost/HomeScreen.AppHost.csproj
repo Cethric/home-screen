@@ -15,15 +15,15 @@
         <Optimize Condition=" '$(Optimize)' == '' ">false</Optimize>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="GitVersion.MsBuild" Version="6.3.0">
+        <PackageReference Include="GitVersion.MsBuild" Version="6.4.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Aspire.Hosting.AppHost" Version="9.4.0" />
-        <PackageReference Include="Aspire.Hosting.Redis" Version="9.4.0" />
-        <PackageReference Include="Aspire.Hosting.SqlServer" Version="9.4.0" />
-        <PackageReference Include="JetBrains.Annotations" Version="2025.2.0" />
-        <PackageReference Include="System.Text.Json" Version="9.0.7" />
+        <PackageReference Include="Aspire.Hosting.AppHost" Version="9.5.1" />
+        <PackageReference Include="Aspire.Hosting.Redis" Version="9.5.1" />
+        <PackageReference Include="Aspire.Hosting.SqlServer" Version="9.5.1" />
+        <PackageReference Include="JetBrains.Annotations" Version="2025.2.2" />
+        <PackageReference Include="System.Text.Json" Version="9.0.10" />
         <PackageReference Include="YamlDotNet" Version="16.3.0"/>
     </ItemGroup>
     <ItemGroup>

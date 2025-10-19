@@ -19,9 +19,7 @@ public class MediaEntry
         CapturedUtc = DateTimeOffset.UtcNow;
         CapturedOffset = TimeSpan.Zero;
         Latitude = 360;
-        LatitudeDirection = LatitudeDirection.Invalid;
         Longitude = 360;
-        LongitudeDirection = LongitudeDirection.Invalid;
         Enabled = false;
         ImageRatio = 16.0 / 9.0;
         ImagePortrait = false;
@@ -45,13 +43,7 @@ public class MediaEntry
     public double Latitude { get; set; }
 
     [Required]
-    public LatitudeDirection LatitudeDirection { get; set; }
-
-    [Required]
     public double Longitude { get; set; }
-
-    [Required]
-    public LongitudeDirection LongitudeDirection { get; set; }
 
     [Required]
     [MaxLength(4096)]

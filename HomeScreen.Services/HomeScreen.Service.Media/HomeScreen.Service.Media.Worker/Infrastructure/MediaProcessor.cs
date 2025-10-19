@@ -54,7 +54,7 @@ public class MediaProcessor(
         using var activity = ActivitySource.StartActivity();
         var histogram = mediaColourProcessor.GetBaseImageColour(image);
         var (capturedUtc, capturedOffset) = await mediaDateTimeProcessor.MediaCaptureDate(file, cancellationToken);
-        var (longitudeDirection, latitudeDirection, latitudeResult, longitudeResult, cachedLocation) =
+        var (latitudeResult, longitudeResult, cachedLocation) =
             await mediaLocationProcessor.ProcessLocation(file, cancellationToken);
         var entry = new MediaEntry(file, hash)
         {
@@ -66,11 +66,9 @@ public class MediaProcessor(
             ImagePortrait = image.Height >= image.Width,
             CapturedUtc = capturedUtc,
             CapturedOffset = capturedOffset,
-            LongitudeDirection = longitudeDirection,
-            LatitudeDirection = latitudeDirection,
             Latitude = latitudeResult,
             Longitude = longitudeResult,
-            LocationLabel = cachedLocation,
+            LocationLabel = string.IsNullOrEmpty(cachedLocation) ? string.Empty : cachedLocation,
             Notes = JsonSerializer.Serialize(
                 image.AttributeNames.Select(name => (Key: name, Value: image.GetAttribute(name))).ToDictionary()
             )

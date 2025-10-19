@@ -10,30 +10,21 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="GitVersion.MsBuild" Version="6.3.0">
+        <PackageReference Include="GitVersion.MsBuild" Version="6.4.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Azure.Maps.Search" Version="2.0.0-beta.4"/>
+        <PackageReference Include="Azure.Maps.Search" Version="2.0.0-beta.5" />
         <PackageReference Include="Grpc.AspNetCore" Version="2.71.0" />
         <PackageReference Include="Grpc.AspNetCore.HealthChecks" Version="2.71.0" />
-        <PackageReference Include="JetBrains.Annotations" Version="2025.2.0" />
-        <PackageReference Include="NSwag.MSBuild" Version="14.4.0">
-            <PrivateAssets>all</PrivateAssets>
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
-        <PackageReference Include="System.Text.Json" Version="9.0.7" />
+        <PackageReference Include="JetBrains.Annotations" Version="2025.2.2" />
+        <PackageReference Include="System.Text.Json" Version="9.0.10" />
     </ItemGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\..\..\HomeScreen.ServiceDefaults\HomeScreen.ServiceDefaults.csproj"/>
+        <ProjectReference Include="..\HomeScreen.OpenAPI.Nominatim\src\HomeScreen.OpenAPI.Nominatim\HomeScreen.OpenAPI.Nominatim.csproj" />
         <ProjectReference Include="..\HomeScreen.Service.Location.Proto\HomeScreen.Service.Location.Proto.csproj"/>
     </ItemGroup>
-
-    <Target Name="NSwag-Pre" BeforeTargets="PreBuildEvent">
-        <Exec WorkingDirectory="$(ProjectDir)"
-              EnvironmentVariables="ASPNETCORE_ENVIRONMENT=Development"
-              Command="$(NSwagExe_Net90) run Infrastructure/NominatimLocationService/nominatim.nswag /variables:Configuration=$(Configuration)"/>
-    </Target>
 
 </Project>

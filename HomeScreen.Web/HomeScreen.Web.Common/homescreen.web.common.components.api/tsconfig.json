@@ -16,13 +16,7 @@
     "declarationDir": "dist/",
     "sourceMap": true,
     "sourceRoot": "src/",
-    "lib": [
-      "ESNext",
-      "ESNext.Object",
-      "DOM",
-      "DOM.Iterable",
-      "DOM.AsyncIterable"
-    ]
+    "lib": ["ESNext", "ESNext.Object", "DOM", "DOM.Iterable", "DOM.AsyncIterable"]
   },
   "include": ["src/**/*"]
 }

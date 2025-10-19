@@ -95,7 +95,7 @@ public class MediaTransformer(ILogger<MediaTransformer> logger, IMediaTransformP
         image.Density = new Density(120, DensityUnit.PixelsPerInch);
         image.Enhance();
         image.SetAttribute("hdr:write-gain-map", true);
-        image.SetProfile(ColorProfile.ColorMatchRGB, ColorTransformMode.HighRes);
+        image.SetProfile(ColorProfiles.ColorMatchRGB, ColorTransformMode.HighRes);
         logger.LogTrace(
             "Resized Image {TransformPath} to size {Width}x{Height} - requested {RequestedWidth}x{RequestedHeight}",
             transformedInfo.FullName,

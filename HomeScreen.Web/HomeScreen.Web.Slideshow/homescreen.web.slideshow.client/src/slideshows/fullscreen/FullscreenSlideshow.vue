@@ -26,7 +26,7 @@
         class="absolute top-1/2 left-1/2 flex h-dvh w-dvw -translate-x-1/2 -translate-y-1/2 items-center justify-center p-2"
       >
         <PolaroidModal
-          :image="images[imageId]"
+          :image="images[imageId] as Image"
           :max-size="size"
           @pause="() => pause()"
           @resume="() => resume()"

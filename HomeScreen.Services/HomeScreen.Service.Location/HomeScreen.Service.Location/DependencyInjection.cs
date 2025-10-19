@@ -1,11 +1,10 @@
 ﻿using Azure;
 using Azure.Maps.Search;
+using HomeScreen.OpenAPI.Nominatim.Api;
 using HomeScreen.Service.Location.Configuration;
 using HomeScreen.Service.Location.Infrastructure;
 using HomeScreen.Service.Location.Infrastructure.Azure;
 using HomeScreen.Service.Location.Infrastructure.NominatimLocationService;
-using HomeScreen.Service.Location.Infrastructure.NominatimLocationService.Generated.Clients;
-using HomeScreen.Service.Location.Infrastructure.NominatimLocationService.Generated.Entities;
 
 namespace HomeScreen.Service.Location;
 
@@ -54,12 +53,19 @@ public static class DependencyInjection
 
     private static IHostApplicationBuilder AddNominatimLocationService(this IHostApplicationBuilder builder)
     {
+        const string BaseServerUrl = "https://nominatim.geocoding.ai";
         builder.Services.AddHttpClient("Nominatim");
-        builder.Services.AddScoped<INominatimClient, NominatimClient>(sp =>
-            new NominatimClient(sp.GetRequiredService<IHttpClientFactory>().CreateClient("Nominatim"))
-            {
-                BaseUrl = "https://nominatim.geocoding.ai"
-            }
+        builder.Services.AddScoped<IDefaultApi, DefaultApi>(sp => new DefaultApi(
+                sp.GetRequiredService<IHttpClientFactory>().CreateClient("Nominatim"),
+                new OpenAPI.Nominatim.Client.Configuration
+                {
+                    BasePath = BaseServerUrl,
+                    UseDefaultCredentials = false,
+                    DefaultHeaders = { },
+                    Timeout = 100_000,
+                    UserAgent = "HomeScreen.Service.Location"
+                }
+            )
         );
         builder.Services.AddScoped<ILocationApi, NominatimLocationApi>();
         return builder;

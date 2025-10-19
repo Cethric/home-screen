@@ -17,7 +17,7 @@ namespace HomeScreen.Database.MediaDb.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.1")
+                .HasAnnotation("ProductVersion", "9.0.9")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -55,9 +55,6 @@ namespace HomeScreen.Database.MediaDb.Migrations
                     b.Property<double>("Latitude")
                         .HasColumnType("float");
 
-                    b.Property<int>("LatitudeDirection")
-                        .HasColumnType("int");
-
                     b.Property<string>("LocationLabel")
                         .IsRequired()
                         .HasMaxLength(4096)
@@ -65,9 +62,6 @@ namespace HomeScreen.Database.MediaDb.Migrations
 
                     b.Property<double>("Longitude")
                         .HasColumnType("float");
-
-                    b.Property<int>("LongitudeDirection")
-                        .HasColumnType("int");
 
                     b.Property<string>("Notes")
                         .IsRequired()

@@ -1,16 +1,31 @@
 {
-	"$schema": "https://biomejs.dev/schemas/2.1.2/schema.json",
-	"root": false,
-	"extends": "//",
-	"vcs": {
-		"root": "../../../.git/"
-	},
-	"files": {
-		"includes": [
-			"src/**/*.vue",
-			"src/**/*.ts",
-			"vite.config.ts",
-			"vitest.config.ts"
-		]
-	}
+  "$schema": "https://biomejs.dev/schemas/2.2.5/schema.json",
+  "root": false,
+  "extends": "//",
+  "vcs": {
+    "root": "../../../.git/"
+  },
+  "overrides": [
+    {
+      "includes": ["src/domain/generated/**/*"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "useIterableCallbackReturn": "off"
+          },
+          "style": {
+            "useConst": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["vite.config.ts"],
+      "linter": {
+        "rules": {
+          "style": { "noNonNullAssertion": "off" }
+        }
+      }
+    }
+  ]
 }

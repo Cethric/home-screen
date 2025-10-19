@@ -6,9 +6,6 @@
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.vitest.tsbuildinfo",
     "module": "ESNext",
     "lib": ["ESNext", "ESNext.AsyncIterable", "DOM", "DOM.Iterable", "DOM.AsyncIterable"],
-    "types": [
-      "node",
-      "jsdom"
-    ]
+    "types": ["node", "jsdom"]
   }
 }

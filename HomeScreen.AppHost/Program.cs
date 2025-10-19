@@ -20,6 +20,7 @@ var slideshowAddress = builder.AddParameter("SlideshowAddress");
 
 var redis = builder
     .AddRedis("homescreen-redis")
+    .WithRedisInsight()
     .WithOtlpExporter()
     .WithImageTag("latest")
     .WithDataVolume()
@@ -28,11 +29,13 @@ var redis = builder
 var sqlServer = builder
     .AddSqlServer("homescreen-sqlserver", mssqlPassword)
     .WithOtlpExporter()
-    .WithImageTag("2022-latest")
+    .WithImageTag("2025-latest")
     .WithImageRegistry("mcr.microsoft.com")
     .WithImage("mssql/server")
-    .WithContainerRuntimeArgs("--cap-add=SYS_PTRACE", "--platform=linux/amd64")
+    .WithContainerRuntimeArgs()
     .WithDataVolume();
+
+mssqlPassword.WithParentRelationship(sqlServer);
 
 var mediaDb = sqlServer.AddDatabase("homescreen-media");
 var dashboardDb = sqlServer.AddDatabase("homescreen-dashboard");
@@ -53,6 +56,10 @@ var location = builder
     .WithEnvironment("AZURE_MAPS_SUBSCRIPTION_KEY", mapsKey)
     .WithEnvironment("AZURE_CLIENT_ID", clientId);
 
+mapsKey.WithParentRelationship(location);
+clientId.WithParentRelationship(location);
+mappingService.WithParentRelationship(location);
+
 
 var media = builder
     .AddProject<HomeScreen_Service_Media>("homescreen-service-media")
@@ -68,6 +75,10 @@ var media = builder
     .WithAnnotation(new ContainerMountAnnotation("cache", "/cache", ContainerMountType.Volume, false))
     .WithAnnotation(new ContainerMountAnnotation("media", "/media", ContainerMountType.Volume, true));
 
+mediaDb.WithParentRelationship(media);
+mediaCache.WithParentRelationship(media);
+mediaSource.WithParentRelationship(media);
+
 var mediaWorker = builder
     .AddProject<HomeScreen_Service_Media_Worker>("homescreen-service-media-worker")
     .WithOtlpExporter()
@@ -82,6 +93,10 @@ var mediaWorker = builder
     .WithEnvironment("MediaCacheDir", mediaCache)
     .WithAnnotation(new ContainerMountAnnotation("cache", "/cache", ContainerMountType.Volume, false))
     .WithAnnotation(new ContainerMountAnnotation("media", "/media", ContainerMountType.Volume, true));
+
+mediaWorker.WithParentRelationship(media);
+mediaMigration.WithParentRelationship(media);
+location.WithParentRelationship(mediaWorker);
 
 var weather = builder
     .AddProject<HomeScreen_Service_Weather>("homescreen-service-weather")
@@ -102,6 +117,9 @@ var common = builder
     .WaitFor(weather)
     .WaitFor(redis)
     .WithHttpHealthCheck("/alive");
+
+media.WithParentRelationship(common);
+weather.WithParentRelationship(common);
 
 var dashboard = builder
     .AddProject<HomeScreen_Web_Dashboard_Server>("homescreen-web-dashboard-server")

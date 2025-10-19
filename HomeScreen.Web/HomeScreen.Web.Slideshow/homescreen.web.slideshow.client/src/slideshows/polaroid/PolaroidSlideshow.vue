@@ -14,7 +14,7 @@
       <TransformedPolaroidModal
         v-for="imageId in slice"
         :key="imageId"
-        :item="makeItem(images[imageId])"
+        :item="makeItem(images[imageId] as Image)"
         @pause="() => pause()"
         @resume="() => resume()"
       />

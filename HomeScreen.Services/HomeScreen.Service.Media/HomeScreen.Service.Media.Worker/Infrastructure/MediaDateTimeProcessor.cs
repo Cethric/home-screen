@@ -30,13 +30,25 @@ public class MediaDateTimeProcessor(ILogger<MediaDateTimeProcessor> logger, IMed
         using var activity = ActivitySource.StartActivity();
         logger.LogDebug("Determining media date for {FileName}", file.FullName);
 
+
+        var gps = await mediaMetadataReader.LoadGps(file, cancellationToken);
+        if (gps != null && gps.TryGetGpsDate(out var date))
+        {
+            return (date, TimeSpan.FromHours(0));
+        }
+
         var exif = await mediaMetadataReader.LoadExif(file, cancellationToken);
         if (exif == null || !TryGetExifDateTimeOffset(file, exif, out var dateTime, out var offset))
         {
             return GetFileTime(file);
         }
 
-        logger.LogInformation("Using DateTime from EXIF for {FileName} - {DateTime} {Offset}", file.FullName, dateTime, offset);
+        logger.LogInformation(
+            "Using DateTime from EXIF for {FileName} - {DateTime} {Offset}",
+            file.FullName,
+            dateTime,
+            offset
+        );
         return (dateTime, offset);
     }
 

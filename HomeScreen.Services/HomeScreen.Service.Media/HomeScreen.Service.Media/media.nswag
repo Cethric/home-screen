@@ -45,6 +45,7 @@
       "typeAccessModifier": "public",
       "propertySetterAccessModifier": "",
       "generateNativeRecords": true,
+      "useRequiredKeyword": false,
       "generateContractsOutput": true,
       "contractsNamespace": "HomeScreen.Service.Media.Client.Generated",
       "contractsOutputFilePath": "../HomeScreen.Service.Media.Client/Generated/IMediaClient.cs",
@@ -56,6 +57,8 @@
       "queryNullValue": "",
       "className": "{controller}Client",
       "operationGenerationMode": "MultipleClientsFromFirstTagAndOperationId",
+      "includedOperationIds": [],
+      "excludedOperationIds": [],
       "additionalNamespaceUsages": [
         "System",
         "System.Collections.Generic",

@@ -11,28 +11,30 @@
     "check": "biome check",
     "check:write": "biome check --write"
   },
-  "dependencies": {},
   "devDependencies": {
-    "@hey-api/openapi-ts": "^0.78.3",
-    "@tsconfig/node22": "^22.0.2",
-    "@types/luxon": "^3.6.2",
-    "@types/node": "^24.0.13",
-    "globals": "^16.3.0",
-    "luxon": "^3.7.1",
-    "npm-run-all2": "^8.0.4",
-    "rimraf": "^6.0.1",
-    "typescript": "^5.8.3",
-    "vue": "^3.5.17",
-    "zod": "^4.0.5"
+    "@biomejs/biome": "catalog:tools",
+    "@hey-api/openapi-ts": "catalog:tools",
+    "@pinia/colada": "catalog:api",
+    "@tsconfig/node22": "catalog:build",
+    "@types/luxon": "catalog:api",
+    "@types/node": "catalog:build",
+    "globals": "catalog:build",
+    "luxon": "catalog:api",
+    "npm-run-all2": "catalog:tools",
+    "rimraf": "catalog:tools",
+    "typescript": "catalog:tools",
+    "vue": "catalog:vue",
+    "zod": "catalog:api"
   },
   "peerDependencies": {
-    "luxon": "^3.5.0",
-    "vue": "^3.5.13",
-    "zod": "^4.0.5"
+    "@pinia/colada": "catalog:api",
+    "luxon": "catalog:api",
+    "vue": "catalog:api",
+    "zod": "catalog:api"
   },
   "engines": {
-    "node": ">=20",
-    "pnpm": ">=9"
+    "node": ">=22",
+    "pnpm": ">=10"
   },
   "module": "dist/index.js",
   "types": "dist/index.d.ts",

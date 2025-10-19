@@ -1,5 +1,5 @@
 using System.Diagnostics;
-using HomeScreen.Database.MediaDb.Entities;
+using Grpc.Core;
 using HomeScreen.Service.Location.Client.Infrastructure.Location;
 using HomeScreen.Service.Media.Common.Infrastructure.Cache;
 using MetadataExtractor;
@@ -16,10 +16,7 @@ public class MediaLocationProcessor(
 {
     private static ActivitySource ActivitySource => new(nameof(MediaLocationProcessor));
 
-    public async Task<(LongitudeDirection, LatitudeDirection, double, double, string)> ProcessLocation(
-        FileInfo file,
-        CancellationToken cancellationToken
-    )
+    public async Task<(double, double, string?)> ProcessLocation(FileInfo file, CancellationToken cancellationToken)
     {
         using var activity = ActivitySource.StartActivity();
 
@@ -28,7 +25,7 @@ public class MediaLocationProcessor(
         if (gps?.TryGetGeoLocation(out var geoLocation) is not true)
         {
             logger.LogInformation("No GPS Details found for {Path}", file.FullName);
-            return (LongitudeDirection.Invalid, LatitudeDirection.Invalid, 360, 360, "");
+            return (360, 360, "");
         }
 
         var altitudeRaw = gps.GetRational(GpsDirectory.TagAltitude);
@@ -44,22 +41,28 @@ public class MediaLocationProcessor(
         var cachedLocation = await genericCache.ReadCache<string>(cachedLocationKey, cancellationToken);
         if (string.IsNullOrEmpty(cachedLocation))
         {
-            logger.LogDebug("Attempting to geolocate {CacheKey}", cachedLocationKey);
-            cachedLocation = await locationApi.SearchForLocation(
-                geoLocation.Longitude,
-                geoLocation.Latitude,
-                altitude,
-                cancellationToken
-            );
-            if (!string.IsNullOrEmpty(cachedLocation))
+            try
             {
-                await genericCache.WriteCache(cachedLocationKey, cachedLocation, cancellationToken);
+                logger.LogDebug("Attempting to geolocate {CacheKey}", cachedLocationKey);
+                cachedLocation = await locationApi.SearchForLocation(
+                    geoLocation.Longitude,
+                    geoLocation.Latitude,
+                    altitude,
+                    cancellationToken
+                );
+                if (!string.IsNullOrEmpty(cachedLocation))
+                {
+                    await genericCache.WriteCache(cachedLocationKey, cachedLocation, cancellationToken);
+                }
+            }
+            catch (RpcException ex)
+            {
+                logger.LogError(ex, "Failed to geolocate {CacheKey}", cachedLocationKey);
             }
         }
 
         logger.LogInformation("Found location for {CacheKey} : {Location}", cachedLocationKey, cachedLocation);
 
-        return (LongitudeDirection.East, LatitudeDirection.North, geoLocation.Latitude, geoLocation.Longitude,
-            cachedLocation);
+        return (geoLocation.Latitude, geoLocation.Longitude, cachedLocation);
     }
 }

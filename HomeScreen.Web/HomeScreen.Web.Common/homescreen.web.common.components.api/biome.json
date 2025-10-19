@@ -1,22 +1,44 @@
 {
-	"$schema": "https://biomejs.dev/schemas/2.1.3/schema.json",
-	"root": false,
-	"extends": "//",
-	"vcs": {
-		"root": "../../../.git/"
-	},
-	"linter": {
-		"rules": {
-			"complexity": {
-				"noUselessSwitchCase": "off"
-			},
-			"suspicious": {
-				"noExplicitAny": "off",
-				"noDoubleEquals": "off"
-			},
-			"style": {
-				"noNonNullAssertion": "off"
-			}
-		}
-	}
+  "$schema": "https://biomejs.dev/schemas/2.2.5/schema.json",
+  "root": false,
+  "extends": "//",
+  "overrides": [
+    {
+      "includes": [
+        "src/\\[!generated\\]/*",
+        ".deepsource.toml",
+        "biome.json",
+        "openapi-ts.config.ts",
+        "package.json",
+        "tsconfig.json"
+      ],
+      "linter": {
+        "rules": {
+          "complexity": {
+            "noUselessSwitchCase": "off"
+          },
+          "suspicious": {
+            "noExplicitAny": "off",
+            "noDoubleEquals": "off"
+          },
+          "style": {
+            "noNonNullAssertion": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["src/generated/**/*"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "useIterableCallbackReturn": "off"
+          },
+          "style": {
+            "useConst": "off"
+          }
+        }
+      }
+    }
+  ]
 }

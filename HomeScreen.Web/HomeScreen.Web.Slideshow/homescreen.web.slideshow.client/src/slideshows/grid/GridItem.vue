@@ -13,7 +13,7 @@
       class="absolute top-1/2 left-1/2 flex size-full -translate-x-1/2 -translate-y-1/2 items-center justify-center p-2"
     >
       <PolaroidModal
-        :image="images[imageId]"
+        :image="images[imageId] as Image"
         :max-size="size"
         @pause="() => pause()"
         @resume="() => resume()"
@@ -45,13 +45,13 @@ const index = ref<number>(0);
 const imageIds = computed(() =>
   Object.keys(props.images).slice(props.length * (props.offset - 1), props.length + props.length * (props.offset - 1)),
 );
-const currentId = ref<Image['id']>(imageIds.value[index.value]);
-const nextId = ref<Image['id']>(imageIds.value[(index.value + 1) % props.length]);
+const currentId = ref<Image['id']>(imageIds.value[index.value] as Image['id']);
+const nextId = ref<Image['id']>(imageIds.value[(index.value + 1) % props.length] as Image['id']);
 
 const { pause, resume } = useIntervalFn(() => {
   index.value = (index.value + 1) % (props.length ?? 1);
-  currentId.value = imageIds.value[index.value];
-  nextId.value = imageIds.value[(index.value + 1) % props.length];
+  currentId.value = imageIds.value[index.value] as Image['id'];
+  nextId.value = imageIds.value[(index.value + 1) % props.length] as Image['id'];
   console.log('Next image', index.value, currentId.value, nextId.value);
 }, props.intervalSeconds * 1000);
 

@@ -12,7 +12,7 @@
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
       <l-geo-json :geojson="location">
-        <l-tooltip>{{ tooltip }}</l-tooltip>
+        <l-tooltip v-if="tooltip">{{ tooltip }}</l-tooltip>
       </l-geo-json>
     </l-map>
   </div>
@@ -27,7 +27,7 @@ const zoom = defineModel({ default: 15 });
 const props = defineProps<{
   latitude: number;
   longitude: number;
-  tooltip: string;
+  tooltip?: string;
 }>();
 
 const location = computed(() => point([props.longitude, props.latitude], {}));

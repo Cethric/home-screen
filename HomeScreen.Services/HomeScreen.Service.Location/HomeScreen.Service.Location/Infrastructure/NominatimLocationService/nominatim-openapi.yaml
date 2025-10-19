@@ -22,146 +22,168 @@ servers:
   - url: "https://nominatim.geocoding.ai"
     description: "GeoCoding Server"
 
+jsonSchemaDialect: https://spec.openapis.org/oas/3.1/dialect/base
+
 paths:
-  "/reverse.php":
+  /reverse:
     get:
-      summary: "Reverse Geocoding"
+      summary: Reverse geocoding generates an address from a coordinate given as latitude and longitude.
       description: |
-        Reverse geocoding generates an address from a coordinate given as latitude and longitude.
-        
         # How it works
-        
         The reverse geocoding API does not exactly compute the address for the coordinate it receives. It works by finding the closest suitable OSM object and returning its address information. This may occasionally lead to unexpected results.
-        
+
         First of all, Nominatim only includes OSM objects in its index that are suitable for searching. Small, unnamed paths for example are missing from the database and can therefore not be used for reverse geocoding either.
-        
-        The other issue to be aware of is that the closest OSM object may not always have a similar enough address to the coordinate you were requesting. For example, in dense city areas it may belong to a completely different street."
+
+        The other issue to be aware of is that the closest OSM object may not always have a similar enough address to the coordinate you were requesting. For example, in dense city areas it may belong to a completely different street.
       parameters:
         - name: lat
           in: query
+          description: Latitude of a coordinate in WGS84 projection
           required: true
-          description: "Latitude of a coordinate in WGS84 projection. The API returns exactly one result or an error when the coordinate is in an area with no OSM data coverage."
           schema:
             type: number
             format: double
+            minimum: -90
+            maximum: 90
         - name: lon
           in: query
+          description: Longitude of a coordinate in WGS84 projection
           required: true
-          description: "Longitude of a coordinate in WGS84 projection. The API returns exactly one result or an error when the coordinate is in an area with no OSM data coverage."
           schema:
             type: number
             format: double
+            minimum: -180
+            maximum: 180
         - name: format
           in: query
+          style: simple
           required: false
-          default: "xml"
           schema:
             $ref: "#/components/schemas/OutputFormat"
+        - name: json_callback
+          in: query
+          style: simple
+          required: false
+          schema:
+            type: string
+          description: |
+            When given, then JSON output will be wrapped in a callback function with the given name. See JSONP for more 
+            information.  
+            
+            Only has an effect for JSON output formats.
         - name: addressdetails
           in: query
           required: false
-          description: "When set to 1, include a breakdown of the address into elements. The exact content of the address breakdown depends on the output format."
-          default: 1
           schema:
             $ref: "#/components/schemas/NumberBoolean"
+            default: 1
+          description: |
+            When set to 1, include a breakdown of the address into elements. The exact content of the address breakdown 
+            depends on the output format.
         - name: extratags
           in: query
           required: false
-          description: "When set to 1, the response include any additional information in the result that is available in the database, e.g. wikipedia link, opening hours."
-          default: 0
           schema:
             $ref: "#/components/schemas/NumberBoolean"
+            default: 0
+          description: |
+            When set to 1, the response include any additional information in the result that is available in the database, e.g. wikipedia link, opening hours.
         - name: namedetails
           in: query
           required: false
-          description: "When set to 1, include a full list of names for the result. These may include language variants, older names, references and brand."
-          default: 0
           schema:
             $ref: "#/components/schemas/NumberBoolean"
+            default: 0
+          description: |
+            When set to 1, include a full list of names for the result. These may include language variants, older names, references and brand.
+        - name: entrances
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/NumberBoolean"
+            default: 0
+          description: |
+            When set to 1, include the tagged entrances in the result.
         - name: accept-language
           in: query
           required: false
-          description: |
-            Preferred language order for showing search results. This may either be a simple comma-separated list of language codes or have the same format as the ["Accept-Language" HTTP header](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Accept-Language).
-          default: 0
           schema:
             type: string
+            default: en
+          description: |
+            Preferred language order for showing search results. This may either be a simple comma-separated list of language codes or have the same format as the ["Accept-Language" HTTP header.](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Accept-Language)
         - name: zoom
           in: query
           required: false
-          description: "Level of detail required for the address. This is a number that corresponds roughly to the zoom level used in XYZ tile sources in frameworks like Leaflet.js, Openlayers etc."
-          default: 18
           schema:
-            type: number
-            minimum: 0
-            maximum: 18
+            $ref: "#/components/schemas/ZoomLevel"
+            default: 0
+          description: |
+            Level of detail required for the address. This is a number that corresponds roughly to the zoom level used in XYZ tile sources in frameworks like Leaflet.js, Openlayers etc.
         - name: layer
           in: query
           required: false
-          description: |
-            The layer filter allows to select places by themes.
-
-            The `address` layer contains all places that make up an address: address points with house numbers, streets, inhabited places (suburbs, villages, cities, states etc.) and administrative boundaries.
-
-            The `poi` layer selects all point of interest. This includes classic points of interest like restaurants, shops, hotels but also less obvious features like recycling bins, guideposts or benches.
-
-            The `railway` layer includes railway infrastructure like tracks. Note that in Nominatim's standard configuration, only very few railway features are imported into the database.
-
-            The `natural` layer collects features like rivers, lakes and mountains while the manmade layer functions as a catch-all for features not covered by the other layers.
           schema:
             $ref: "#/components/schemas/Layer"
         - name: polygon_geojson
           in: query
           required: false
-          description: "Add the full geometry of the place to the result output. Output formats in GeoJSON, KML, SVG or WKT are supported."
-          default: 0
           schema:
-            $ref: "#/components/schemas/NumberBoolean"
+            type: number
+            minimum: 0
+            maximum: 1
+            default: 0
         - name: polygon_kml
           in: query
           required: false
-          description: "Add the full geometry of the place to the result output. Output formats in GeoJSON, KML, SVG or WKT are supported."
-          default: 0
           schema:
-            $ref: "#/components/schemas/NumberBoolean"
+            type: number
+            minimum: 0
+            maximum: 1
+            default: 0
         - name: polygon_svg
           in: query
           required: false
-          description: "Add the full geometry of the place to the result output. Output formats in GeoJSON, KML, SVG or WKT are supported."
-          default: 0
           schema:
-            $ref: "#/components/schemas/NumberBoolean"
+            type: number
+            minimum: 0
+            maximum: 1
+            default: 0
         - name: polygon_text
           in: query
           required: false
-          description: "Add the full geometry of the place to the result output. Output formats in GeoJSON, KML, SVG or WKT are supported."
-          default: 0
           schema:
-            $ref: "#/components/schemas/NumberBoolean"
+            type: number
+            minimum: 0
+            maximum: 1
+            default: 0
         - name: polygon_threshold
           in: query
           required: false
-          description: "When one of the polygon_* outputs is chosen, return a simplified version of the output geometry. The parameter describes the tolerance in degrees with which the geometry may differ from the original geometry. Topology is preserved in the geometry."
-          default: 0.0
           schema:
             type: number
             format: float
+            default: 0
+          description: |
+            When one of the polygon_* outputs is chosen, return a simplified version of the output geometry. The parameter describes the tolerance in degrees with which the geometry may differ from the original geometry. Topology is preserved in the geometry.
         - name: email
           in: query
           required: false
-          description: |
-            If you are making large numbers of request please include an appropriate email address to identify your requests. See Nominatim's [Usage Policy](https://operations.osmfoundation.org/policies/nominatim/) for more details.
           schema:
             type: string
             format: email
+          description: |
+            If you are making large numbers of request please include an appropriate email address to identify your requests. See Nominatim's Usage Policy for more details.
         - name: debug
           in: query
           required: false
+          schema:
+            type: number
+            minimum: 0
+            maximum: 1
+            default: 0
           description: |
             Output assorted developer debug information. Data on internals of Nominatim's "search loop" logic, and SQL queries. The output is HTML format. This overrides the specified machine readable format.
-          default: 0
-          schema:
-            $ref: "#/components/schemas/NumberBoolean"
       
       responses:
         200:
@@ -169,11 +191,7 @@ paths:
           content:
             "application/json":
               schema:
-                oneOf:
-                  - $ref: "#/components/schemas/ReverseOutputJson"
-                  - $ref: "#/components/schemas/ReverseOutputJsonV2"
-                  - $ref: "#/components/schemas/ReverseOutputGeoJson"
-                  - $ref: "#/components/schemas/ReverseOutputGeoCodeJson"
+                $ref: "#/components/schemas/ReverseOutputJson"
             "application/xml":
               schema:
                 $ref: "#/components/schemas/ReverseOutputXml"
@@ -184,376 +202,209 @@ paths:
               schema:
                 type: string
 
+
 webhooks: { }
 components:
   schemas:
     OutputFormat:
       type: string
       enum: [ "xml", "json", "jsonv2", "geojson", "geocodejson" ]
+    #      anyOf: 
+    #        - const: "xml"
+    #          description: |
+    #            ```xml
+    #            <reversegeocode timestamp="Sat, 11 Aug 18 11:53:21 +0000"
+    #                            attribution="Data © OpenStreetMap contributors, ODbL 1.0. https://www.openstreetmap.org/copyright"
+    #                            querystring="lat=48.400381&lon=11.745876&zoom=5&format=xml">
+    #              <result place_id="179509537" osm_type="relation" osm_id="2145268" ref="BY" place_rank="15" address_rank="15"
+    #                      lat="48.9467562" lon="11.4038717"
+    #                      boundingbox="47.2701114,50.5647142,8.9763497,13.8396373">
+    #                   Bavaria, Germany
+    #              </result>
+    #              <addressparts>
+    #                 <state>Bavaria</state>
+    #                 <ISO3166-2-lvl4>DE-BY</ISO3166-2-lvl4>
+    #                 <country>Germany</country>
+    #                 <country_code>de</country_code>
+    #              </addressparts>
+    #              <extratags>
+    #                <tag key="place" value="state"/>
+    #                <tag key="wikidata" value="Q980"/>
+    #                <tag key="wikipedia" value="de:Bayern"/>
+    #                <tag key="population" value="12520000"/>
+    #                <tag key="name:prefix" value="Freistaat"/>
+    #              </extratags>
+    #            </reversegeocode>
+    #            ```
+    #            The attributes of the outer reversegeocode element return generic information about the query, including the time when the response was sent (in UTC), attribution to OSM and the original querystring.
+    #
+    #            The place information can be found in the result element. The attributes of that element contain:
+    #
+    #            - place_id - reference to the Nominatim internal database ID (see notes)
+    #            - osm_type, osm_id - reference to the OSM object (see notes)
+    #            - ref - content of ref tag if it exists
+    #            - lat, lon - latitude and longitude of the centroid of the object
+    #            - boundingbox - comma-separated list of corner coordinates (see notes)
+    #            The full address of the result can be found in the content of the result element as a comma-separated list.
+    #
+    #            Additional information requested with addressdetails=1, extratags=1, namedetails=1, and entrances=1 can be found in extra elements.
+    #        - const: "json"
+    #          description: |
+    #            The JSON format returns an array of places (for search and lookup) or a single place (for reverse) of the following format:
+    #            ```json
+    #            {
+    #              "place_id": 100149,
+    #              "licence": "Data © OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+    #              "osm_type": "node",
+    #              "osm_id": "107775",
+    #              "boundingbox": ["51.3473219", "51.6673219", "-0.2876474", "0.0323526"],
+    #              "lat": "51.5073219",
+    #              "lon": "-0.1276474",
+    #              "display_name": "London, Greater London, England, SW1A 2DU, United Kingdom",
+    #              "class": "place",
+    #              "type": "city",
+    #              "importance": 0.9654895765402,
+    #              "icon": "https://nominatim.openstreetmap.org/images/mapicons/poi_place_city.p.20.png",
+    #              "address": {
+    #                "city": "London",
+    #                "state_district": "Greater London",
+    #                "state": "England",
+    #                "ISO3166-2-lvl4": "GB-ENG",
+    #                "postcode": "SW1A 2DU",
+    #                "country": "United Kingdom",
+    #                "country_code": "gb"
+    #              },
+    #              "extratags": {
+    #                "capital": "yes",
+    #                "website": "http://www.london.gov.uk",
+    #                "wikidata": "Q84",
+    #                "wikipedia": "en:London",
+    #                "population": "8416535"
+    #              }
+    #            }
+    #            ```
+    #            The possible fields are:
+    #            - place_id - reference to the Nominatim internal database ID (see notes)
+    #            - osm_type, osm_id - reference to the OSM object (see notes)
+    #            - boundingbox - area of corner coordinates (see notes)
+    #            - lat, lon - latitude and longitude of the centroid of the object
+    #            - display_name - full comma-separated address
+    #            - class, type - key and value of the main OSM tag
+    #            - importance - computed importance rank
+    #            - icon - link to class icon (if available)
+    #            - address - dictionary of address details (only with addressdetails=1, see notes)
+    #            - extratags - dictionary with additional useful tags like website or maxspeed (only with extratags=1)
+    #            - namedetails - dictionary with full list of available names including ref etc.
+    #            - geojson, svg, geotext, geokml - full geometry (only with the appropriate polygon_* parameter)
+    #            - entrances - array of objects representing tagged entrances for the object, or null if none are found (only with entrances=1)
+    #        - const: "jsonv2"
+    #          description: |
+    #            This is the same as the JSON format with two changes:
+    #            - class renamed to category
+    #            - additional field place_rank with the search rank of the object
+    #        - const: "geojson"
+    #          description: |
+    #            This format follows the [RFC7946](https://geojson.org/). Every feature includes a bounding box (bbox).  
+    #            The properties object has the following fields:
+    #            - place_id - reference to the Nominatim internal database ID ([see notes](https://nominatim.org/release-docs/develop/api/Output/#place_id-is-not-a-persistent-id))
+    #            - osm_type, osm_id - reference to the OSM object ([see notes](https://nominatim.org/release-docs/develop/api/Output/#osm-reference))
+    #            - category, type - key and value of the main OSM tag
+    #            - display_name - full comma-separated address
+    #            - place_rank - class search rank
+    #            - importance - computed importance rank
+    #            - icon - link to class icon (if available)
+    #            - address - dictionary of address details (only with addressdetails=1, [see notes](https://nominatim.org/release-docs/develop/api/Output/#addressdetails))
+    #            - extratags - dictionary with additional useful tags like website or maxspeed (only with extratags=1)
+    #            - namedetails - dictionary with full list of available names including ref etc.
+    #            - entrances - array of objects representing tagged entrances for the object, or null if none are found (only with entrances=1)
+    #            Use polygon_geojson to output the full geometry of the object instead of the centroid.
+    #        - const: "geocodejson"
+    #          description: |
+    #            The GeocodeJSON format follows the GeocodeJSON spec 0.1.0. The following feature attributes are implemented:
+    #            - osm_type, osm_id - reference to the OSM object (unofficial extension, see notes)
+    #            - type - the 'address level' of the object ('house', 'street', district, city, county, state, country, locality)
+    #            - osm_key- key of the main tag of the OSM object (e.g. boundary, highway, amenity)
+    #            - osm_value - value of the main tag of the OSM object (e.g. residential, restaurant)
+    #            - label - full comma-separated address
+    #            - name - localised name of the place
+    #            - housenumber, street, locality, district, postcode, city, county, state, country - provided when it can be determined from the address (only with addressdetails=1)
+    #            - admin - list of localised names of administrative boundaries (only with addressdetails=1)
+    #            - extra - dictionary with additional useful tags like website or maxspeed (only with extratags=1)
+    #            - entrances - array of objects representing tagged entrances for the object, or null if none are found (only with entrances=1)
+    #            - Use polygon_geojson to output the full geometry of the object instead of the centroid.
+    
     NumberBoolean:
       type: integer
       format: int32
       enum: [ 0, 1 ]
       minimum: 0
       maximum: 1
+    
     Layer:
       type: string
-      enum: [ "address", "poi", "railway", "natural", "manmade" ]
-    ReverseOutputJsonBase:
+      enum: [ 'address', 'poi', 'railway', 'natural', 'manmade' ]
+    #      anyOf:
+    #        - const: 'address'
+    ##          enum: ["address"]
+    #          description: |
+    #            The address layer contains all places that make up an address: address points with house numbers, streets, inhabited places (suburbs, villages, cities, states etc.) and administrative boundaries.
+    #        - const: 'poi'
+    ##          enum: ["poi"]
+    #          description: |
+    #            The poi layer selects all point of interest. This includes classic points of interest like restaurants, shops, hotels but also less obvious features like recycling bins, guideposts or benches.
+    #        - const: 'railway'
+    ##          enum: ["railway"]
+    #          description: |
+    #            The railway layer includes railway infrastructure like tracks. Note that in Nominatim's standard configuration, only very few railway features are imported into the database.
+    #        - const: 'natural'
+    ##          enum: ["natural"]
+    #          description: |
+    #            The natural layer collects features like rivers, lakes and mountains
+    #        - const: 'manmade'
+    ##          enum: ["manmade"]
+    #          description: |
+    #            The manmade layer functions as a catch-all for features not covered by the other layers.
+    
+    ZoomLevel:
+      anyOf:
+        - type: integer
+          minimum: 0
+          maximum: 18
+    #        - oneOf:
+    #            - const: 3
+    #              description: country
+    #            - const: 5
+    #              description: state
+    #            - const: 8
+    #              description: county
+    #            - const: 10
+    #              description: city
+    #            - const: 12
+    #              description: town / borough
+    #            - const: 13
+    #              description: village / suburb
+    #            - const: 14
+    #              description: neighbourhood
+    #            - const: 15
+    #              description: any settlement
+    #            - const: 16
+    #              description: major streets
+    #            - const: 17
+    #              description: major and minor streets
+    #            - const: 18
+    #              description: building
+
+    ReverseOutputJson:
       type: object
+      additionalProperties: true
       properties:
-        place_id:
-          type: number
-          format: int64
-        licence:
-          type: string
-        osm_type:
-          type: string
-        osm_id:
-          type: number
-          format: int64
-        lat:
-          type: string
-        lon:
-          type: string
-        place_rank:
-          type: number
-          format: int64
-        type:
-          type: string
-        importance:
-          type: number
-          format: float
-        addresstype:
-          type: string
         display_name:
           type: string
-        name:
-          type: string
-        address:
-          type: object
-          properties:
-            road:
-              type: string
-            village:
-              type: string
-            state_district:
-              type: string
-            state:
-              type: string
-            postcode:
-              type: string
-            country:
-              type: string
-            country_code:
-              type: string
-        boundingbox:
-          type: array
-          items:
-            type: string
-            format: float
-    
-    ReverseOutputJson:
-      allOf:
-        - type: object
-          properties:
-            class:
-              type: string
-        - $ref: "#/components/schemas/ReverseOutputJsonBase"
-      example: |
+      example: >
         {
-            "place_id": 275915539,
-            "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
-            "osm_type": "way",
-            "osm_id": 88378435,
-            "lat": "52.54867955",
-            "lon": "-1.815784965131578",
-            "class": "leisure",
-            "type": "garden",
-            "place_rank": 30,
-            "importance": 0.00000999999999995449,
-            "addresstype": "leisure",
-            "name": "",
-            "display_name": "Pilkington Avenue, Maney, Sutton Coldfield, Birmingham, West Midlands Combined Authority, England, B72 1LH, United Kingdom",
-            "address": {
-                "road": "Pilkington Avenue",
-                "hamlet": "Maney",
-                "town": "Sutton Coldfield",
-                "city": "Birmingham",
-                "ISO3166-2-lvl8": "GB-BIR",
-                "state_district": "West Midlands Combined Authority",
-                "state": "England",
-                "ISO3166-2-lvl4": "GB-ENG",
-                "postcode": "B72 1LH",
-                "country": "United Kingdom",
-                "country_code": "gb"
-            },
-            "boundingbox": [
-                "52.5485735",
-                "52.5487962",
-                "-1.8161646",
-                "-1.8154131"
-            ]
+          "display_name": "Australia",
         }
-    ReverseOutputJsonV2:
-      allOf:
-        - type: object
-          properties:
-            category:
-              type: string
-        - $ref: "#/components/schemas/ReverseOutputJsonBase"
-      example: |
-        {
-            "place_id": 275915539,
-            "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
-            "osm_type": "way",
-            "osm_id": 88378435,
-            "lat": "52.54867955",
-            "lon": "-1.815784965131578",
-            "category": "leisure",
-            "type": "garden",
-            "place_rank": 30,
-            "importance": 0.00000999999999995449,
-            "addresstype": "leisure",
-            "name": "",
-            "display_name": "Pilkington Avenue, Maney, Sutton Coldfield, Birmingham, West Midlands Combined Authority, England, B72 1LH, United Kingdom",
-            "address": {
-                "road": "Pilkington Avenue",
-                "hamlet": "Maney",
-                "town": "Sutton Coldfield",
-                "city": "Birmingham",
-                "ISO3166-2-lvl8": "GB-BIR",
-                "state_district": "West Midlands Combined Authority",
-                "state": "England",
-                "ISO3166-2-lvl4": "GB-ENG",
-                "postcode": "B72 1LH",
-                "country": "United Kingdom",
-                "country_code": "gb"
-            },
-            "boundingbox": [
-                "52.5485735",
-                "52.5487962",
-                "-1.8161646",
-                "-1.8154131"
-            ]
-        }
-    ReverseOutputGeoJson:
-      type: object
-      properties:
-        type:
-          type: string
-        licence:
-          type: string
-        features:
-          type: array
-          items:
-            type: object
-            properties:
-              type:
-                type: string
-              properties:
-                $ref: "#/components/schemas/ReverseOutputJsonV2"
-              bbox:
-                type: array
-                items:
-                  type: number
-                  format: float
-                example: |
-                  [
-                    -1.8161646,
-                    52.5485735,
-                    -1.8154131,
-                    52.5487962
-                  ]
-              geometry:
-                type: object
-                properties:
-                  type:
-                    type: string
-                  coordinates:
-                    type: array
-                    items:
-                      type: number
-                      format: float
-      example: |
-        {
-            "type": "FeatureCollection",
-            "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
-            "features": [
-                {
-                    "type": "Feature",
-                    "properties": {
-                        "place_id": 272613568,
-                        "osm_type": "way",
-                        "osm_id": 88378435,
-                        "place_rank": 30,
-                        "category": "leisure",
-                        "type": "garden",
-                        "importance": 0.00000999999999995449,
-                        "addresstype": "leisure",
-                        "name": "",
-                        "display_name": "Pilkington Avenue, Maney, Sutton Coldfield, Birmingham, West Midlands Combined Authority, England, B72 1LH, United Kingdom",
-                        "address": {
-                            "road": "Pilkington Avenue",
-                            "hamlet": "Maney",
-                            "town": "Sutton Coldfield",
-                            "city": "Birmingham",
-                            "ISO3166-2-lvl8": "GB-BIR",
-                            "state_district": "West Midlands Combined Authority",
-                            "state": "England",
-                            "ISO3166-2-lvl4": "GB-ENG",
-                            "postcode": "B72 1LH",
-                            "country": "United Kingdom",
-                            "country_code": "gb"
-                        }
-                    },
-                    "bbox": [
-                        -1.8161646,
-                        52.5485735,
-                        -1.8154131,
-                        52.5487962
-                    ],
-                    "geometry": {
-                        "type": "Point",
-                        "coordinates": [
-                            -1.815784965131578,
-                            52.54867955
-                        ]
-                    }
-                }
-            ]
-        }
-    ReverseOutputGeoCodeJson:
-      type: object
-      properties:
-        type:
-          type: string
-        geocoding:
-          type: object
-          properties:
-            version:
-              type: string
-            attribution:
-              type: string
-            licence:
-              type: string
-            query:
-              type: string
-        features:
-          type: array
-          items:
-            type: object
-            properties:
-              type:
-                type: string
-              properties:
-                type: object
-                properties:
-                  geocoding:
-                    type: object
-                    properties:
-                      place_id:
-                        type: number
-                      osm_type:
-                        type: string
-                      osm_id:
-                        type: number
-                      osm_key:
-                        type: string
-                      osm_value:
-                        type: string
-                      type:
-                        type: string
-                      accuracy:
-                        type: number
-                      label:
-                        type: string
-                      postcode:
-                        type: string
-                      street:
-                        type: string
-                      locality:
-                        type: string
-                      district:
-                        type: string
-                      city:
-                        type: string
-                      county:
-                        type: string
-                      state:
-                        type: string
-                      country:
-                        type: string
-                      admin:
-                        type: object
-                        properties:
-                          level10:
-                            type: string
-                          level8:
-                            type: string
-                          level5:
-                            type: string
-                          level4:
-                            type: string
-              geometry:
-                type: object
-                properties:
-                  type:
-                    type: string
-                  coordinates:
-                    type: array
-                    items:
-                      type: number
-                      format: float
-      example: |
-        {
-            "type": "FeatureCollection",
-            "geocoding": {
-                "version": "0.1.0",
-                "attribution": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
-                "licence": "ODbL",
-                "query": ""
-            },
-            "features": [
-                {
-                    "type": "Feature",
-                    "properties": {
-                        "geocoding": {
-                            "place_id": 241931941,
-                            "osm_type": "way",
-                            "osm_id": 88378435,
-                            "osm_key": "leisure",
-                            "osm_value": "garden",
-                            "type": "house",
-                            "accuracy": 0,
-                            "label": "Pilkington Avenue, Maney, Sutton Coldfield, Birmingham, West Midlands Combined Authority, England, B72 1LH, United Kingdom",
-                            "postcode": "B72 1LH",
-                            "street": "Pilkington Avenue",
-                            "locality": "Maney",
-                            "district": "Sutton Coldfield",
-                            "city": "Birmingham",
-                            "county": "West Midlands Combined Authority",
-                            "state": "England",
-                            "country": "United Kingdom",
-                            "country_code": "gb",
-                            "admin": {
-                                "level10": "Sutton Coldfield",
-                                "level8": "Birmingham",
-                                "level5": "West Midlands Combined Authority",
-                                "level4": "England"
-                            }
-                        }
-                    },
-                    "geometry": {
-                        "type": "Point",
-                        "coordinates": [
-                            -1.815784965131578,
-                            52.54867955
-                        ]
-                    }
-                }
-            ]
-        }
+
     ReverseOutputXml:
       type: object
       properties:

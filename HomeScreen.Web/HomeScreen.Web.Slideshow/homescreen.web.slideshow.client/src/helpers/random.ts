@@ -10,8 +10,8 @@ export function range(min: number, max: number): number {
   return rangeRNG(min, max, random);
 }
 
-export function choiceRNG<T>(options: T[], random: () => number): T {
-  return options[rangeRNG(0, options.length, random)];
+export function choiceRNG<T, TArr extends T[] = T[]>(options: TArr, random: () => number): TArr[number] {
+  return options[rangeRNG(0, options.length, random)] as TArr[number];
 }
 
 export function choice<T>(options: T[]): T {
